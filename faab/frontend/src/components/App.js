@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 import { render } from "react-dom";
-import BidPlayerPage from "./BidPlayerPage";
+import BidPlayer from "./BidPlayer";
 import HomePage from "./HomePage";
+import ShowData from "./ShowData";
 
 export default class App extends Component {
   constructor(props) {
@@ -10,8 +11,8 @@ export default class App extends Component {
 
   render() {
     return (
-      <div>
-        <BidPlayerPage />
+      <div className="center">
+        <HomePage />
       </div>
       ); 
     }
