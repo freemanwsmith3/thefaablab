@@ -2,6 +2,7 @@ import React, { Component} from "react";
 import ShowData from "./ShowData";
 import { BrowserRouter as Router, Switch, Route, Link, Redirect } from "react-router-dom";
 import BidPlayer from "./BidPlayer";
+import ThisWeek from "./ThisWeek";
 
 
 
@@ -21,7 +22,7 @@ export default class HomePage extends Component {
                     );
                 }}/>
                  <Route exact path='/player' component = {BidPlayer} />
-                 <Route exact path='/week/:weekNumber' component = {ShowData} />
+                 <Route exact path='/week/:weekNumber' component = {ThisWeek} />
             </Switch>
         </Router>
     }

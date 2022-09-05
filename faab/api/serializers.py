@@ -16,4 +16,4 @@ class BidSerializer(serializers.ModelSerializer):
 class TargetSerializer(serializers.ModelSerializer):
     class Meta:
         model = Target
-        fields = ('player', 'mean_value', 'week')
+        fields = ('player', 'week')

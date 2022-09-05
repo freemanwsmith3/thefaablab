@@ -24,3 +24,14 @@ body {
   left: 50%;
   transform: translate(-50%, -50%);
 }
+
+.submitted-box{
+    border: 4px solid green;
+    display: 'inline-flex';
+    padding: 3px;
+  }
+
+#bid-box{
+  border: 4px dashed red;
+  padding: 3px;
+}

@@ -4,11 +4,11 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 class Player(models.Model):
     name = models.CharField(max_length=50, unique = True)
     team = models.CharField(max_length=50)
+    position = models.CharField(max_length=50)
 
 
 class Target(models.Model):
     player = models.ForeignKey(Player,  on_delete=models.CASCADE, related_name="targets")
-    mean_value = models.FloatField(null=False, default=0,  validators=[MinValueValidator(0.0), MaxValueValidator(100.0)])
     week = models.IntegerField(null=False, validators=[MinValueValidator(0), MaxValueValidator(17)])
 
 class Bid(models.Model):
