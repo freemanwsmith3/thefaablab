@@ -1,5 +1,5 @@
 
 web: gunicorn faablab.wsgi:application --log-file - 
---pythonpath django_structure/src django_structure.wsgi
+--pythonpath django_structure/src faab.wsgi
 
-release: python manage.py migrate
+release: python faablab/manage.py migrate
