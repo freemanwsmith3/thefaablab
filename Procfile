@@ -1,4 +1,4 @@
 
-web: gunicorn faablab.wsgi:application --log-file - 
+web: gunicorn faablab.faab.wsgi:application --log-file - 
 
 release: python manage.py migrate
