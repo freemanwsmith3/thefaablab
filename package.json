@@ -2,8 +2,9 @@
   "dependencies": {
     "react-router-dom": "^5.2.0"
   },
-  "scripts" : {
-    "start": "App.js"
+  "engines" : {
+    "node":"16.14.0",
+    "npm": "8.3.1"
   }
 }
 
