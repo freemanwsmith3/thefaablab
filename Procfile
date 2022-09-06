@@ -1,4 +1,4 @@
 
-web: gunicorn faablab.faab.wsgi:application --log-file - 
-
-release: python manage.py migrate
+web: gunicorn faablab.wsgi:application --log-file - 
+web: python faablab/manage.py runserver 0.0.0.0:$PORT --noreload
+release: python faablab/manage.py migrate
