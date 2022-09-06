@@ -131,3 +131,6 @@ STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 #maybe change for heroku
+
+#SESSION_COOKIE_SECURE = False
+#CSRF_COOKIE_SECURE = False
