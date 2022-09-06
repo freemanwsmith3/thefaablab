@@ -32,6 +32,7 @@ ALLOWED_HOSTS = ['.faablab.app', '.herokuapp.com', 'faablab.herokuapp.com', '127
 # Application definition
 
 INSTALLED_APPS = [
+    'faab',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
