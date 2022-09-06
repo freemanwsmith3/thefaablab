@@ -4,8 +4,6 @@ import BidPlayer from "./BidPlayer";
 import HomePage from "./HomePage";
 import ShowData from "./ShowData";
 
-
-
 export default class App extends Component {
   constructor(props) {
     super(props);
