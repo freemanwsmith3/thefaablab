@@ -13,4 +13,5 @@ from django.core.wsgi import get_wsgi_application
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'faab.settings')
 
+os.environ.setdefault('DJANGO_STRUCTION', 'faab')
 application = get_wsgi_application()
