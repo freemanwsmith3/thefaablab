@@ -3,7 +3,7 @@ import ShowData from "./ShowData";
 import { BrowserRouter as Router, Switch, Route, Link, Redirect } from "react-router-dom";
 import BidPlayer from "./BidPlayer";
 import Typography from "@material-ui/core/Typography";
-
+import Grid from "@material-ui/core/Grid";
 
 export default class ThisWeek extends Component {
     constructor(props) {
