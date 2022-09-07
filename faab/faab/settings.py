@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-c(tebb2w04c9mt&0!vp%-zy2jyu4-cz%#lgdp$jzp$2io*o4+5'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['.faablab.app', '.herokuapp.com', 'faablab.herokuapp.com', '127.0.0.1']
 
@@ -135,4 +135,4 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 #SESSION_COOKIE_SECURE = False
 #CSRF_COOKIE_SECURE = False
-SECURE_SSL_REDIRECT = False
+#SECURE_SSL_REDIRECT = False

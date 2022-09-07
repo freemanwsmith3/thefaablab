@@ -81,8 +81,12 @@ WSGI_APPLICATION = 'faab.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'd9pv40acl34n43',
+        'USER': 'uesklzvzkoyjny',
+        'PASSWORD' : '844e044743f46918ba0e3626ea9d28dd2648ed8bdae506b54e8111fe93a810c9',
+        'HOST': 'ec2-34-199-68-114.compute-1.amazonaws.com',
+        'PORT': '5432',
     }
 }
 
