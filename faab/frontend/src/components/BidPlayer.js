@@ -30,7 +30,7 @@ export default class BidPlayer extends Component {
     }
 
     handleBidValue(e){
-        
+
         this.setState({
             value: e.target.value,
 
@@ -38,8 +38,12 @@ export default class BidPlayer extends Component {
         console.log(e)
     }
 
+    reloadPage(){
+        window.location.reload(false); 
+    };
+
     handleBidButtonPress(e){
-        window.location.reload(false);
+
         this.setState({
             guestsCanSee: true,
         })
@@ -57,7 +61,11 @@ export default class BidPlayer extends Component {
 
         fetch("/api/bid", submitBid)
             .then((response) => response.json())
-            .then((data) => console.log(data));
+            .then((data) => console.log(data))
+            .then(this.reloadPage);
+
+        
+        //window.location.reload(); 
         //console.log(this.state)
 
         

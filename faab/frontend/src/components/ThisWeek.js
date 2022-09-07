@@ -13,7 +13,6 @@ export default class ThisWeek extends Component {
         };
         
         this.weekNumber = this.props.match.params.weekNumber;
-        this.testTarget = 2;
     }
 
     async componentDidMount(){
@@ -24,6 +23,7 @@ export default class ThisWeek extends Component {
             this.setState({
                 names: data.names,
                 teams: data.teams,
+                targets: data.targets,
                 positions: data.positions,
                 mean_values: data.mean_values,
                 mode_values: data.mode_values,
@@ -55,11 +55,11 @@ export default class ThisWeek extends Component {
                     {this.state.visibleTargets.map((visible, index) => {   
                         return visible ? (
                             <div>
-                                <ShowData weekNumber={this.weekNumber} target={index} name = {this.state.names[index]} team = {this.state.teams[index]} position = {this.state.positions[index]} mean_value = {this.state.mean_values[index]} mode_value = {this.state.mode_values[index]} median_value = {this.state.median_values[index]} num_bid = {this.state.num_bids[index]} />
+                                <ShowData weekNumber={this.weekNumber} target={this.state.targets[index]} name = {this.state.names[index]} team = {this.state.teams[index]} position = {this.state.positions[index]} mean_value = {this.state.mean_values[index]} mode_value = {this.state.mode_values[index]} median_value = {this.state.median_values[index]} num_bid = {this.state.num_bids[index]} />
                             </div> )  : (
                             <div>
                                 
-                                <BidPlayer weekNumber={this.weekNumber}  target={index} name = {this.state.names[index]} team = {this.state.teams[index]} position = {this.state.positions[index]}  />
+                                <BidPlayer weekNumber={this.weekNumber}  target={this.state.targets[index]} name = {this.state.names[index]} team = {this.state.teams[index]} position = {this.state.positions[index]}  />
                             </div>
                             )   
                         })}

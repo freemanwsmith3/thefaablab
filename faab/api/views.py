@@ -29,7 +29,7 @@ class GetWeek(APIView):
         week = request.GET.get(self.lookup_url_kwarg)
         if week != None:
             targets = Target.objects.filter(week=week)
-            if 0 < int(week) < 18:
+            if 0 <= int(week) < 18:
                 data = TargetSerializer(targets, many=True).data
                 #data['is_user'] = self.request.session.session_key == bid.host
 
@@ -51,32 +51,44 @@ class BidView(APIView):
         data=request.data
         data['user'] = self.request.session.session_key 
         serializer = self.serializer_class(data=data)
+        print("-----------------------")
+        print(data)
+        print("++++++++++++++++++++++++++++")
         if serializer.is_valid():
             value = serializer.data.get('value')
             target = serializer.data.get('target')
             week = serializer.data.get('week')
             user = self.request.session.session_key
             
-            if 0 <= value <= 100 and 1 <= week <=17:
+            if 0 <= value <= 100 and 0 <= week <=17:
 
                 bid = Bid(user=user, value = value, week = week, target = Target.objects.get(id = target))
                 bid.save()
-                targets_dict = {}
-                weekly_bids = []
 
-                if self.request.session.get('visible_targets'):
-                    
-                    targets_dict = self.request.session.get('visible_targets')
-                
-                    if targets_dict[str(week)]:
 
-                        weekly_bids = targets_dict[str(week)]
+                try:
 
+                    this_week_vis_dict = self.request.session.get('visible_targets')
+                    print("OLD DICTK", this_week_vis_dict)
+                    this_week_vis_list = this_week_vis_dict[str(week)]
+                    this_week_vis_list.append(target)
+                    this_week_vis_dict[str(week)] = this_week_vis_list
+                    self.request.session['visible_targets'] = this_week_vis_dict
+                    print("NEW_DICT", self.request.session['visible_targets'][str(week)])
+                except Exception as e:
+                    print("No Session Key", e)
+
+                # targets_dict = {}
+                # weekly_bids = []
+
+                # if str(week) not in self.request.session.get('visible_targets'):
+                #     self.request.session.get('visible_targets')[str(week)] = weekly_bids
+                #     print(weekly_bids)
                         
-                if target not in weekly_bids:
-                    weekly_bids.append(target)
-                targets_dict[str(week)] = weekly_bids
-                self.request.session['visible_targets']= targets_dict
+                # if target not in weekly_bids:
+                #     weekly_bids.append(target)
+                # targets_dict[str(week)] = weekly_bids
+                # self.request.session['visible_targets']= targets_dict
 
                 return Response(BidSerializer(bid).data, status=status.HTTP_201_CREATED)
             else:
@@ -94,19 +106,24 @@ class TargetsAPI(APIView):
 
         if not self.request.session.exists(self.request.session.session_key):
             self.request.session.create()
+            
         vis_targs_bool = []
-        if not self.request.session.get('visible_targets'):
-            targets_dict = {}
-            targets_dict[str(week)] = vis_targs_bool
-            self.request.session['visible_targets']= targets_dict
-        
+        #if not self.request.session.get('visible_targets') or 'None' in self.request.session.get('visible_targets') or str(week) not in self.request.session.get('visible_targets'):
+        if not self.request.session.get('visible_targets') or str(week) not in self.request.session.get('visible_targets'):
+            target_dict = {}
+            target_dict[str(week)] = []
+            self.request.session['visible_targets'] = target_dict
+            
         targets = Target.objects.filter(week=week)
-        for targ in range(len(targets)):
-            if targ in self.request.session.get('visible_targets')[str(week)]:
-                vis_targs_bool.append(True)
-            else:
-                vis_targs_bool.append(False)
 
+        print("STRINGWEEK", self.request.session.get('visible_targets')[str(week)])
+        # for targ in range(len(targets)):
+        #     print(targ)
+        #     if targ in self.request.session.get('visible_targets')[str(week)]:
+        #         vis_targs_bool.append(True)
+
+        #     else:
+        #         vis_targs_bool.append(False)
         names = []
         teams = []
         positions = []
@@ -114,18 +131,38 @@ class TargetsAPI(APIView):
         mode_values = []
         median_values = []
         num_bids = []
+        target_ids = []
+        vis_targs_bool = []
         for d in targets:
+            if d.id in self.request.session.get('visible_targets')[str(week)]:
+                vis_targs_bool.append(True)
+
+            else:
+                vis_targs_bool.append(False)
+                print(vis_targs_bool)
             #names.append(Player.objects.get(id = d['player']).name)
             #teams.append(Player.objects.get(id = d['player']).team)
             #positions.append(Player.objects.get(id = d['player']).position)
             names.append(d.player.name)
-            teams.append(d.player.team)
-            positions.append(d.player.position)
+            teams.append(d.player.team.team_name)
+            positions.append(d.player.position.position_type)
+            target_ids.append(d.id)
             bids = Bid.objects.filter(target = d.id).values_list('value', flat=True)
-            num_bids.append(len(bids))
-            mean_values.append(round(numpy.mean(bids), 2))
-            mode_values.append(int(stats.mode(bids, keepdims=False)[0]))
-            median_values.append(round(numpy.median(bids), 2))
+
+            
+            num_bid = len(bids)
+            num_bids.append(num_bid)
+            if num_bid != 0:
+
+                mean_values.append(round(numpy.mean(bids), 2))
+                mode_values.append(int(stats.mode(bids, keepdims=False)[0]))
+                median_values.append(round(numpy.median(bids), 2))
+            else:
+                mean_values.append(0)
+                mode_values.append(0)
+                median_values.append(0)
+
+            
 
         # data['names'] += names
         # data['teams'] += teams
@@ -136,12 +173,13 @@ class TargetsAPI(APIView):
             'visibleTargets': vis_targs_bool,
             'names': names,
             'teams': teams,
+            'targets': target_ids,
             'positions': positions,
             'mean_values' : mean_values,
             'mode_values' : mode_values,
             'median_values' : median_values,
             'num_bids': num_bids,
         }
-        print(data)
+
 
         return JsonResponse(data, status=status.HTTP_200_OK)
