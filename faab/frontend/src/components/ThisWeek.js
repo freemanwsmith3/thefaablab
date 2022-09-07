@@ -39,32 +39,31 @@ export default class ThisWeek extends Component {
 
     render(){
         return(
-            <body>
+                <Grid container spacing={1} >
+                    <div id="app">
+                        <Typography component='h3' variant='h3'>
+                            Week: {this.weekNumber}
+                        </Typography>    
+                        <Typography component='h5' variant='h5'>
+                            <br></br>
+                            Submit a Mock Bid to View Average Responses
+                            <br></br>
+                            <br></br>
+                        </Typography>    
 
-                <div id="app">
-                    <Typography component='h3' variant='h3'>
-                        Week: {this.weekNumber}
-                    </Typography>    
-                    <Typography component='h5' variant='h5'>
-                        <br></br>
-                        Submit a Mock Bid to View Average Responses
-                        <br></br>
-                        <br></br>
-                    </Typography>    
-
-                    {this.state.visibleTargets.map((visible, index) => {   
-                        return visible ? (
-                            <div>
-                                <ShowData weekNumber={this.weekNumber} target={this.state.targets[index]} name = {this.state.names[index]} team = {this.state.teams[index]} position = {this.state.positions[index]} mean_value = {this.state.mean_values[index]} mode_value = {this.state.mode_values[index]} median_value = {this.state.median_values[index]} num_bid = {this.state.num_bids[index]} />
-                            </div> )  : (
-                            <div>
-                                
-                                <BidPlayer weekNumber={this.weekNumber}  target={this.state.targets[index]} name = {this.state.names[index]} team = {this.state.teams[index]} position = {this.state.positions[index]}  />
-                            </div>
-                            )   
-                        })}
-                </div>
-            </body>
+                        {this.state.visibleTargets.map((visible, index) => {   
+                            return visible ? (
+                                <div>
+                                    <ShowData weekNumber={this.weekNumber} target={this.state.targets[index]} name = {this.state.names[index]} team = {this.state.teams[index]} position = {this.state.positions[index]} mean_value = {this.state.mean_values[index]} mode_value = {this.state.mode_values[index]} median_value = {this.state.median_values[index]} num_bid = {this.state.num_bids[index]} />
+                                </div> )  : (
+                                <div>
+                                    
+                                    <BidPlayer weekNumber={this.weekNumber}  target={this.state.targets[index]} name = {this.state.names[index]} team = {this.state.teams[index]} position = {this.state.positions[index]}  />
+                                </div>
+                                )   
+                            })}
+                    </div>
+                </Grid> 
         )
     }
 }
