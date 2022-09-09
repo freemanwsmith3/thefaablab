@@ -6,7 +6,7 @@ from .models import Player, Bid, Target
 class PlayerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Player
-        fields = ('id', 'name', 'team')
+        fields = ('id', 'name', 'team', 'link', 'image')
 
 class BidSerializer(serializers.ModelSerializer):
     class Meta:

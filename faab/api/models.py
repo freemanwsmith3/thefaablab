@@ -12,6 +12,8 @@ class Player(models.Model):
     name = models.CharField(max_length=50, unique = True)
     team = models.ForeignKey(Team,  on_delete=models.CASCADE, related_name="teams")
     position = models.ForeignKey(Position,  on_delete=models.CASCADE, related_name="positions")
+    link = models.CharField(max_length=256, unique = True)
+    image = models.CharField(max_length=256, unique = True)
 
 class Target(models.Model):
     player = models.ForeignKey(Player,  on_delete=models.CASCADE, related_name="targets")

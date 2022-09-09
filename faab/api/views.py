@@ -126,6 +126,8 @@ class TargetsAPI(APIView):
         #         vis_targs_bool.append(False)
         names = []
         teams = []
+        links = []
+        images = []
         positions = []
         mean_values = []
         mode_values = []
@@ -145,6 +147,8 @@ class TargetsAPI(APIView):
             #positions.append(Player.objects.get(id = d['player']).position)
             names.append(d.player.name)
             teams.append(d.player.team.team_name)
+            links.append(d.player.link)
+            images.append(d.player.image)
             positions.append(d.player.position.position_type)
             target_ids.append(d.id)
             bids = Bid.objects.filter(target = d.id).values_list('value', flat=True)
@@ -173,6 +177,8 @@ class TargetsAPI(APIView):
             'visibleTargets': vis_targs_bool,
             'names': names,
             'teams': teams,
+            'links' : links,
+            'images': images,
             'targets': target_ids,
             'positions': positions,
             'mean_values' : mean_values,
