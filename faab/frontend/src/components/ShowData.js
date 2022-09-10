@@ -73,7 +73,7 @@ export default class ShowData extends Component {
                         alt="random"
                     />
     
-                    <CardContent sx={{ flexGrow: 1 }} >
+                      <CardContent sx={{ flexGrow: 1, border: 1 } }>
                         <Typography component='h5' variant='h5'>
                             {this.name}
                         </Typography>
