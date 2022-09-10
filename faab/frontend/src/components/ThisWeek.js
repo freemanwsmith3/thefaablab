@@ -16,6 +16,7 @@ import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import { createTheme, ThemeProvider } from '@material-ui/core/styles';
 
+
 function themeFunction(){
     const theme = createTheme();
 }
@@ -77,7 +78,7 @@ export default class ThisWeek extends Component {
                 <header>
                     <AppBar position="relative">
                         <Toolbar>
-                        {/* <CameraIcon sx={{ mr: 2 }} /> */}
+                        {/* <SportsFootballOutlinedIcon sx={{ mr: 2 }} /> */}
                         <Typography variant="h3" color="inherit" noWrap>
                             FaabLab
                         </Typography>
@@ -113,36 +114,9 @@ export default class ThisWeek extends Component {
                         <Grid container spacing={4}>
                             {this.state.visibleTargets.map((visible, index) => {    
                                 return visible ? ( 
-                                    // <ShowData weekNumber={this.weekNumber} target={this.state.targets[index]} name = {this.state.names[index]} team = {this.state.teams[index]} link = {this.state.links[index]}  image = {this.state.images[index]} position = {this.state.positions[index]} mean_value = {this.state.mean_values[index]} mode_value = {this.state.mode_values[index]} median_value = {this.state.median_values[index]} num_bid = {this.state.num_bids[index]} />
+                                    <ShowData weekNumber={this.weekNumber} target={this.state.targets[index]} name = {this.state.names[index]} team = {this.state.teams[index]} link = {this.state.links[index]}  image = {this.state.images[index]} position = {this.state.positions[index]} mean_value = {this.state.mean_values[index]} mode_value = {this.state.mode_values[index]} median_value = {this.state.median_values[index]} num_bid = {this.state.num_bids[index]} />
 
-                                    <Grid  item key={index}xs={12} sm={6} md={4}>
-                                        <Card
-                                        
-                                        sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}
-                                        >
-                                        <CardMedia
-                                            component="img"
-                                            sx={{
-                                            // 16:9
-                                            pt: '56.25%',
-                                            }}
-                                            alt="random"
-                                        />
-                                        <CardContent sx={{ flexGrow: 1 }}>
-                                        <Typography gutterBottom variant="h5" component="h2">
-                                        Heading
-                                        </Typography>
-                                        <Typography>
-                                        This is a media card. You can use this section to describe the
-                                        content.
-                                        </Typography>
-                                        </CardContent>
-                                        <CardActions>
-                                            <Button size="small">View</Button>
-                                            <Button size="small">Edit</Button>
-                                        </CardActions>
-                                        </Card>
-                                    </Grid>) :(
+                                    ) :(
                                     <BidPlayer weekNumber={this.weekNumber}  target={this.state.targets[index]} name = {this.state.names[index]} team = {this.state.teams[index]}  link = {this.state.links[index]}  image = {this.state.images[index]} position = {this.state.positions[index]}  />
                                 )
                             })}
