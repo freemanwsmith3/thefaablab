@@ -6,12 +6,19 @@ import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
 import Container from '@material-ui/core/Container';
 import Box from '@material-ui/core/Box';
-import Stack from '@material-ui/core/Stack';
+import CssBaseline from '@material-ui/core/CssBaseline';
 import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core//Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
+import AppBar from "@material-ui/core/AppBar";
+import Toolbar from "@material-ui/core/Toolbar";
+import { createTheme, ThemeProvider } from '@material-ui/core/styles';
+
+function themeFunction(){
+    const theme = createTheme();
+}
 
 function Copyright() {
     return (
@@ -27,8 +34,10 @@ function Copyright() {
   }
 
 export default class ThisWeek extends Component {
+
     constructor(props) {
         super(props);
+        this.theme = themeFunction();
         this.state = {
             visibleTargets: []
         };
@@ -62,38 +71,53 @@ export default class ThisWeek extends Component {
 
     render(){
         return(
-                <Grid container spacing={1} >
-                    <div id="app">
-                        <Box
-                            sx={{
-                                bgcolor: 'background.paper',
-                                pt: 8,
-                                pb: 6,
-                            }}
+            <html>
+                <ThemeProvider theme={this.theme}>
+                <CssBaseline />
+                <header>
+                    <AppBar position="relative">
+                        <Toolbar>
+                        {/* <CameraIcon sx={{ mr: 2 }} /> */}
+                        <Typography variant="h3" color="inherit" noWrap>
+                            FaabLab
+                        </Typography>
+                        </Toolbar>
+                    </AppBar>
+                </header>
+                <main id="app">
+                    <Box
+                        sx={{
+                            bgcolor: 'background.paper',
+                            pt: 8,
+                            pb: 6,
+                        }}
+                        >
+                        <Container maxWidth="sm">
+                            <Typography
+                            component="h1"
+                            variant="h2"
+                            align="center"
+                            color="text.primary"
+                            gutterBottom
                             >
-                            <Container maxWidth="sm">
-                                <Typography
-                                component="h1"
-                                variant="h2"
-                                align="center"
-                                color="text.primary"
-                                gutterBottom
-                                >
-                                Week: {this.weekNumber}
-                                </Typography>
-                                <Typography variant="h5" align="center" color="text.secondary" paragraph>
-                                Submit a Mock Bid to View Average Responses
-                                </Typography>
+                            Week: {this.weekNumber}
+                            </Typography>
+                            <Typography variant="h5" align="center" color="text.secondary" paragraph>
+                            Submit a Mock Bid to View Average Responses
+                            </Typography>
 
-                            </Container>
-                        </Box>                        
-                        <Container sx={{ py: 8 }} maxWidth="md">
-                        {/* End hero unit */}
+                        </Container>
+                    </Box>                        
+                    <Container sx={{ py: 8 }} maxWidth="md">
+                    {/* End hero unit */}
                         <Grid container spacing={4}>
                             {this.state.visibleTargets.map((visible, index) => {    
                                 return visible ? ( 
+                                    // <ShowData weekNumber={this.weekNumber} target={this.state.targets[index]} name = {this.state.names[index]} team = {this.state.teams[index]} link = {this.state.links[index]}  image = {this.state.images[index]} position = {this.state.positions[index]} mean_value = {this.state.mean_values[index]} mode_value = {this.state.mode_values[index]} median_value = {this.state.median_values[index]} num_bid = {this.state.num_bids[index]} />
+
                                     <Grid  item key={index}xs={12} sm={6} md={4}>
                                         <Card
+                                        
                                         sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}
                                         >
                                         <CardMedia
@@ -104,7 +128,6 @@ export default class ThisWeek extends Component {
                                             }}
                                             alt="random"
                                         />
-
                                         <CardContent sx={{ flexGrow: 1 }}>
                                         <Typography gutterBottom variant="h5" component="h2">
                                         Heading
@@ -120,20 +143,31 @@ export default class ThisWeek extends Component {
                                         </CardActions>
                                         </Card>
                                     </Grid>) :(
-                                        <BidPlayer weekNumber={this.weekNumber}  target={this.state.targets[index]} name = {this.state.names[index]} team = {this.state.teams[index]}  link = {this.state.links[index]}  image = {this.state.images[index]} position = {this.state.positions[index]}  />
-                                    
-                            )})}
-                            </Grid>
-                        </Container>         
-                    </div>
-                </Grid> 
-        )
+                                    <BidPlayer weekNumber={this.weekNumber}  target={this.state.targets[index]} name = {this.state.names[index]} team = {this.state.teams[index]}  link = {this.state.links[index]}  image = {this.state.images[index]} position = {this.state.positions[index]}  />
+                                )
+                            })}
+                        </Grid>
+                    </Container>         
+                </main>
+                <footer>
+                <Box sx={{ bgcolor: 'background.paper', p: 6 }} component="footer">
+                    {/* <Typography variant="h6" align="center" gutterBottom>
+                    Footer
+                    </Typography>
+                    <Typography
+                    variant="subtitle1"
+                    align="center"
+                    color="text.secondary"
+                    component="p"
+                    >
+                    Something here to give the footer a purpose!
+                    </Typography> */}
+                    <Copyright />
+                </Box>
+                </footer>
+                </ThemeProvider>
+            </html>
+        );
+        
     }
 }
-                            {/* return visible ? (
-                                <div>
-                                    <ShowData weekNumber={this.weekNumber} target={this.state.targets[index]} name = {this.state.names[index]} team = {this.state.teams[index]} link = {this.state.links[index]}  image = {this.state.images[index]} position = {this.state.positions[index]} mean_value = {this.state.mean_values[index]} mode_value = {this.state.mode_values[index]} median_value = {this.state.median_values[index]} num_bid = {this.state.num_bids[index]} />
-                                </div> )  : (
-
-                                )   
-                            })} */}
