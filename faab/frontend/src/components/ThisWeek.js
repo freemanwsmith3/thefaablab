@@ -11,7 +11,7 @@ import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core//Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
-import CardMedia from '@material-ui/core/CardMedia';
+import Fade from '@material-ui/core/Fade';
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import { createTheme, ThemeProvider } from '@material-ui/core/styles';
@@ -78,6 +78,7 @@ export default class ThisWeek extends Component {
                 <header>
                     <AppBar position="relative">
                         <Toolbar>
+                            
                         {/* <SportsFootballOutlinedIcon sx={{ mr: 2 }} /> */}
                         <Typography variant="h3" color="inherit" noWrap>
                             FaabLab
@@ -103,9 +104,14 @@ export default class ThisWeek extends Component {
                             >
                             Week: {this.weekNumber}
                             </Typography>
-                            <Typography variant="h5" align="center" color="text.secondary" paragraph>
-                            Submit a Mock Bid to View Average Responses
+                            <Typography variant="h6" align="left" color="text.secondary"  >
+                            <ul>
+                                <li>Submit how much FAAB you will bid on a player </li>
+                                <li>Bid in % of your start of season FAAB</li>
+                                <li>After submission, consensus bid data will be revealed </li>
+                            </ul>
                             </Typography>
+
 
                         </Container>
                     </Box>                        
@@ -114,10 +120,10 @@ export default class ThisWeek extends Component {
                         <Grid container spacing={4}>
                             {this.state.visibleTargets.map((visible, index) => {    
                                 return visible ? ( 
-                                    <ShowData weekNumber={this.weekNumber} target={this.state.targets[index]} name = {this.state.names[index]} team = {this.state.teams[index]} link = {this.state.links[index]}  image = {this.state.images[index]} position = {this.state.positions[index]} mean_value = {this.state.mean_values[index]} mode_value = {this.state.mode_values[index]} median_value = {this.state.median_values[index]} num_bid = {this.state.num_bids[index]} />
+                                    <ShowData index = {index} weekNumber={this.weekNumber} target={this.state.targets[index]} name = {this.state.names[index]} team = {this.state.teams[index]} link = {this.state.links[index]}  image = {this.state.images[index]} position = {this.state.positions[index]} mean_value = {this.state.mean_values[index]} mode_value = {this.state.mode_values[index]} median_value = {this.state.median_values[index]} num_bid = {this.state.num_bids[index]} />
 
                                     ) :(
-                                    <BidPlayer weekNumber={this.weekNumber}  target={this.state.targets[index]} name = {this.state.names[index]} team = {this.state.teams[index]}  link = {this.state.links[index]}  image = {this.state.images[index]} position = {this.state.positions[index]}  />
+                                    <BidPlayer index = {index} weekNumber={this.weekNumber}  target={this.state.targets[index]} name = {this.state.names[index]} team = {this.state.teams[index]}  link = {this.state.links[index]}  image = {this.state.images[index]} position = {this.state.positions[index]}  />
                                 )
                             })}
                         </Grid>

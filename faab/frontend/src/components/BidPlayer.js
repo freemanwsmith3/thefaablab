@@ -20,6 +20,7 @@ export default class BidPlayer extends Component {
             value: 0,
             week: 1,
         };
+        this.index = this.props.index;
         this.weekNumber = this.props.weekNumber;
         this.target = this.props.target;
         this.name = this.props.name;
@@ -83,9 +84,9 @@ export default class BidPlayer extends Component {
         
         return (
         
-        <Grid  xs={12} sm={6} md={4}>
+        <Grid item key={this.index} xs={12} sm={6} md={4}>
             <Card
-            sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}
+            sx={{ height: '100%', display: 'flex', flexDirection: 'column'}} 
             >
                 <CardMedia
                     component="img"
@@ -94,11 +95,11 @@ export default class BidPlayer extends Component {
                     pt: '56.25%',
                     }}
                     image={this.image}
-                    alt="random"
+                    alt={this.name}
                 />
 
-                <CardContent sx={{ flexGrow: 1 }}>
-                    <FormControl component="fieldset">
+                <CardContent sx={{ flexGrow: 1, border: 1 } }>
+                    <FormControl component="fieldset" style={{width:'100%'}}>
                         <FormHelperText >
                             <div align='center'>
                             <Typography component='h5' variant='h5'>
@@ -115,9 +116,8 @@ export default class BidPlayer extends Component {
                         <TextField
                             type="number"
                             name="bid"
-                            label="Bid"
+                            label="% of initial FAAB"
                             variant="filled"
-                            defaultValue={0}
                             onFocus={(e) => e.target.value = ""}
                             InputProps={{ inputProps: { min: 0, max: 100 } }}
                             //value={inputField.bid}

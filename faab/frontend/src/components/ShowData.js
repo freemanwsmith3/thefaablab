@@ -59,7 +59,7 @@ export default class ShowData extends Component {
     render() {
         return (
        
-            <Grid  xs={12} sm={6} md={4 } >
+          <Grid item key={this.index} xs={12} sm={6} md={4 } >
                 <Card
                 sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}
                 >
