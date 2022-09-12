@@ -166,7 +166,11 @@ export default class ThisWeek extends Component {
                                     pb: 6,
                                 }}
                                 >
-                                    <Container maxWidth="sm">
+                                    <Container maxWidth="sm"  sx={{
+                                    bgcolor: 'background.paper',
+                                    pt: 8,
+                                    pb: 6,
+                                }}>
                                         <Typography
                                         component="h1"
                                         variant="h2"
