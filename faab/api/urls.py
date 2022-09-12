@@ -17,6 +17,7 @@ Including another URLconf
 from django.urls import path
 from .views import PlayerView, BidView,GetWeek, TargetsAPI
 
+
 urlpatterns = [
     path('player', PlayerView.as_view()),
     path('bid', BidView.as_view()), 
