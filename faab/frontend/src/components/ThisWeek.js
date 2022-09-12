@@ -16,6 +16,9 @@ import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import { createTheme, ThemeProvider } from '@material-ui/core/styles';
 import { ClickAwayListener } from "@material-ui/core";
+import favicon from '../../static/favicon.icio';
+
+
 
 function themeFunction(){
     const theme = createTheme();
@@ -95,6 +98,7 @@ export default class ThisWeek extends Component {
                     <AppBar position="relative">
                         <Toolbar>
                         {/* <SportsFootballOutlinedIcon sx={{ mr: 2 }} /> */}
+                        
                         <Typography variant="h3" color="inherit" noWrap>
                             FAABLab
                         </Typography>
