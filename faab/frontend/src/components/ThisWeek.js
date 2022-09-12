@@ -96,7 +96,7 @@ export default class ThisWeek extends Component {
                         <Toolbar>
                         {/* <SportsFootballOutlinedIcon sx={{ mr: 2 }} /> */}
                         <Typography variant="h3" color="inherit" noWrap>
-                            FaabLab
+                            FAABLab
                         </Typography>
                         {/* <ClickAwayListener onClickAway={this.handleClickAway}>
                             <Box sx={{ position: 'relative' }}>
@@ -133,7 +133,7 @@ export default class ThisWeek extends Component {
                                     </li>
                                     <li>
                                     <Typography component='h5' variant='h5'>
-                                    Submit what you plan to bid in your league (Bids are in % of start of season FAAB)
+                                    Submit what you plan to bid in your league (bids are in % of start of season FAAB)
                                     </Typography>
                                     </li>
                                     <li>
@@ -197,7 +197,7 @@ export default class ThisWeek extends Component {
                                         <Typography component='h5' variant='h5' >
                                        Top Waiver Adds
                                         </Typography>
-                                        </Container>
+
                                             {this.state.visibleTargets.map((visible, index) => {    
                                                 return visible ? ( 
                                                     <ShowData weekNumber={this.weekNumber} target={this.state.targets[index]} name = {this.state.names[index]} team = {this.state.teams[index]} link = {this.state.links[index]}  image = {this.state.images[index]} position = {this.state.positions[index]} mean_value = {this.state.mean_values[index]} mode_value = {this.state.mode_values[index]} median_value = {this.state.median_values[index]} num_bid = {this.state.num_bids[index]} />
@@ -206,6 +206,7 @@ export default class ThisWeek extends Component {
                                                     <BidPlayer weekNumber={this.weekNumber}  target={this.state.targets[index]} name = {this.state.names[index]} team = {this.state.teams[index]}  link = {this.state.links[index]}  image = {this.state.images[index]} position = {this.state.positions[index]}  />
                                                 )
                                             })}
+                                        </Container>
                                         </Grid>
                                     </Container>        
                                 </Box>      
