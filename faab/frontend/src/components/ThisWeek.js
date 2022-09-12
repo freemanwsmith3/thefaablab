@@ -117,7 +117,7 @@ export default class ThisWeek extends Component {
 
                         {this.state.openPop ? (
                             <Container maxWidth="md">
-                                                                <Box
+                                <Box
                                 sx={{
                                     bgcolor: 'background.paper',
                                     pt: 8,
@@ -133,7 +133,7 @@ export default class ThisWeek extends Component {
                                     </li>
                                     <li>
                                     <Typography component='h5' variant='h5'>
-                                    Submit what you plan to bid in your league (bids are in % of start of season FAAB)
+                                    Submit what you plan to bid in your league (Bids are in % of start of season FAAB)
                                     </Typography>
                                     </li>
                                     <li>
@@ -166,11 +166,7 @@ export default class ThisWeek extends Component {
                                     pb: 6,
                                 }}
                                 >
-                                    <Container maxWidth="sm"  sx={{
-                                    bgcolor: 'background.paper',
-                                    pt: 8,
-                                    pb: 6,
-                                }}>
+                                    <Container maxWidth="sm">
                                         <Typography
                                         component="h1"
                                         variant="h2"
@@ -188,7 +184,9 @@ export default class ThisWeek extends Component {
                                             How it works
                                             </Button>
                                         </Typography>
-
+                                        <Typography align="center" component='h5' variant='h5' >
+                                       <br></br>Top Waiver Adds
+                                        </Typography>
                                     </Container>
                                 </Box>
                                 <Box>
@@ -197,11 +195,9 @@ export default class ThisWeek extends Component {
 
                                     {/* End hero unit */}
                                         <Grid container spacing={4}>
-                                        <Container sx={{ py: 8 }} maxWidth="md" align="center">
-                                        <Typography component='h5' variant='h5' >
-                                       Top Waiver Adds
-                                        </Typography>
+                                        <Container align="center">
 
+                                        </Container>
                                             {this.state.visibleTargets.map((visible, index) => {    
                                                 return visible ? ( 
                                                     <ShowData weekNumber={this.weekNumber} target={this.state.targets[index]} name = {this.state.names[index]} team = {this.state.teams[index]} link = {this.state.links[index]}  image = {this.state.images[index]} position = {this.state.positions[index]} mean_value = {this.state.mean_values[index]} mode_value = {this.state.mode_values[index]} median_value = {this.state.median_values[index]} num_bid = {this.state.num_bids[index]} />
@@ -210,7 +206,6 @@ export default class ThisWeek extends Component {
                                                     <BidPlayer weekNumber={this.weekNumber}  target={this.state.targets[index]} name = {this.state.names[index]} team = {this.state.teams[index]}  link = {this.state.links[index]}  image = {this.state.images[index]} position = {this.state.positions[index]}  />
                                                 )
                                             })}
-                                        </Container>
                                         </Grid>
                                     </Container>        
                                 </Box>      
