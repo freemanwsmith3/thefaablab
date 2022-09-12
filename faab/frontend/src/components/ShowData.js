@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import Button from "@material-ui/core/Button";
+import Box from "@material-ui/core/Box";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";
@@ -72,29 +72,31 @@ export default class ShowData extends Component {
                         image={this.image}
                         alt="random"
                     />
-    
+
                       <CardContent sx={{ flexGrow: 1, border: 1 } }>
-                        <Typography component='h5' variant='h5'>
-                            {this.name}
-                        </Typography>
-                        <Typography component='h6' variant='h6'>
-                            {this.team}
-                        </Typography>
-                        <Typography component='h7' variant='h7'>
-                            {this.position}
-                        </Typography>
-                        <Typography component='h5' variant='h5'>
-                        Average Bid:  {this.mean_value.toString()}%
-                      </Typography>
-                      <Typography component='h5' variant='h5'>
-                        Median Bid:  {this.median_value.toString()}%
-                      </Typography>
-                      <Typography component='h5' variant='h5'>
-                        Most Common Bid:  {this.mode_value.toString()}%
-                      </Typography>
-                      <Typography component='h5' variant='h5'>
-                        Number of Bids:  {this.num_bid.toString()}
-                        </Typography>
+                      <div align='center'>
+                            <Typography component='h5' variant='h5'>
+                                {this.name} - {this.position}
+                            </Typography>
+                            <Typography component='h6' variant='h6'>
+                                {this.team}
+                            </Typography>
+
+                            </div>
+                        <Box sx={{ p: 2, border: '1px dashed grey' }}>
+                            <Typography component='h5' variant='h5'>
+                            Average Bid:  {this.mean_value.toString()}%
+                            </Typography>
+                            <Typography component='h5' variant='h5'>
+                                Median Bid:  {this.median_value.toString()}%
+                            </Typography>
+                            <Typography component='h5' variant='h5'>
+                                Most Common Bid:  {this.mode_value.toString()}%
+                            </Typography>
+                            <Typography component='h5' variant='h5'>
+                                Number of Bids:  {this.num_bid.toString()}
+                            </Typography>
+                        </Box>
                     </CardContent>
                     <CardActions>
                     {/* <Button
