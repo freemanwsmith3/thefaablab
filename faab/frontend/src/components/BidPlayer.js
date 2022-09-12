@@ -9,6 +9,7 @@ import Card from '@material-ui/core//Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
+import Container from '@material-ui/core/Container';
 
 export default class BidPlayer extends Component {
 
@@ -103,14 +104,12 @@ export default class BidPlayer extends Component {
                         <FormHelperText >
                             <div align='center'>
                             <Typography component='h5' variant='h5'>
-                                {this.name}
+                                {this.name} - {this.position}
                             </Typography>
                             <Typography component='h6' variant='h6'>
                                 {this.team}
                             </Typography>
-                            <Typography component='h7' variant='h7'>
-                                {this.position}
-                            </Typography>
+
                             </div>
                         </FormHelperText>
                         <TextField
@@ -140,6 +139,8 @@ export default class BidPlayer extends Component {
                     </FormControl> */}
                 </CardContent>
                 <CardActions>
+                <Container>
+                <Typography align = "center">
                 <Button
                             //className={classes.button}
                             variant="contained" 
@@ -151,6 +152,8 @@ export default class BidPlayer extends Component {
                             >Submit</Button>
                     {/* <Button size="small">View</Button>
                     <Button size="small">Edit</Button> */}
+                    </Typography>
+                    </Container>
                 </CardActions>
             </Card>
         </Grid> );
