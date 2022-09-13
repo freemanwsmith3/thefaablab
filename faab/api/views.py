@@ -116,7 +116,6 @@ class TargetsAPI(APIView):
             
         targets = Target.objects.filter(week=week)
 
-        print("STRINGWEEK", self.request.session.get('visible_targets')[str(week)])
         # for targ in range(len(targets)):
         #     print(targ)
         #     if targ in self.request.session.get('visible_targets')[str(week)]:
@@ -141,7 +140,7 @@ class TargetsAPI(APIView):
 
             else:
                 vis_targs_bool.append(False)
-                print(vis_targs_bool)
+
             #names.append(Player.objects.get(id = d['player']).name)
             #teams.append(Player.objects.get(id = d['player']).team)
             #positions.append(Player.objects.get(id = d['player']).position)
