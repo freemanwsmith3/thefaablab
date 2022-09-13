@@ -181,7 +181,7 @@ export default class ThisWeek extends Component {
                                             </Button>
                                         </Typography>
                                         <Typography align="center" component='h5' variant='h5' >
-                                       <br></br>Top Waiver Adds
+                                       <br></br><div style = {{textDecoration: 'underline'}} >Top Waiver Adds:</div>
                                         </Typography>
                                     </Container>
                                 </Box>
