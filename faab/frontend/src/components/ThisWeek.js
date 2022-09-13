@@ -129,7 +129,7 @@ export default class ThisWeek extends Component {
                                     </li>
                                     <li>
                                     <Typography component='h5' variant='h5'>
-                                    Submit what you plan to bid in your league (Bids are in % of start of season FAAB)
+                                    Submit what you plan to bid in your league (bids are in % of start of season FAAB)
                                     </Typography>
                                     </li>
                                     <li>
