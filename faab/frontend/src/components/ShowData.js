@@ -67,9 +67,9 @@ export default class ShowData extends Component {
                     </Typography>
                 </Box>
                 <Container maxWidth="md">
-                    <Box>
+
                         <DetailedHistogram sx={{ height: '100%',  width: '100%'}} weekNumber={this.weekNumber} target={this.target} />
-                    </Box>
+
                 </Container>
             </CardContent>
                     {/* <CardActions>
