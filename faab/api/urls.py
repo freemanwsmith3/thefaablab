@@ -15,13 +15,14 @@ Including another URLconf
 """
 
 from django.urls import path
-from .views import PlayerView, BidView,GetWeek, TargetsAPI
+from .views import PlayerView, BidView,GetWeek, TargetsAPI, DataAPI
 
 
 urlpatterns = [
     path('player', PlayerView.as_view()),
     path('bid', BidView.as_view()), 
     path('get-week', GetWeek.as_view() ),
-    path('get-targets', TargetsAPI.as_view())
+    path('get-targets', TargetsAPI.as_view()),
+    path('get-data', DataAPI.as_view())
 ]
 

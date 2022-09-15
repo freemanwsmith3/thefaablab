@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 import numpy
 from scipy import stats
-
+from django_pivot import histogram as histo
 
 # Create your views here.
 # class PlayerView(generics.CreateAPIView):
@@ -51,9 +51,7 @@ class BidView(APIView):
         data=request.data
         data['user'] = self.request.session.session_key 
         serializer = self.serializer_class(data=data)
-        print("-----------------------")
-        print(data)
-        print("++++++++++++++++++++++++++++")
+
         if serializer.is_valid():
             value = serializer.data.get('value')
             target = serializer.data.get('target')
@@ -69,12 +67,12 @@ class BidView(APIView):
                 try:
 
                     this_week_vis_dict = self.request.session.get('visible_targets')
-                    print("OLD DICTK", this_week_vis_dict)
+                    #print("OLD DICTK", this_week_vis_dict)
                     this_week_vis_list = this_week_vis_dict[str(week)]
                     this_week_vis_list.append(target)
                     this_week_vis_dict[str(week)] = this_week_vis_list
                     self.request.session['visible_targets'] = this_week_vis_dict
-                    print("NEW_DICT", self.request.session['visible_targets'][str(week)])
+                    #print("NEW_DICT", self.request.session['visible_targets'][str(week)])
                 except Exception as e:
                     print("No Session Key", e)
 
@@ -99,22 +97,30 @@ class BidView(APIView):
 
 class TargetsAPI(APIView):
 
-    lookup_url_kwarg = 'week'
+    week = 'week'
 
     def get(self,request,format=None):
-        week = request.GET.get(self.lookup_url_kwarg)
+        week = request.GET.get(self.week)
+
+
+        ###################
+        current_week = 3
+        ########################
 
         if not self.request.session.exists(self.request.session.session_key):
             self.request.session.create()
             
         vis_targs_bool = []
         #if not self.request.session.get('visible_targets') or 'None' in self.request.session.get('visible_targets') or str(week) not in self.request.session.get('visible_targets'):
+        
+        targets = Target.objects.filter(week=week)  
+
         if not self.request.session.get('visible_targets') or str(week) not in self.request.session.get('visible_targets'):
             target_dict = {}
             target_dict[str(week)] = []
             self.request.session['visible_targets'] = target_dict
             
-        targets = Target.objects.filter(week=week)
+
 
         # for targ in range(len(targets)):
         #     print(targ)
@@ -135,7 +141,7 @@ class TargetsAPI(APIView):
         target_ids = []
         vis_targs_bool = []
         for d in targets:
-            if d.id in self.request.session.get('visible_targets')[str(week)]:
+            if d.id in self.request.session.get('visible_targets')[str(week)] or current_week > int(week):
                 vis_targs_bool.append(True)
 
             else:
@@ -188,3 +194,22 @@ class TargetsAPI(APIView):
 
 
         return JsonResponse(data, status=status.HTTP_200_OK)
+
+class DataAPI(APIView):
+    week_target = 'week'
+    def get(self,request,format=None):
+        
+
+        week_name = request.GET.get(self.week_target).split('?target=')
+
+        week = week_name[0]
+        target_id = week_name[1]
+        bids = Bid.objects.filter(week=week, target_id=target_id)
+
+
+        data = {
+            "name": week,
+            "week": target_id,
+        }
+        return JsonResponse(data)
+
