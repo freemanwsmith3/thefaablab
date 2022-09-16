@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
+from django.db.models import Max
 from rest_framework import generics, status
 from .serializers import PlayerSerializer,BidSerializer, TargetSerializer
 from .models import Player, Bid, Target
@@ -104,7 +105,7 @@ class TargetsAPI(APIView):
 
 
         ###################
-        current_week = 3
+        current_week = 2
         ########################
 
         if not self.request.session.exists(self.request.session.session_key):
@@ -204,12 +205,20 @@ class DataAPI(APIView):
 
         week = week_name[0]
         target_id = week_name[1]
-        bids = Bid.objects.filter(week=week, target_id=target_id)
+        first_bin = Bid.objects.filter(week=week, target_id=target_id, value__range = [1, 10]).count()
+        second_bin = Bid.objects.filter(week=week, target_id=target_id, value__range = [10, 20]).count()
+        third_bin = Bid.objects.filter(week=week, target_id=target_id, value__range = [20, 30]).count()
+        fourth_bin = Bid.objects.filter(week=week, target_id=target_id, value__range = [30, 40]).count()
 
+        fifth_bin = Bid.objects.filter(week=week, target_id=target_id, value__range = [40, 50]).count()
+        
 
         data = {
-            "name": week,
-            "week": target_id,
+            "first_bin": first_bin,
+            "second_bin": second_bin,
+            "third_bin": third_bin,
+            "fourth_bin": fourth_bin,
+            "fifth_bin": fifth_bin
         }
         return JsonResponse(data)
 

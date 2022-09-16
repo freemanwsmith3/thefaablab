@@ -25,30 +25,41 @@ export default class DetailedHistogram extends Component {
       super(props);
       this.target = this.props.target;
       this.weekNumber = this.props.weekNumber;
-      this.data = [
-        {
-          name: "0-5",
-          pv: 5
-        },
-        {
-          name: "5-10",
-          pv: 10
-        },
-        {
-          name: "10-15",
-          pv: 20
-        },
-        {
-          name: "15-20",
-          pv: 15
-        }]
+      this.state = {data: null}
+
   }
 
   async componentDidMount(){
     fetch("/api/get-data" + "?week=" + this.weekNumber + "?target=" + this.target)
     .then((response) => response.json())
-    .then((data) => console.log(data))
-    };
+    .then((data) => {
+
+      this.setState({
+          hist_data: [
+            {
+              name: "<10%",
+              pv: data.first_bin
+            },
+            {
+              name: "20-30%",
+              pv: data.second_bin
+            },
+            {
+              name: "30-40%",
+              pv: data.third_bin
+            },
+            {
+              name: "40-50%",
+              pv: data.fourth_bin
+            },
+            {
+              name: ">50%",
+              pv: data.fifth_bin
+            }]
+        });
+      });
+    }
+      
   
 
   render(){
@@ -56,17 +67,17 @@ export default class DetailedHistogram extends Component {
       <BarChart
         width={250}
         height={350}
-        data={this.data}
+        data={this.state.hist_data}
         margin={{
           top: 50,
-          right: 5,
-          left: 5,
+          right: 25,
+          left: 0,
           bottom: 0
         }}
         barSize={15}
       >
-        <XAxis >
-          <Label value="% of FAAB Budget"  position="Bottom" />
+        <XAxis dataKey="name" >
+          {/* <Label value="% of FAAB Budget"  position="Bottom" /> */}
         </XAxis>
         <YAxis width={0} ticks={false}>
          <Label value="Bids"  position="left" />

@@ -66,7 +66,7 @@ export default class ShowData extends Component {
                     <Typography align = "center" component='h5' variant='h5'>
                     </Typography>
                 </Box>
-                <Container maxWidth="md">
+                <Container align="center" maxWidth="md">
 
                         <DetailedHistogram sx={{ height: '100%',  width: '100%'}} weekNumber={this.weekNumber} target={this.target} />
 
