@@ -8,8 +8,6 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 import numpy
 from scipy import stats
-from django_pivot import histogram as histo
-
 # Create your views here.
 # class PlayerView(generics.CreateAPIView):
 #     queryset = Player.objects.all()
