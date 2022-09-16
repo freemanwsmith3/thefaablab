@@ -3,6 +3,7 @@ import {
   Bar,
   XAxis,
   YAxis,
+  ResponsiveContainer,
   CartesianGrid,
   Label,
   LabelList
@@ -20,6 +21,7 @@ import React, { Component} from "react";
 
 export default class DetailedHistogram extends Component {
 
+  
 
   constructor(props) {
       super(props);
@@ -37,25 +39,30 @@ export default class DetailedHistogram extends Component {
       this.setState({
           hist_data: [
             {
-              name: "<10%",
+              name: data.first_name,
               pv: data.first_bin
             },
             {
-              name: "20-30%",
+              name: data.second_name,
               pv: data.second_bin
             },
             {
-              name: "30-40%",
+              name: data.third_name,
               pv: data.third_bin
             },
             {
-              name: "40-50%",
+              name: data.fourth_name,
               pv: data.fourth_bin
             },
             {
-              name: ">50%",
+              name: data.fifth_name,
               pv: data.fifth_bin
-            }]
+            },
+            {
+              name: data.sixth_name,
+              pv: data.sixth_bin
+            },
+          ]
         });
       });
     }
@@ -64,29 +71,33 @@ export default class DetailedHistogram extends Component {
 
   render(){
     return (
-      <BarChart
-        width={250}
-        height={350}
-        data={this.state.hist_data}
-        margin={{
-          top: 50,
-          right: 25,
-          left: 0,
-          bottom: 0
-        }}
-        barSize={15}
-      >
-        <XAxis dataKey="name" >
-          {/* <Label value="% of FAAB Budget"  position="Bottom" /> */}
-        </XAxis>
-        <YAxis width={0} ticks={false}>
-         <Label value="Bids"  position="left" />
-        </YAxis  >
-        <CartesianGrid strokeDasharray="3 3" />
-        <Bar dataKey="pv" fill="#8884d8"   barCategoryGap={10}>
-        <LabelList dataKey="pv" position="top" />
-        </Bar> 
-      </BarChart>
+      <div style={{ width: "100%", height: 350}}>
+      <ResponsiveContainer>
+        <BarChart
+          height={350}
+          layout="horizontal"
+          data={this.state.hist_data}
+          margin={{
+            top: 60,
+            right: 0,
+            left: 0,
+            bottom: 40
+          }}
+          
+        >
+          <XAxis ticks={false} dy={19} dataKey="name" angle={90} >
+            <Label fill="#616161" dy={50} value="% of FAAB Budget"  position="Bottom" />
+            <Label dy={-264}  value="# of Bids per Bid Value"  position="Top" />
+          </XAxis>
+          <YAxis width={0} ticks={false}>
+          {/* <Label value="Bids"  position="left" /> */}
+          </YAxis  >
+          <Bar  barSize={20} dataKey="pv" fill="#8884d8"   >
+          <LabelList dataKey="pv" position="top" />
+          </Bar> 
+        </BarChart>
+        </ResponsiveContainer>
+      </div>
     );
   };
 }
