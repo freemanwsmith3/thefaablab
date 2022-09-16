@@ -1,21 +1,25 @@
 import React, { Component } from "react";
 import Box from "@material-ui/core/Box";
+import Container from "@material-ui/core/Container";
+import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import Card from '@material-ui/core//Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
-
+import DetailedHistogram from "./DetailedHistogram";
 
 export default class ShowData extends Component {
     constructor(props) {
         super(props);
         this.state = {
             mean_value: 0,
+            openPop: false
             //visibleTargets: null,
             // visibleTargets: 1,
         };
+        this.target = this.props.target;
         this.weekNumber = this.props.weekNumber;
         this.name = this.props.name;
         this.team = this.props.team;
@@ -28,30 +32,9 @@ export default class ShowData extends Component {
         this.num_bid = this.props.num_bid;
     }
 
-    // async componentDidMount(){
-    //     fetch('/api/user-did-bid')
-    //     .then((response)=> response.json())
-    //     .then((data) => {
-    //         this.setState({
-    //         visibleTargets: data.visibleTargets
-    //         });
-    //     });
-    //     console.log(this.state)
+
     // }
 
-
-    // getWeekDetails(){
-    //     fetch("/api/get-week" + "?week=" + this.weekNumber)
-    //     .then((response) => response.json())
-    //     .then((data) => {
-    //       this.setState({
-    //         player: data[0].player,
-    //         //guestCanPause: data.guestsCanSee,
-    //         mean_value: data[0].mean_value,
-    //       });
-    //     });
-        
-    // }
 
     render() {
         return (
@@ -60,54 +43,38 @@ export default class ShowData extends Component {
                 <Card
                 sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}
                 >
-                    <CardMedia
-                        component="img"
-                        sx={{
-                        // 16:9
-                        pt: '56.25%',
-                        }}
-                        image={this.image}
-                        alt="random"
-                    />
+                <CardContent sx={{ flexGrow: 1, border: 1 } }>
+                <div align='center'>
+                    <Typography component='h5' variant='h5'>
+                        {this.name} - {this.position}
+                    </Typography>
+                    <Typography component='h6' variant='h6'>
+                        {this.team}
+                    </Typography>
+                </div>
+                
+                <Box sx={{ p: 2, border: '1px dashed grey' }}>
+                    <Typography component='h5' variant='h5'>
+                    Average Bid:  {this.mean_value.toString()}%
+                    </Typography>
+                    <Typography component='h5' variant='h5'>
+                        Median Bid:  {this.median_value.toString()}%
+                    </Typography>
+                    <Typography component='h5' variant='h5'>
+                        Number of Bids:  {this.num_bid.toString()}
+                    </Typography>
+                    <Typography align = "center" component='h5' variant='h5'>
+                    </Typography>
+                </Box>
+                <Container align="center" maxWidth="md">
 
-                      <CardContent sx={{ flexGrow: 1, border: 1 } }>
-                      <div align='center'>
-                            <Typography component='h5' variant='h5'>
-                                {this.name} - {this.position}
-                            </Typography>
-                            <Typography component='h6' variant='h6'>
-                                {this.team}
-                            </Typography>
+                        <DetailedHistogram sx={{ height: '100%',  width: '100%'}} weekNumber={this.weekNumber} target={this.target} />
 
-                            </div>
-                        <Box sx={{ p: 2, border: '1px dashed grey' }}>
-                            <Typography component='h5' variant='h5'>
-                            Average Bid:  {this.mean_value.toString()}%
-                            </Typography>
-                            <Typography component='h5' variant='h5'>
-                                Median Bid:  {this.median_value.toString()}%
-                            </Typography>
-                            <Typography component='h5' variant='h5'>
-                                Most Common Bid:  {this.mode_value.toString()}%
-                            </Typography>
-                            <Typography component='h5' variant='h5'>
-                                Number of Bids:  {this.num_bid.toString()}
-                            </Typography>
-                        </Box>
-                    </CardContent>
-                    <CardActions>
-                    {/* <Button
-                                //className={classes.button}
-                                variant="contained" 
-                                color="primary" 
-                                type="submit" 
-                                //endIcon={<Icon>SportsFootball</Icon>}
-                                //defaultValue="true"
-                                onClick={this.handleBidButtonPress}
-                                >Submit</Button> */}
-                        {/* <Button size="small">View</Button>
-                        <Button size="small">Edit</Button> */}
-                    </CardActions>
+                </Container>
+            </CardContent>
+                    {/* <CardActions>
+
+                    </CardActions> */}
                 </Card>
             </Grid> 
         );
