@@ -103,7 +103,7 @@ class TargetsAPI(APIView):
 
 
         ###################
-        current_week = 2
+        current_week = 3
         ########################
 
         if not self.request.session.exists(self.request.session.session_key):
@@ -155,7 +155,7 @@ class TargetsAPI(APIView):
             images.append(d.player.image)
             positions.append(d.player.position.position_type)
             target_ids.append(d.id)
-            bids = Bid.objects.filter(target = d.id).values_list('value', flat=True)
+            bids = Bid.objects.filter(target = d.id, value__range = [1, 100]).values_list('value', flat=True)
 
             
             num_bid = len(bids)

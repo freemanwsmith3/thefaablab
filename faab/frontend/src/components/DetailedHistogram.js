@@ -81,7 +81,7 @@ export default class DetailedHistogram extends Component {
         </XAxis>
         <YAxis width={0} ticks={false}>
          <Label value="Bids"  position="left" />
-        </YAxis>
+        </YAxis  >
         <CartesianGrid strokeDasharray="3 3" />
         <Bar dataKey="pv" fill="#8884d8"   barCategoryGap={10}>
         <LabelList dataKey="pv" position="top" />

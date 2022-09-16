@@ -54,19 +54,20 @@ export default class ShowData extends Component {
                 </div>
                 
                 <Box sx={{ p: 2, border: '1px dashed grey' }}>
-                    <Typography component='h5' variant='h5'>
+                    <Typography component='h6' variant='h6'>
                     Average Bid:  {this.mean_value.toString()}%
                     </Typography>
-                    <Typography component='h5' variant='h5'>
+                    <Typography component='h6' variant='h6'>
                         Median Bid:  {this.median_value.toString()}%
                     </Typography>
-                    <Typography component='h5' variant='h5'>
+                    <Typography component='h6' variant='h6'>
+                        Most Common Bid:  {this.mode_value.toString()}%
+                    </Typography>
+                    <Typography component='h6' variant='h6'>
                         Number of Bids:  {this.num_bid.toString()}
                     </Typography>
-                    <Typography align = "center" component='h5' variant='h5'>
-                    </Typography>
                 </Box>
-                <Container align="center" maxWidth="md">
+                <Container align="center">
 
                         <DetailedHistogram sx={{ height: '100%',  width: '100%'}} weekNumber={this.weekNumber} target={this.target} />
 
