@@ -203,20 +203,37 @@ class DataAPI(APIView):
 
         week = week_name[0]
         target_id = week_name[1]
-        first_bin = Bid.objects.filter(week=week, target_id=target_id, value__range = [1, 10]).count()
-        second_bin = Bid.objects.filter(week=week, target_id=target_id, value__range = [10, 20]).count()
-        third_bin = Bid.objects.filter(week=week, target_id=target_id, value__range = [20, 30]).count()
-        fourth_bin = Bid.objects.filter(week=week, target_id=target_id, value__range = [30, 40]).count()
-
-        fifth_bin = Bid.objects.filter(week=week, target_id=target_id, value__range = [40, 50]).count()
+        flat_vals = list(Bid.objects.filter(week=week, target_id=target_id).order_by('value').values_list('value', flat=True))
         
+        low_range = flat_vals[int(len(flat_vals)*.1)]
+        high_range = flat_vals[int(len(flat_vals)*.9)]
+
+        interval = int((high_range - low_range) / 6)
+        print("low", low_range)
+        print("high", high_range)
+
+        first_bin = Bid.objects.filter(week=week, target_id=target_id, value__range = [low_range, interval+low_range]).count()
+        second_bin = Bid.objects.filter(week=week, target_id=target_id, value__range = [interval+low_range, 2*interval+low_range]).count()
+        third_bin = Bid.objects.filter(week=week, target_id=target_id, value__range = [2*interval+low_range, 3*interval+low_range]).count()
+        fourth_bin = Bid.objects.filter(week=week, target_id=target_id, value__range = [3*interval+low_range, 4*interval+low_range]).count()
+        fifth_bin = Bid.objects.filter(week=week, target_id=target_id, value__range = [4*interval+low_range, 5*interval+low_range]).count()
+        sixth_bin= Bid.objects.filter(week=week, target_id=target_id, value__range = [5*interval+low_range, high_range]).count()
 
         data = {
             "first_bin": first_bin,
             "second_bin": second_bin,
             "third_bin": third_bin,
             "fourth_bin": fourth_bin,
-            "fifth_bin": fifth_bin
+            "fifth_bin": fifth_bin,
+            "sixth_bin": sixth_bin,
+
+            "first_name": str(low_range) + '-' + str(interval+low_range),
+            "second_name": str(interval+low_range) + '-' + str(2*interval+low_range),
+            "third_name": str(2*interval+low_range) + '-' + str(3*interval+low_range),
+            "fourth_name": str(3*interval+low_range) + '-' + str(4*interval+low_range),
+            "fifth_name": str(4*interval+low_range) + '-' + str(5*interval+low_range),
+            "sixth_name": str(5*interval+low_range) + '-' + str(high_range),
+
         }
         return JsonResponse(data)
 

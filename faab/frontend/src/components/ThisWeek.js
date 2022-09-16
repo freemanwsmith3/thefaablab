@@ -19,12 +19,9 @@ function themeFunction(){
 function Copyright() {
     return (
       <Typography variant="body2" color="text.secondary" align="center">
-        {'Copyright © '}
-        <Link color="inherit" href="https://faablab.app/">
-          FaabLab
-        </Link>{' '}
-        {new Date().getFullYear()}
-        {'.'}
+        Contact: faablabapp@gmail.com
+        {/* {new Date().getFullYear()}
+        {'.'} */}
       </Typography>
     );
   }
@@ -64,7 +61,6 @@ export default class ThisWeek extends Component {
                 visibleTargets: data.visibleTargets
             });
         });
-        console.log(this.state)
     }
 
     handleOpen(e){
@@ -130,6 +126,11 @@ export default class ThisWeek extends Component {
                                     <li>
                                     <Typography component='h5' variant='h5'>
                                     Submit what you plan to bid in your league (bids are in % of start of season FAAB)
+                                    </Typography>
+                                    </li>
+                                    <li>
+                                    <Typography component='h5' variant='h5'>
+                                    Zero % bids will not be stored, but will allow you to see the data 
                                     </Typography>
                                     </li>
                                     <li>

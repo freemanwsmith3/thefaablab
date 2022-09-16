@@ -9,6 +9,7 @@ import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import DetailedHistogram from "./DetailedHistogram";
+import { borders } from '@material-ui/system';
 
 export default class ShowData extends Component {
     constructor(props) {
@@ -40,10 +41,10 @@ export default class ShowData extends Component {
         return (
        
             <Grid  xs={12} sm={6} md={4 } >
-                <Card
-                sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}
-                >
-                <CardContent sx={{ flexGrow: 1, border: 1 } }>
+                <Card 
+                sx={{  height: '100%', display: 'flex', flexDirection: 'column'}} 
+                                >
+                <CardContent sx={{ flexGrow: 1 } }>
                 <div align='center'>
                     <Typography component='h5' variant='h5'>
                         {this.name} - {this.position}
@@ -67,7 +68,7 @@ export default class ShowData extends Component {
                         Number of Bids:  {this.num_bid.toString()}
                     </Typography>
                 </Box>
-                <Container align="center">
+                <Container align="center"  disableGutters={true} >
 
                         <DetailedHistogram sx={{ height: '100%',  width: '100%'}} weekNumber={this.weekNumber} target={this.target} />
 
