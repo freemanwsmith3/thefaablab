@@ -56,11 +56,15 @@ class BidView(APIView):
             target = serializer.data.get('target')
             week = serializer.data.get('week')
             user = self.request.session.session_key
-            
             if 0 <= value <= 100 and 0 <= week <=17:
-
-                bid = Bid(user=user, value = value, week = week, target = Target.objects.get(id = target))
-                bid.save()
+                print("Val", value)
+                
+                ###############
+                ## make a better way to avoid zero bids
+                ############
+                if value != 0:
+                    bid = Bid(user=user, value = value, week = week, target = Target.objects.get(id = target))
+                    bid.save()
 
 
                 try:
@@ -91,7 +95,7 @@ class BidView(APIView):
             else:
                 return Response({'Bad Request':'Invalid Value or Week'}, status=status.HTTP_400_BAD_REQUEST)
         else:
-
+            print(data)
             return Response({'Bad Request':'Invalid Bid'}, status=status.HTTP_400_BAD_REQUEST)
 
 class TargetsAPI(APIView):
@@ -139,6 +143,8 @@ class TargetsAPI(APIView):
         num_bids = []
         target_ids = []
         vis_targs_bool = []
+        #bids_rank = Bid.objects.filter(week = week, value__range = [1, 100]).values('target_id').annotate(total=Count('target_id')).order_by('total')
+        
         for d in targets:
             if d.id in self.request.session.get('visible_targets')[str(week)] or current_week > int(week):
                 vis_targs_bool.append(True)
@@ -190,8 +196,8 @@ class TargetsAPI(APIView):
             'median_values' : median_values,
             'num_bids': num_bids,
         }
-
-
+        
+        
         return JsonResponse(data, status=status.HTTP_200_OK)
 
 class DataAPI(APIView):
