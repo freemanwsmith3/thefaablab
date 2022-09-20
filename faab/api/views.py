@@ -62,9 +62,8 @@ class BidView(APIView):
                 ###############
                 ## make a better way to avoid zero bids
                 ############
-                if value != 0:
-                    bid = Bid(user=user, value = value, week = week, target = Target.objects.get(id = target))
-                    bid.save()
+                bid = Bid(user=user, value = value, week = week, target = Target.objects.get(id = target))
+                bid.save()
 
 
                 try:
@@ -209,10 +208,15 @@ class DataAPI(APIView):
 
         week = week_name[0]
         target_id = week_name[1]
-        flat_vals = list(Bid.objects.filter(week=week, target_id=target_id).order_by('value').values_list('value', flat=True))
-        
-        low_range = flat_vals[int(len(flat_vals)*.1)]
-        high_range = flat_vals[int(len(flat_vals)*.9)]
+        flat_vals = list(Bid.objects.filter(week=week, target_id=target_id, value__range = [1, 100]).order_by('value').values_list('value', flat=True))
+        if flat_vals:
+            low_range = flat_vals[int(len(flat_vals)*.1)]
+            high_range = flat_vals[int(len(flat_vals)*.9)]
+
+        else:
+
+            low_range = 0
+            high_range = 100
 
         interval = int((high_range - low_range) / 6)
 
