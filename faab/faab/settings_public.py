@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-c(tebb2w04c9mt&0!vp%-zy2jyu4-cz%#lgdp$jzp$2io*o4+5'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['.faablab.app', '.herokuapp.com', 'faablab.herokuapp.com', '127.0.0.1']
 
@@ -82,10 +82,10 @@ WSGI_APPLICATION = 'faab.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'dactfaa8v6hpuh',
-        'USER': 'usnpyumygdltnc',
-        'PASSWORD' : '62ef4ea685e6e29f46dd25cce1ff367b6869fe07876bf4c9e9366bc1764f426c',
-        'HOST': 'ec2-3-93-206-109.compute-1.amazonaws.com',
+        'NAME': 'd4qgddmcqs7su1',
+        'USER': 'oibdolfaruxway',
+        'PASSWORD' : '5983be3a6ab94c50df024487d2c3bcbab6a2eca9a8b4c594ddaf0b934a5553cc',
+        'HOST': 'ec2-34-199-68-114.compute-1.amazonaws.com',
         'PORT': '5432',
     }
 }

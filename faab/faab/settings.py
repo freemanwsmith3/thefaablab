@@ -82,10 +82,10 @@ WSGI_APPLICATION = 'faab.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'dactfaa8v6hpuh',
-        'USER': 'usnpyumygdltnc',
-        'PASSWORD' : '62ef4ea685e6e29f46dd25cce1ff367b6869fe07876bf4c9e9366bc1764f426c',
-        'HOST': 'ec2-3-93-206-109.compute-1.amazonaws.com',
+        'NAME': 'd4qgddmcqs7su1',
+        'USER': 'oibdolfaruxway',
+        'PASSWORD' : '5983be3a6ab94c50df024487d2c3bcbab6a2eca9a8b4c594ddaf0b934a5553cc',
+        'HOST': 'ec2-34-199-68-114.compute-1.amazonaws.com',
         'PORT': '5432',
     }
 }
