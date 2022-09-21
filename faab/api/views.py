@@ -182,23 +182,22 @@ class DataAPI(APIView):
         target_id = week_name[1]
         flat_vals = list(Bid.objects.filter(week=week, target_id=target_id, value__range = [1, 100]).order_by('value').values_list('value', flat=True))
 
+
         if flat_vals:
             low_range = flat_vals[int(len(flat_vals)*.1)]
             high_range = flat_vals[int(len(flat_vals)*.9)]
 
-        
-        interval = int((high_range - low_range) / 6)
 
         ###############################
         ######## Be careful of weird random bins 
         ##############################
 
-        first_bin = Bid.objects.filter(week=week, target_id=target_id, value__range = [low_range, interval+low_range]).count()
-        second_bin = Bid.objects.filter(week=week, target_id=target_id, value__range = [interval+low_range+1, 2*interval+low_range]).count()
-        third_bin = Bid.objects.filter(week=week, target_id=target_id, value__range = [2*interval+low_range+1, 3*interval+low_range]).count()
-        fourth_bin = Bid.objects.filter(week=week, target_id=target_id, value__range = [3*interval+low_range+1, 4*interval+low_range+1]).count()
-        fifth_bin = Bid.objects.filter(week=week, target_id=target_id, value__range = [4*interval+low_range+2, 5*interval+low_range+1]).count()
-        sixth_bin= Bid.objects.filter(week=week, target_id=target_id, value__range = [5*interval+low_range+2, high_range]).count()
+        first_bin = Bid.objects.filter(week=week, target_id=target_id, value__range = [low_range,  round((1)*(high_range- low_range)/6 +  low_range)]).count()
+        second_bin = Bid.objects.filter(week=week, target_id=target_id, value__range = [ round((1)*(high_range- low_range)/6 +  low_range), round((2)*(high_range- low_range)/6 +  low_range)]).count()
+        third_bin = Bid.objects.filter(week=week, target_id=target_id, value__range = [ round((2)*(high_range- low_range)/6 +  low_range), round((3)*(high_range- low_range)/6 +  low_range)]).count()
+        fourth_bin = Bid.objects.filter(week=week, target_id=target_id, value__range =[ round((3)*(high_range- low_range)/6 +  low_range), round((4)*(high_range- low_range)/6 +  low_range)]).count()
+        fifth_bin = Bid.objects.filter(week=week, target_id=target_id, value__range =[ round((4)*(high_range- low_range)/6 +  low_range), round((5)*(high_range- low_range)/6 +  low_range)]).count()
+        sixth_bin= Bid.objects.filter(week=week, target_id=target_id, value__range = [ round((5)*(high_range- low_range)/6 +  low_range), high_range]).count()
 
         data = {
             "first_bin": first_bin,
@@ -208,12 +207,12 @@ class DataAPI(APIView):
             "fifth_bin": fifth_bin,
             "sixth_bin": sixth_bin,
 
-            "first_name": str(low_range) + '-' + str(interval+low_range),
-            "second_name": str(interval+low_range+1) + '-' + str(2*interval+low_range),
-            "third_name": str(2*interval+low_range+1) + '-' + str(3*interval+low_range),
-            "fourth_name": str(3*interval+low_range+1) + '-' + str(4*interval+low_range+1),
-            "fifth_name": str(4*interval+low_range+2) + '-' + str(5*interval+low_range+1),
-            "sixth_name": str(5*interval+low_range+2) + '-' + str(high_range),
+            "first_name": str(low_range) + '-' + str(round((1)*(high_range- low_range)/6 +low_range)),
+            "second_name": str(round((1)*(high_range- low_range)/6 +low_range)) + '-' + str(round((2)*(high_range- low_range)/6 +low_range)),
+            "third_name": str(round((2)*(high_range- low_range)/6 +low_range)) + '-' + str(round((3)*(high_range- low_range)/6 +low_range)),
+            "fourth_name": str(round((3)*(high_range- low_range)/6 +low_range)) + '-' + str(round((4)*(high_range- low_range)/6 +low_range)),
+            "fifth_name": str(round((4)*(high_range- low_range)/6 +low_range)) + '-' + str(round((5)*(high_range- low_range)/6 +low_range)),
+            "sixth_name": str(round((5)*(high_range- low_range)/6 +low_range)) + '-' + str(high_range),
 
         }
         return JsonResponse(data)
