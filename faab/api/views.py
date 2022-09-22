@@ -57,8 +57,7 @@ class BidView(APIView):
             week = serializer.data.get('week')
             user = self.request.session.session_key
             if 0 <= value <= 100 and 0 <= week <=17:
-                print("Val", value)
-                
+
                 ###############
                 ## make a better way to avoid zero bids
                 ############
@@ -94,7 +93,6 @@ class BidView(APIView):
             else:
                 return Response({'Bad Request':'Invalid Value or Week'}, status=status.HTTP_400_BAD_REQUEST)
         else:
-            print(data)
             return Response({'Bad Request':'Invalid Bid'}, status=status.HTTP_400_BAD_REQUEST)
 
 class TargetsAPI(APIView):
@@ -113,24 +111,15 @@ class TargetsAPI(APIView):
             self.request.session.create()
             
         vis_targs_bool = []
-        #if not self.request.session.get('visible_targets') or 'None' in self.request.session.get('visible_targets') or str(week) not in self.request.session.get('visible_targets'):
         
-        targets = Target.objects.filter(week=week)  
-
+        targets = Target.objects.filter(week=week)
+        targets = sorted(targets, key=lambda t: t.num_valid_bids, reverse=True)
         if not self.request.session.get('visible_targets') or str(week) not in self.request.session.get('visible_targets'):
             target_dict = {}
             target_dict[str(week)] = []
             self.request.session['visible_targets'] = target_dict
             
 
-
-        # for targ in range(len(targets)):
-        #     print(targ)
-        #     if targ in self.request.session.get('visible_targets')[str(week)]:
-        #         vis_targs_bool.append(True)
-
-        #     else:
-        #         vis_targs_bool.append(False)
         names = []
         teams = []
         links = []
@@ -142,44 +131,27 @@ class TargetsAPI(APIView):
         num_bids = []
         target_ids = []
         vis_targs_bool = []
-        #bids_rank = Bid.objects.filter(week = week, value__range = [1, 100]).values('target_id').annotate(total=Count('target_id')).order_by('total')
         
         for d in targets:
+
             if d.id in self.request.session.get('visible_targets')[str(week)] or current_week > int(week):
                 vis_targs_bool.append(True)
 
             else:
                 vis_targs_bool.append(False)
 
-            #names.append(Player.objects.get(id = d['player']).name)
-            #teams.append(Player.objects.get(id = d['player']).team)
-            #positions.append(Player.objects.get(id = d['player']).position)
             names.append(d.player.name)
             teams.append(d.player.team.team_name)
             links.append(d.player.link)
             images.append(d.player.image)
             positions.append(d.player.position.position_type)
             target_ids.append(d.id)
+            num_bids.append(d.num_valid_bids)
+            mean_values.append(round(d.mean_value, 2))
+            median_values.append(d.median_value)
+            mode_values.append(d.mode_value)
             bids = Bid.objects.filter(target = d.id, value__range = [1, 100]).values_list('value', flat=True)
 
-            
-            num_bid = len(bids)
-            num_bids.append(num_bid)
-            if num_bid != 0:
-
-                mean_values.append(round(numpy.mean(bids), 2))
-                mode_values.append(int(stats.mode(bids, keepdims=False)[0]))
-                median_values.append(round(numpy.median(bids), 2))
-            else:
-                mean_values.append(0)
-                mode_values.append(0)
-                median_values.append(0)
-
-            
-
-        # data['names'] += names
-        # data['teams'] += teams
-        # data['positions'] += positions
 
 
         data = {
@@ -209,24 +181,23 @@ class DataAPI(APIView):
         week = week_name[0]
         target_id = week_name[1]
         flat_vals = list(Bid.objects.filter(week=week, target_id=target_id, value__range = [1, 100]).order_by('value').values_list('value', flat=True))
-        print(flat_vals)
+
+
         if flat_vals:
             low_range = flat_vals[int(len(flat_vals)*.1)]
             high_range = flat_vals[int(len(flat_vals)*.9)]
 
-        
-        interval = int((high_range - low_range) / 6)
 
         ###############################
         ######## Be careful of weird random bins 
         ##############################
 
-        first_bin = Bid.objects.filter(week=week, target_id=target_id, value__range = [low_range, interval+low_range]).count()
-        second_bin = Bid.objects.filter(week=week, target_id=target_id, value__range = [interval+low_range+1, 2*interval+low_range]).count()
-        third_bin = Bid.objects.filter(week=week, target_id=target_id, value__range = [2*interval+low_range+1, 3*interval+low_range]).count()
-        fourth_bin = Bid.objects.filter(week=week, target_id=target_id, value__range = [3*interval+low_range+1, 4*interval+low_range+1]).count()
-        fifth_bin = Bid.objects.filter(week=week, target_id=target_id, value__range = [4*interval+low_range+2, 5*interval+low_range+1]).count()
-        sixth_bin= Bid.objects.filter(week=week, target_id=target_id, value__range = [5*interval+low_range+2, high_range]).count()
+        first_bin = Bid.objects.filter(week=week, target_id=target_id, value__range = [low_range,  round((1)*(high_range- low_range)/6 +  low_range)]).count()
+        second_bin = Bid.objects.filter(week=week, target_id=target_id, value__range = [ round((1)*(high_range- low_range)/6 +  low_range), round((2)*(high_range- low_range)/6 +  low_range)]).count()
+        third_bin = Bid.objects.filter(week=week, target_id=target_id, value__range = [ round((2)*(high_range- low_range)/6 +  low_range), round((3)*(high_range- low_range)/6 +  low_range)]).count()
+        fourth_bin = Bid.objects.filter(week=week, target_id=target_id, value__range =[ round((3)*(high_range- low_range)/6 +  low_range), round((4)*(high_range- low_range)/6 +  low_range)]).count()
+        fifth_bin = Bid.objects.filter(week=week, target_id=target_id, value__range =[ round((4)*(high_range- low_range)/6 +  low_range), round((5)*(high_range- low_range)/6 +  low_range)]).count()
+        sixth_bin= Bid.objects.filter(week=week, target_id=target_id, value__range = [ round((5)*(high_range- low_range)/6 +  low_range), high_range]).count()
 
         data = {
             "first_bin": first_bin,
@@ -236,12 +207,12 @@ class DataAPI(APIView):
             "fifth_bin": fifth_bin,
             "sixth_bin": sixth_bin,
 
-            "first_name": str(low_range) + '-' + str(interval+low_range),
-            "second_name": str(interval+low_range+1) + '-' + str(2*interval+low_range),
-            "third_name": str(2*interval+low_range+1) + '-' + str(3*interval+low_range),
-            "fourth_name": str(3*interval+low_range+1) + '-' + str(4*interval+low_range+1),
-            "fifth_name": str(4*interval+low_range+2) + '-' + str(5*interval+low_range+1),
-            "sixth_name": str(5*interval+low_range+2) + '-' + str(high_range),
+            "first_name": str(low_range) + '-' + str(round((1)*(high_range- low_range)/6 +low_range)),
+            "second_name": str(round((1)*(high_range- low_range)/6 +low_range)) + '-' + str(round((2)*(high_range- low_range)/6 +low_range)),
+            "third_name": str(round((2)*(high_range- low_range)/6 +low_range)) + '-' + str(round((3)*(high_range- low_range)/6 +low_range)),
+            "fourth_name": str(round((3)*(high_range- low_range)/6 +low_range)) + '-' + str(round((4)*(high_range- low_range)/6 +low_range)),
+            "fifth_name": str(round((4)*(high_range- low_range)/6 +low_range)) + '-' + str(round((5)*(high_range- low_range)/6 +low_range)),
+            "sixth_name": str(round((5)*(high_range- low_range)/6 +low_range)) + '-' + str(high_range),
 
         }
         return JsonResponse(data)
