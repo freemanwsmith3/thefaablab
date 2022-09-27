@@ -112,7 +112,7 @@ class TargetsAPI(APIView):
             
         vis_targs_bool = []
         
-        targets = Target.objects.filter(week=week)[0:6]
+        targets = Target.objects.filter(week=week)
         targets = sorted(targets, key=lambda t: t.num_valid_bids, reverse=True)
         if not self.request.session.get('visible_targets') or str(week) not in self.request.session.get('visible_targets'):
             target_dict = {}
