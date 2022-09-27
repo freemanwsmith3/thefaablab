@@ -104,7 +104,7 @@ class TargetsAPI(APIView):
 
 
         ###################
-        current_week = 3
+        current_week = 4
         ########################
 
         if not self.request.session.exists(self.request.session.session_key):
@@ -112,7 +112,7 @@ class TargetsAPI(APIView):
             
         vis_targs_bool = []
         
-        targets = Target.objects.filter(week=week)
+        targets = Target.objects.filter(week=week)[0:6]
         targets = sorted(targets, key=lambda t: t.num_valid_bids, reverse=True)
         if not self.request.session.get('visible_targets') or str(week) not in self.request.session.get('visible_targets'):
             target_dict = {}
@@ -147,10 +147,23 @@ class TargetsAPI(APIView):
             positions.append(d.player.position.position_type)
             target_ids.append(d.id)
             num_bids.append(d.num_valid_bids)
-            mean_values.append(round(d.mean_value, 2))
-            median_values.append(d.median_value)
-            mode_values.append(d.mode_value)
-            bids = Bid.objects.filter(target = d.id, value__range = [1, 100]).values_list('value', flat=True)
+            try:
+                mean_values.append(round(d.mean_value, 2))
+            except:
+                mean_values.append(0)
+            
+            try:
+                median_values.append(round(d.mean_value, 2))
+            except:
+                median_values.append(0)
+            try:
+                mode_values.append(round(d.mean_value, 2))
+            except:
+                mode_values.append(0)                
+
+
+
+            #bids = Bid.objects.filter(target = d.id, value__range = [1, 100]).values_list('value', flat=True)
 
 
 
