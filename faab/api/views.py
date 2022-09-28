@@ -153,11 +153,11 @@ class TargetsAPI(APIView):
                 mean_values.append(0)
             
             try:
-                median_values.append(round(d.mean_value, 2))
+                median_values.append(round(d.median_value, 2))
             except:
                 median_values.append(0)
             try:
-                mode_values.append(round(d.mean_value, 2))
+                mode_values.append(round(d.mode_value, 2))
             except:
                 mode_values.append(0)                
 
