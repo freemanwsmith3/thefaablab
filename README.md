@@ -37,3 +37,5 @@ pipenv shell python manage.py runserver --settings=code_breaker.local_settings
 another terminal: npm run dev
 
 third terminal: python manage.py test --settings=code_breaker.local_settings
+
+**updating week issue is probably because you need run the npm run dev then redeploy (possibly in debug mode) **
