@@ -15,7 +15,7 @@ soup = BeautifulSoup(data, 'html.parser')
 
 ####################
 # change week below
-week = 9
+week = 13
 #############
 print('Classes of each table:')
 
@@ -121,6 +121,8 @@ for i in range(count-1):
                 team_id = 31
             if team == "TEX":
                 team_id = 32
+            if team == "FA":
+                team_id = 33
             ######################
             if position == "RB":
                 pos_id = 1
@@ -132,6 +134,7 @@ for i in range(count-1):
                 pos_id = 4
             if position == "K":
                 pos_id = 6       
+
 
             link  = 'https://www.nfl.com/players/' + slugify(name) + '/'
             curr.execute("""insert into api_player (name, team_id, position_id, link, image) values (%s, %s, %s, %s, %s);""", [name, team_id, pos_id, link, name] )
