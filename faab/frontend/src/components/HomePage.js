@@ -7,7 +7,7 @@ export default class HomePage extends Component {
     constructor(props) {
         super(props);
         this.state= {
-            week: 13,
+            week: 14,
         };
     }
 
