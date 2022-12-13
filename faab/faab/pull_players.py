@@ -53,7 +53,7 @@ for i in range(count-1):
         player_id = curr.fetchone()[0]
         curr.execute("""insert into api_target (week, player_id) values (%s, %s);""", [week, player_id,] )
     except Exception as e:
-        if position != 'DST':
+        if position != 'DST' and position != 'K':
             print(name)
             print(position)
             print(team)
@@ -119,7 +119,7 @@ for i in range(count-1):
                 team_id = 30
             if team == "BAL":
                 team_id = 31
-            if team == "TEX":
+            if team == "TEX" or team == "HOU":
                 team_id = 32
             if team == "FA":
                 team_id = 33
