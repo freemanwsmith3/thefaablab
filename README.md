@@ -39,3 +39,11 @@ another terminal: npm run dev
 third terminal: python manage.py test --settings=code_breaker.local_settings
 
 **updating week issue is probably because you need run the npm run dev then redeploy (possibly in debug mode) **
+
+
+# How it works
+in HomePage.js redirects to the correct week, the week is based what you put in the state of HomePage.js and in views with "current_week"
+if current week in views is more than current week in the homePage.js it will automatically show results
+the there is an if statement based on whether or not the the user based of their session token has already submitted
+it shows either the bid page if they havent submitted yet or the show results if they have submitted
+next year yo umight have to add a year column to the table 
