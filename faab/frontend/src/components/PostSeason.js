@@ -165,9 +165,6 @@ export default class ThisWeek extends Component {
                                             </Button>
                                         </Typography>
                                         <Typography align="center" component='h5' variant='h5' >
-                                       <br></br><a style = {{color: 'blue'}}  href="https://www.faablab.app/week/1" >Week 1</a>
-                                        </Typography>
-                                        <Typography align="center" component='h5' variant='h5' >
                                        <br></br><a style = {{color: 'blue'}}  href="https://www.faablab.app/week/2" >Week 2</a>
                                         </Typography>
                                         <Typography align="center" component='h5' variant='h5' >
