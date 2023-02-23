@@ -40,6 +40,9 @@ third terminal: python manage.py test --settings=code_breaker.local_settings
 
 **updating week issue is probably because you need run the npm run dev then redeploy (possibly in debug mode) **
 
+*for developer* 
+do not forget to rerun npm build when updating, that was always an issue last year
+
 
 # How it works
 in HomePage.js redirects to the correct week, the week is based what you put in the state of HomePage.js and in views with "current_week"
