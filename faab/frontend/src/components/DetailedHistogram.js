@@ -86,13 +86,13 @@ export default class DetailedHistogram extends Component {
           
         >
           <XAxis ticks={false} dy={19} dataKey="name" angle={90} >
-            <Label fill="#616161" dy={50} value="% of FAAB Budget"  position="Bottom" />
+            <Label fill="#4F6D7A" dy={50} value="% of FAAB Budget"  position="Bottom" />
             <Label dy={-264}  value="# of Bids per Bid Value"  position="Top" />
           </XAxis>
           <YAxis width={0} ticks={false}>
           {/* <Label value="Bids"  position="left" /> */}
           </YAxis  >
-          <Bar  barSize={20} dataKey="pv" fill="#8884d8"   >
+          <Bar  barSize={20} dataKey="pv" fill="#DD6E42"   >
           <LabelList dataKey="pv" position="top" />
           </Bar> 
         </BarChart>

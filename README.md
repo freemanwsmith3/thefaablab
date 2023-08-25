@@ -1,3 +1,11 @@
+To do: 
+
+add ADP rankings for comparison 
+remove console.log
+change colors
+add adverts
+fix change state thing to avoid full refresh
+
 # thefaablab
 Python 3.10 Node JS 16 On Mac OS X: brew install postgresql
 

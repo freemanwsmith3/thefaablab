@@ -46,7 +46,7 @@ export default class ShowData extends Component {
                                 >
                 <CardContent sx={{ flexGrow: 1 } }>
                 <div align='center'>
-                    <Typography component='h5' variant='h5'>
+                    <Typography component='h6' variant='h6'>
                         {this.name} - {this.position}
                     </Typography>
                     <Typography component='h6' variant='h6'>
@@ -54,7 +54,7 @@ export default class ShowData extends Component {
                     </Typography>
                 </div>
                 
-                <Box sx={{ p: 2, border: '1px dashed grey' }}>
+                <Box sx={{ p: 2, border: '1px dashed ##DD6E42",' }}>
                     <Typography component='h6' variant='h6'>
                     Average Bid:  {this.mean_value.toString()}%
                     </Typography>
