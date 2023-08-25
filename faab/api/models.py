@@ -5,16 +5,22 @@ from django.db.models import Avg, Count
 
 class Team(models.Model):
     team_name = models.CharField(max_length=50, unique = True)
+    abbreviation = models.CharField(max_length=4, unique = True)
 
 class Position(models.Model):
     position_type = models.CharField(max_length=50, unique = True)
 
 class Player(models.Model):
     name = models.CharField(max_length=50, unique = True)
-    team = models.ForeignKey(Team,  on_delete=models.CASCADE, related_name="teams")
-    position = models.ForeignKey(Position,  on_delete=models.CASCADE, related_name="positions")
-    link = models.CharField(max_length=256, unique = True)
-    image = models.CharField(max_length=256, unique = True)
+    team = models.ForeignKey(Team,  on_delete=models.CASCADE, related_name="teams", null=True)
+    position = models.ForeignKey(Position,  on_delete=models.CASCADE, related_name="positions", null=True)
+    link = models.CharField(max_length=256, unique = True, null=True)
+    image = models.CharField(max_length=256, unique = True, null=True)
+    
+    @property
+    def average_rank(self):
+        return Ranking.objects.all().aggregate(avg_rank=models.Avg('rank'))['avg_rank'] 
+
 
 class Target(models.Model):
     player = models.ForeignKey(Player,  on_delete=models.CASCADE, related_name="targets")
@@ -46,4 +52,12 @@ class Bid(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     week = models.IntegerField(null=False, validators=[MinValueValidator(0), MaxValueValidator(17)])
     user = models.CharField(max_length=50)
+
+class Ranking(models.Model):
+    rank = models.IntegerField(null=False, default=0,  validators=[MinValueValidator(0), MaxValueValidator(200)])
+    Player = models.ForeignKey(Player, on_delete=models.CASCADE, related_name="rankings")
+    created_at = models.DateTimeField(auto_now_add=True)
+    week = models.IntegerField(null=False, validators=[MinValueValidator(0), MaxValueValidator(20)])
+    user = models.CharField(max_length=50)
+
 

@@ -1,17 +1,21 @@
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
-from django.db.models import Max
+from django.db.models import Count, Case, When, Avg, Q, IntegerField
 from rest_framework import generics, status
-from .serializers import PlayerSerializer,BidSerializer, TargetSerializer
-from .models import Player, Bid, Target
+from .serializers import *
+from .models import Player, Bid, Target, Ranking
 from rest_framework.views import APIView
 from rest_framework.response import Response
-import numpy
+import random
+from itertools import chain
 from scipy import stats
-# Create your views here.
-# class PlayerView(generics.CreateAPIView):
-#     queryset = Player.objects.all()
-#     serializer_class = PlayerSerializer
+
+def sort_queryset_by_ids(queryset, ids):
+    # Prepare the ordering using the Case/When expressions
+    preserved_order = Case(*[When(pk=pk, then=pos) for pos, pk in enumerate(ids)], output_field=IntegerField())
+
+    # Annotate the queryset with the ordering and then sort by it
+    return queryset.annotate(sort_order=preserved_order).order_by('sort_order')
 
 class PlayerView(generics.ListAPIView):
     queryset = Player.objects.all()
@@ -201,7 +205,7 @@ class DataAPI(APIView):
             high_range = flat_vals[int(len(flat_vals)*.9)]
 
 
-        ###############################
+        ###############################ge
         ######## Be careful of weird random bins 
         ##############################
 
@@ -230,3 +234,79 @@ class DataAPI(APIView):
         }
         return JsonResponse(data)
 
+class RankingAPI(APIView):
+    week_target = 'week'
+    def get(self,request, format=None):
+        week_name = request.GET.get(self.week_target).split('?target=')
+
+        week = week_name[0]
+        #player_ids = list(Ranking.objects.filter(week=week).order_by('rank').values_list('Player_id', flat=True))[0:5]
+        # player_ids = Ranking.objects.values('Player_id').annotate(average_rank=Avg('rank')).order_by('average_rank')
+        # #players = Player.objects.filter(id__in=player_ids)
+        # # for id in player_ids:
+        # #     print(id.Player_id)
+
+        players_with_avg_rank = (Player.objects
+                        .annotate(avg_rank=Avg('rankings__rank', filter=Q(rankings__week=week)))
+                        .order_by('avg_rank'))[0:25]
+
+        
+        serializer = PlayerRankingSerializer(players_with_avg_rank, many=True)
+        # for player in categories_with_avg_rank:
+        #     print(player)
+        #@sorted_players = sort_queryset_by_ids(players, player_ids)
+        #print(type(sorted_players))
+        return Response(serializer.data)
+
+class VotingAPI(APIView):
+    week_target = 'week'
+    def get(self,request, format=None):
+        week_name = request.GET.get(self.week_target).split('?target=')
+
+        week = week_name[0]
+        top_tier = random.randint(1, 49)
+        mid_tier = random.randint(50, 99)
+        low_tier = random.randint(100,150)
+        top_tier_players = (Player.objects
+                                .annotate(avg_rank=Avg('rankings__rank', filter=Q(rankings__week=week)))
+                                .order_by('avg_rank'))[top_tier:top_tier+3]
+        mid_tier_players = (Player.objects
+                                .annotate(avg_rank=Avg('rankings__rank', filter=Q(rankings__week=week)))
+                                .order_by('avg_rank'))[mid_tier:mid_tier+3]
+        low_tier_players = (Player.objects
+                                .annotate(avg_rank=Avg('rankings__rank', filter=Q(rankings__week=week)))
+                                .order_by('avg_rank'))[low_tier:low_tier+3]    
+                            
+        voting_players = chain( top_tier_players, mid_tier_players, low_tier_players)
+        
+        serializer = PlayerRankingSerializer(voting_players, many=True)
+        # for player in categories_with_avg_rank:
+        #     print(player)
+        #@sorted_players = sort_queryset_by_ids(players, player_ids)
+        #print(type(sorted_players))
+        print(serializer.data)
+        return Response(serializer.data)
+
+class VoteView(APIView):
+    serializer_class = RankingSerializer
+    def post(self, request, format=None):
+
+        ###############
+        ##  SESSION KEY HERE
+        ##############
+        if not self.request.session.exists(self.request.session.session_key):
+            self.request.session.create()
+        print(self.request.session.session_key)
+        data=request.data
+        user = self.request.session.session_key 
+        player = Player.objects.get(id=data['playerid'])
+        
+        #print(serializer.data)
+        try:  
+    
+            ranking = Ranking(user=user,rank=data['rank'], Player=player, week = data['week'])
+            ranking.save()
+            return Response(RankingSerializer(ranking).data, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            print(e)     
+            return Response({'Bad Request':'Invalid Rank'}, status=status.HTTP_400_BAD_REQUEST)

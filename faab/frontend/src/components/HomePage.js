@@ -3,6 +3,8 @@ import { BrowserRouter as Router, Switch, Route, Link, Redirect } from "react-ro
 import BidPlayer from "./BidPlayer";
 import ThisWeek from "./ThisWeek";
 import PostSeason from "./PostSeason"
+import Rankings from "./Rankings"
+import WRVegas from "./WRVegas"
 
 export default class HomePage extends Component {
     constructor(props) {
@@ -22,8 +24,11 @@ export default class HomePage extends Component {
                     return(<Redirect to={`/week/${this.state.week}`}/>
                     );
                 }}/> */}
-                 <Route exact path='/player' component = {BidPlayer} />
-                 <Route exact path='/week/:weekNumber' component = {ThisWeek} />
+                <Route exact path='/rankings/:weekNumber' component = {Rankings} />
+                <Route exact path='/player' component = {BidPlayer} />
+                <Route exact path='/week/:weekNumber' component = {ThisWeek} />
+                <Route exact path='/articles/vegas-versus-wr-adp' component = {WRVegas} />
+
                  {/* <Route exact path='/week/:weekNumber/:playerName' component = {StatDetails} /> */}
             </Switch>
         </Router>

@@ -11,20 +11,11 @@ import Button from '@material-ui/core/Button';
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import { createTheme, ThemeProvider } from '@material-ui/core/styles';
+import customtheme from "../style/theme";
 
 function themeFunction(){
-    const theme = createTheme();
 }
 
-function Copyright() {
-    return (
-      <Typography variant="body2" color="text.secondary" align="center">
-        Contact: faablabapp@gmail.com
-        {/* {new Date().getFullYear()}
-        {'.'} */}
-      </Typography>
-    );
-  }
 
 export default class ThisWeek extends Component {
     
@@ -80,11 +71,15 @@ export default class ThisWeek extends Component {
     render(){
         return(
             <html >
-                <ThemeProvider theme={this.theme} >
+                <ThemeProvider theme={customtheme}> 
                 <CssBaseline />
                 <header>
                     <AppBar position="relative">
-                        <Toolbar>
+                        <Toolbar     sx={{
+                                    fill: 'green',
+                                    pt: 8,
+                                    pb: 6,
+                                }}>
                         {/* <SportsFootballOutlinedIcon sx={{ mr: 2 }} /> */}
                         
                         <Typography variant="h3" color="inherit" noWrap>
@@ -111,7 +106,7 @@ export default class ThisWeek extends Component {
                             <Container maxWidth="md">
                                 <Box
                                 sx={{
-                                    bgcolor: 'background.paper',
+                                    bgcolor: '#98C1D9',
                                     pt: 8,
                                     pb: 6,
                                 }}>
@@ -158,7 +153,7 @@ export default class ThisWeek extends Component {
                             <Container>
                                 <Box
                                 sx={{
-                                    bgcolor: 'background.paper',
+                                    bgcolor: '#98C1D9',
                                     pt: 8,
                                     pb: 6,
                                 }}
@@ -181,7 +176,7 @@ export default class ThisWeek extends Component {
                                             How it works
                                             </Button>
                                         </Typography>
-                                        <Typography align="center" component='h5' variant='h5' >
+                                        <Typography align="center" component='h7' variant='h7' >
                                        <br></br><div style = {{textDecoration: 'underline'}} >Top Waiver Adds:</div>
                                         </Typography>
                                     </Container>
@@ -207,25 +202,9 @@ export default class ThisWeek extends Component {
                             </Container>
                         )  }
 
-                   
 
                 </main>
-                <footer>
-                <Box sx={{ bgcolor: 'background.paper', p: 6 }} component="footer">
-                    {/* <Typography variant="h6" align="center" gutterBottom>
-                    Footer
-                    </Typography>
-                    <Typography
-                    variant="subtitle1"
-                    align="center"
-                    color="text.secondary"
-                    component="p"
-                    >
-                    Something here to give the footer a purpose!
-                    </Typography> */}
-                    <Copyright />
-                </Box>
-                </footer>
+
                 </ThemeProvider>
             </html>
         );
