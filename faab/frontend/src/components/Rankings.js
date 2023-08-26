@@ -17,22 +17,12 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import { createTheme, ThemeProvider } from '@material-ui/core/styles';
 import customtheme from "../style/theme";
 function themeFunction(){
    
 }
-
-function Copyright() {
-    return (
-      <Typography variant="body2" color="text.secondary" align="center">
-        Contact: faablabapp@gmail.com
-        {/* {new Date().getFullYear()}
-        {'.'} */}
-      </Typography>
-    );
-  }
-
 export default class Rankings extends Component {
     
 
@@ -47,7 +37,8 @@ export default class Rankings extends Component {
             openPop: false,
             votedTop: false,
             votedMid: false,
-            votedLow: false
+            votedLow: false,
+            loading: true,
         };
         
         this.weekNumber = this.props.match.params.weekNumber;
@@ -82,8 +73,8 @@ export default class Rankings extends Component {
         .then((data) => {
             this.setState({
 
-                currentRankings: data
-                
+                currentRankings: data,
+                loading: false
                 // mean_values: data.mean_values,
                 // mode_values: data.mode_values,
                 // median_values: data.median_values,
@@ -232,11 +223,12 @@ export default class Rankings extends Component {
                     </AppBar>
                 </header>
                 <main id="app">
-                {this.state.votedTop ? (
-                    this.state.votedMid ? (
-                        this.state.votedLow ? (
-                            this.state.openPop ? (
-                            <Container maxWidth="md">
+                {
+                    this.state.votedTop ? (
+                        this.state.votedMid ? (
+                            this.state.votedLow ? (
+                                this.state.openPop ? (
+                                <Container maxWidth="md">
                                 <Box
                                 sx={{
                                     bgcolor: 'background.paper',
@@ -371,7 +363,7 @@ export default class Rankings extends Component {
                                         gutterBottom
                                         
                                         ><div  >
-                                        Select who you'd draft first to see rankings</div>
+                                        Click your highest ranked player to see the crowdsourced rankings</div>
                                         </Typography>
                             
                             <Typography align="center">
@@ -380,7 +372,7 @@ export default class Rankings extends Component {
                                          variant="contained" 
                                          color="primary" 
                                          onClick={() => this.handleVotedLow(index)}>
-                                         {row.name}<br></br>{row.position_type} |  {row.abbreviation}
+                                         <h4><span style={{fontSize: 'large'}}>{row.name}</span> <br></br>{row.position_type} |  {row.abbreviation}</h4>
                                          </Button>
                                             ))}
                                      <Typography
@@ -395,7 +387,8 @@ export default class Rankings extends Component {
                                   
                                 </Typography>
                         </Box>
-                    </Container>)):(                            <Container maxWidth="md">
+                    </Container>)):
+                    (<Container maxWidth="md">
                         <Box
                         sx={{
                             bgcolor: 'background.paper',
@@ -409,7 +402,7 @@ export default class Rankings extends Component {
                                         color="text.primary"
                                         gutterBottom
                                         ><div >
-                                        Select who you'd draft first to see rankings</div>
+                                        Click your highest ranked player to see the rankings</div>
                                         </Typography>
 
                             
@@ -419,7 +412,7 @@ export default class Rankings extends Component {
                                     variant="contained" 
                                     color="primary" 
                                     onClick={() => this.handleVotedMid(index)}>
-                                    {row.name}<br></br>{row.position_type} |  {row.abbreviation}
+                                    <h4><span style={{fontSize: 'large'}}>{row.name}</span> <br></br>{row.position_type} |  {row.abbreviation}</h4>
                                     </Button>
                                             ))}
                                     <Typography
@@ -434,7 +427,8 @@ export default class Rankings extends Component {
                                   
                                 </Typography>
                         </Box>
-                    </Container>)):(                            <Container maxWidth="md">
+                    </Container>)):(                            
+                    <Container maxWidth="md">
                         <Box
                         sx={{
                             bgcolor: 'background.paper',
@@ -449,18 +443,19 @@ export default class Rankings extends Component {
                                         color="text.primary"
                                         gutterBottom
                                         ><div >
-                                        Select who you'd draft first to see rankings</div>
+                                        Click your highest ranked player to see the rankings</div>
                                         </Typography>
                        
                             <Typography align="center">
-                            {this.state.votingPlayersTop.map((row,index) => (
+                            {this.state.loading ? (<CircularProgress /> ):(
+                            this.state.votingPlayersTop.map((row,index) => (
                                         <Button 
                                         variant="contained" 
                                         color="primary" 
                                         onClick={() => this.handleVotedTop(index)}>
-                                        {row.name}<br></br>{row.position_type} |  {row.abbreviation}
+                                        <h4><span style={{fontSize: 'large'}}>{row.name}</span> <br></br>{row.position_type} |  {row.abbreviation}</h4>
                                         </Button>
-                                            ))}
+                                            )))}
                                           <Typography
                                         component="h4"
                                         variant="h5"
@@ -479,22 +474,7 @@ export default class Rankings extends Component {
                    
 
                 </main>
-                <footer>
-                <Box sx={{ bgcolor: 'background.paper', p: 6 }} component="footer">
-                    {/* <Typography variant="h6" align="center" gutterBottom>
-                    Footer
-                    </Typography>
-                    <Typography
-                    variant="subtitle1"
-                    align="center"
-                    color="text.secondary"
-                    component="p"
-                    >
-                    Something here to give the footer a purpose!
-                    </Typography> */}
-                    <Copyright />
-                </Box>
-                </footer>
+
                 </ThemeProvider>
             </html>
         );

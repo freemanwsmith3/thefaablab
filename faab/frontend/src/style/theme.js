@@ -19,8 +19,15 @@ const myTheme = createTheme({
       
       
     },  
+
     MuiTypography: {
       
+      body2: {
+        paddingTop: "20px",
+        marginTop: "10px",
+        backgroundColor: "#EAEAEA",
+        color: "#EAEAEA"
+      },
       h4: {
         paddingTop: "20px",
         backgroundColor: "#EAEAEA",
@@ -44,11 +51,25 @@ const myTheme = createTheme({
       },
     },  
     MuiBox: {
+      img: {
+        maxWidth: '100%',
+        height: 'auto',
+        display: 'block', 
+      },
       root: {
+        // maxWidth: '100%',
+        // height: 'auto',
+        // display: 'block', 
         backgroundColor: "#EAEAEA",
         color: "#4F6D7A"
       },
     },  
+    // MuiCardMedia: {
+    //   root: {
+    //     backgroundColor: "#C0D6DF",
+    //     paddingBottom: "50px"
+    //   },
+    // },
     MuiCardContent: {
       root: {
         borderStyle: "solid",

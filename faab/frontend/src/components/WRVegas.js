@@ -16,13 +16,21 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import Paper from '@material-ui/core/Paper';
-import { createTheme, ThemeProvider } from '@material-ui/core/styles';
+import CardMedia from '@material-ui/core/CardMedia';
+import CardContent from '@material-ui/core/CardContent';
+import Card from '@material-ui/core/Card';
+import { makeStyles, ThemeProvider } from '@material-ui/core/styles';
 import customtheme from "../style/theme";
 function themeFunction(){
 
 }
-
+const useStyles = makeStyles({
+  responsiveImage: {
+    maxWidth: '100%',
+    height: 'auto',
+    display: 'block'
+  }
+});
 
 
 export default class WRVegas extends Component {
@@ -67,6 +75,7 @@ export default class WRVegas extends Component {
 
     render(){
         const {classes} = this.props;
+        
         return(
             <html >
                 <ThemeProvider theme={customtheme}> 
@@ -133,47 +142,37 @@ export default class WRVegas extends Component {
                             </Container>
                         ) : (
                             <Container>
-                                <Box
-                                sx={{
-                                    bgcolor: 'background.paper',
-                                    pt: 8,
-                                    pb: 6,
-                                }}
-                                >
-                                    <Container maxWidth="sm">
-                                        <Typography
-                                        component="h1"
-                                        variant="h2"
-                                        align="center"
-                                        color="text.primary"
-                                        gutterBottom
-                                        ><div style = {{textDecoration: 'underline'}} >
-                                        2023 Draft Rankings</div>
-                                        </Typography>
-                                        <Typography align="center" component='h5' variant='h5' >
-                                        <div>Crowd Sourced Rankings</div><br></br>
-                                        </Typography>
-
-                                        <Box
-                                          component="img"
-                                          sx={{
+                    
+                                
+                                    <Container maxWidth="sm" >
                             
+                                        <Typography align="center" component='h5' variant='h5' >
+                                        <div>
+                                                    <h3>Vegas WR Lines vs. ADP</h3>
+                                                    <p>The chart presented offers an in-depth analysis of fantasy football wide receivers. Rankings are determined based on their projected season long fantasy outputs, which have been derived from Las Vegas lines predicting receiving yards and touchdowns for the upcoming season.</p>
+                                                    <p>These projections give us a predictive framework to assess a player's potential performance. The chart compares these projections against the average draft position (ADP) for wide receivers in standard fantasy football leagues. This comparative view allows fantasy managers to discern where the general consensus might be underestimating (or overestimating) a player's true value.</p>
+                                                    <p>By capitalizing on these market inefficiencies and making well-informed drafting decisions, fantasy football managers can gain a significant edge over their competition, optimizing their roster for success throughout the season.</p>
+                                                </div>
 
-                                          }}
-                                          alt="WRs ADP vs Vegas Projections."
-                                          src="../static/images/wr_by_vegas_odds.jpg"
-                                        />
+                                        </Typography>
+                                                                                
+                                        <Card 
+                                            sx={{  height: '100%', display: 'block', flexDirection: 'column'}} >
+                                                           <CardMedia
+                                                component="img"
+                                                sx={{
+                                                // 16:9
+                                                pt: '56.25%',
+                                                }}
+                                                image="../static/images/wr_by_vegas_odds.jpg"
+                                                alt="WRs ADP vs Vegas Projections."
+                />                 
+
+                                         
+                                            </Card>
+
                                     </Container>
-                                </Box>
-                                <Box>
-                                    <Container sx={{ py: 8 }} maxWidth="md">
 
-                                        <Grid container spacing={4}>
-
-
-                                        </Grid>
-                                    </Container>        
-                                </Box>      
                             </Container>
                         )  }
                 </main>
