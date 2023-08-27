@@ -313,7 +313,7 @@ export default class Rankings extends Component {
                                               <TableCell>Player</TableCell>
                                               {/* <TableCell>Team</TableCell>
                                               <TableCell>Position</TableCell>  */}
-                                              <TableCell>+- ADP</TableCell>   
+                                              <TableCell>User Consensus (vs. ADP)</TableCell>   
                                               {/* <TableCell>Positional Rank</TableCell> */}
                                             </TableRow>
                                           </TableHead>
@@ -329,9 +329,11 @@ export default class Rankings extends Component {
                                                 <TableRow key={index}>
                                                     <TableCell>{index+1}</TableCell>
                                                     <TableCell>{row.name} <br></br> ({row.position_type} | {row.abbreviation})</TableCell>
-                                                    {/* <TableCell>{row.abbreviation}</TableCell>
-                                                    <TableCell>{row.position_type}</TableCell> */}
-                                                    <TableCell>{row.avg_rank}</TableCell>
+                                                    {/* <REPLACE 5 WITH THE ADP THAT YOU ADD TO MODELS*/}
+                                                    {row.avg_rank<5 && 
+                                                    <TableCell>{row.avg_rank.toFixed(1)}  <span style={{color: "red"}}>(-{(row.avg_rank-index).toFixed(1)})</span></TableCell>}
+                                                                                                        {row.avg_rank>=5 && 
+                                                    <TableCell>{row.avg_rank.toFixed(1)}  <span style={{color: "green"}}>(+{(row.avg_rank-index).toFixed(1)})</span></TableCell>}
                                                 </TableRow>)
                                             )}
                                         </TableBody>
@@ -365,8 +367,7 @@ export default class Rankings extends Component {
                                         color="text.primary"
                                         gutterBottom
                                         
-                                        ><div  >
-                                        Click your highest ranked player to see the crowdsourced rankings</div>
+                                        ><div >To view the crowdsourced rankings, choose who you'd draft higher (half ppr)</div>
                                         </Typography>
                             
                             <Typography align="center">
@@ -404,8 +405,7 @@ export default class Rankings extends Component {
                                         align="center"
                                         color="text.primary"
                                         gutterBottom
-                                        ><div >
-                                        Click your highest ranked player to see the rankings</div>
+                                        ><div >To view the crowdsourced rankings, choose who you'd draft higher (half ppr)</div>
                                         </Typography>
 
                             
@@ -445,8 +445,7 @@ export default class Rankings extends Component {
                                         align="center"
                                         color="text.primary"
                                         gutterBottom
-                                        ><div >
-                                        Click your highest ranked player to see the rankings</div>
+                                        ><div >To view the crowdsourced rankings, choose who you'd draft higher (half ppr)</div>
                                         </Typography>
                        
                             <Typography align="center">
