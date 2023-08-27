@@ -248,7 +248,7 @@ class RankingAPI(APIView):
 
         players_with_avg_rank = (Player.objects
                         .annotate(avg_rank=Avg('rankings__rank', filter=Q(rankings__week=week)))
-                        .order_by('avg_rank'))[0:25]
+                        .order_by('avg_rank'))[0:250]
 
         
         serializer = PlayerRankingSerializer(players_with_avg_rank, many=True)
