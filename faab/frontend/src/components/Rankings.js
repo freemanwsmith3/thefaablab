@@ -295,6 +295,7 @@ export default class Rankings extends Component {
                                         </Typography>
                                         <Typography align="center" component='h5' variant='h5' >
                                         <div>Crowd Sourced Rankings</div><br></br>
+                                        <a href=" http://faablabapp.draftdash.hop.clickbank.net"><img border="0" src="http://www.draftdashboard.com/creatives/draftdashboard300x250.gif" width="300" height="250"/></a>
                                         </Typography>
                                         <Typography align="center">
                                             <Button 
@@ -322,15 +323,17 @@ export default class Rankings extends Component {
                                                 <TableCell>ddsdfasd</TableCell>
                                                 <TableCell>asdfd</TableCell>
                                             </TableRow> */}
+                                            
                                             {this.state.currentRankings.map((row,index) => (
+                                               
                                                 <TableRow key={index}>
                                                     <TableCell>{index+1}</TableCell>
                                                     <TableCell>{row.name} <br></br> ({row.position_type} | {row.abbreviation})</TableCell>
                                                     {/* <TableCell>{row.abbreviation}</TableCell>
                                                     <TableCell>{row.position_type}</TableCell> */}
                                                     <TableCell>{row.avg_rank}</TableCell>
-                                                </TableRow>
-                                            ))}
+                                                </TableRow>)
+                                            )}
                                         </TableBody>
                                         </Table>
                                       </TableContainer>
