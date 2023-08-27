@@ -13,7 +13,7 @@ const myTheme = createTheme({
     },
     MuiTableCell: {
       root: {
-        
+        textAlign: "center",
         color: "#4F6D7A"
       },
       
@@ -34,7 +34,7 @@ const myTheme = createTheme({
         color: "#EAEAEA"
       },
       h5: {
-        margin: "0px",
+        marginTop: "20px",
         backgroundColor: "#EAEAEA",
         color: "#4F6D7A"
       },
