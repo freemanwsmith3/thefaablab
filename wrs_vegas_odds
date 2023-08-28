@@ -1,49 +1,42 @@
-,Player,Vegas Projections
-0,Ja'Marr Chase,193.05
-1,Justin Jefferson,191.05
-2,Davante Adams,175.95
-3,Cooper Kupp,173.55
-4,Tyreek Hill,172.55
-5,Stefon Diggs,166.05
-6,A.J. Brown,163.55
-7,Garrett Wilson,157.55
-8,CeeDee Lamb,155.05
-9,Jaylen Waddle,146.55
-10,Tee Higgins,139.05
-11,DK Metcalf,137.55
-12,Chris Olave,135.55
-13,Amon-Ra St. Brown,133.05
-14,Amari Cooper,131.55
-15,DeVonta Smith,125.55
-16,Calvin Ridley,123.05
-17,Keenan Allen,123.05
-18,Mike Evans,120.55
-19,Tyler Lockett,120.55
-20,Mark Andrews,119.05
-21,Mike Williams,118.05
-22,Christian Watson,118.05
-23,Brandon Aiyuk,113.05
-24,DeAndre Hopkins,112.05
-25,Gabe Davis,111.55
-26,Christian Kirk,109.55
-27,DJ Moore,109.55
-28,Chris Godwin,107.05
-29,George Pickens,107.05
-30,Drake London,107.05
-31,Michael Pittman Jr.,107.05
-32,Marquise Brown,106.95
-33,Deebo Samuel,102.05
-34,George Kittle,100.55
-35,Brandin Cooks,99.55
-36,Michael Thomas,99.55
-37,Jahan Dotson,99.55
-38,Kyle Pitts,94.55
-39,Allen Lazard,91.95
-40,Dallas Goedert,91.05
-41,Darren Waller,91.05
-42,Michael Gallup,87.05
-43,Marquez Valdes-Scantling,83.55
-44,Adam Thielen,81.95
-45,Evan Engram,81.05
-46,Tyler Higbee,77.05
-47,Odell Beckham Jr.,76.05
+Vegas RK,Player,Vegas Projected Points,Vegas vs. ADP,ADP,,,,
+1,Ja'Marr Chase,193.05,1,2,,Justin Jefferson,1,-1
+2,Justin Jefferson,191.05,-1,1,,Ja'Marr Chase,2,-2
+3,Davante Adams,175.95,5,8,,Tyreek Hill,3,-3
+4,Cooper Kupp,173.55,0,4,,Cooper Kupp,4,-4
+5,Tyreek Hill,172.55,-2,3,,Stefon Diggs,5,-5
+6,Stefon Diggs,166.05,-1,5,,A.J. Brown,6,-6
+7,A.J. Brown,163.55,-1,6,,CeeDee Lamb,7,-7
+8,Garrett Wilson,157.55,2,10,,Davante Adams,8,-8
+9,CeeDee Lamb,155.05,-2,7,,Amon-Ra St. Brown,9,-9
+10,Jaylen Waddle,146.55,1,11,,Garrett Wilson,10,-10
+11,Tee Higgins,139.05,3,14,,Jaylen Waddle,11,-11
+12,DK Metcalf,137.55,4,16,,DeVonta Smith,12,-12
+13,Chris Olave,135.55,0,13,,Chris Olave,13,-13
+14,Amon-Ra St. Brown,133.05,-5,9,,Tee Higgins,14,-14
+15,Amari Cooper,131.55,2,17,,Calvin Ridley,15,-15
+16,DeVonta Smith,125.55,-4,12,,DK Metcalf,16,-16
+17,Calvin Ridley,123.05,-2,15,,Amari Cooper,17,-17
+18,Keenan Allen,123.05,1,19,,DJ Moore,18,-18
+19,Mike Evans,120.55,10,29,,Keenan Allen,19,-19
+20,Tyler Lockett,120.55,10,30,,DeAndre Hopkins,20,-20
+21,Mike Williams,119.05,5,26,,Christian Watson,21,-21
+22,Christian Watson,118.05,-1,21,,Jerry Jeudy,22,-23
+23,Brandon Aiyuk,118.05,4,27,,Terry McLaurin,23,-19
+24,DeAndre Hopkins,113.05,-4,20,,Drake London,24,-28
+25,Gabe Davis,112.05,13,38,,Christian Kirk,25,-12
+26,Christian Kirk,111.55,-1,25,,Mike Williams,26,-27
+27,DJ Moore,109.55,-9,18,,Brandon Aiyuk,27,-36
+28,Chris Godwin,109.55,3,31,,George Pickens,28,-25
+29,George Pickens,107.05,-1,28,,Mike Evans,29,-30
+30,Drake London,107.05,-6,24,,Tyler Lockett,30,-36
+,,,,,,,,
+31,Michael Pittman Jr.,107.05,2,33,,Chris Godwin,31,-29
+32,Marquise Brown,107.05,2,34,,Jahan Dotson,32,-30
+33,Brandin Cooks,106.95,6,39,,Michael Pittman Jr.,33,-27
+34,Michael Thomas,102.05,-34,,,Marquise Brown,34,-68
+35,Jahan Dotson,100.55,-35,,,Diontae Johnson,35,-70
+36,Kyle Pitts,99.55,-36,,,Jordan Addison,36,-72
+37,Allen Lazard,99.55,-37,,,Jaxon Smith-Njigba,37,-74
+38,Dallas Goedert,99.55,-38,,,Gabe Davis,38,-76
+39,Darren Waller,94.55,-39,,,Brandin Cooks,,-39
+40,Michael Gallup,91.95,-40,,,,,-40

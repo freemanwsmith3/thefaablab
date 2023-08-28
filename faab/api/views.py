@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
-from django.db.models import Count, Case, When, Avg, Q, IntegerField
+from django.db.models import Count, Case, When, Avg, Q, IntegerField, Min
 from rest_framework import generics, status
 from .serializers import *
 from .models import Player, Bid, Target, Ranking
@@ -240,22 +240,15 @@ class RankingAPI(APIView):
         week_name = request.GET.get(self.week_target).split('?target=')
 
         week = week_name[0]
-        #player_ids = list(Ranking.objects.filter(week=week).order_by('rank').values_list('Player_id', flat=True))[0:5]
-        # player_ids = Ranking.objects.values('Player_id').annotate(average_rank=Avg('rank')).order_by('average_rank')
-        # #players = Player.objects.filter(id__in=player_ids)
-        # # for id in player_ids:
-        # #     print(id.Player_id)
 
-        players_with_avg_rank = (Player.objects
-                        .annotate(avg_rank=Avg('rankings__rank', filter=Q(rankings__week=week)))
-                        .order_by('avg_rank'))[0:250]
-
-        
-        serializer = PlayerRankingSerializer(players_with_avg_rank, many=True)
-        # for player in categories_with_avg_rank:
-        #     print(player)
-        #@sorted_players = sort_queryset_by_ids(players, player_ids)
-        #print(type(sorted_players))
+        players_with_avg_rank_and_ecr = (Player.objects
+            .annotate(
+                avg_rank=Avg('rankings__rank', filter=Q(rankings__week=week)),
+                ecr=Min('rankings__rank', filter=Q(rankings__week=week, rankings__user='fantasy_pros'))
+            )
+            .order_by('avg_rank')
+        )[0:25]
+        serializer = PlayerRankingSerializer(players_with_avg_rank_and_ecr, many=True)
         return Response(serializer.data)
 
 class VotingAPI(APIView):
@@ -284,7 +277,7 @@ class VotingAPI(APIView):
         #     print(player)
         #@sorted_players = sort_queryset_by_ids(players, player_ids)
         #print(type(sorted_players))
-        print(serializer.data)
+
         return Response(serializer.data)
 
 class VoteView(APIView):
