@@ -109,7 +109,7 @@ export default class Rankings extends Component {
         console.log(index)
 
         
-        //subtracting if it's the lower ranked guy based off odd or even
+        
         let newRank = this.state.votingPlayersTop[index].avg_rank -(index)
         let playerid = this.state.votingPlayersTop[index].id
         
@@ -139,7 +139,6 @@ export default class Rankings extends Component {
         console.log(index)
 
         
-        //subtracting if it's the lower ranked guy based off odd or even
         let newRank = this.state.votingPlayersMid[index].avg_rank -(index)
         let playerid = this.state.votingPlayersMid[index].id
         
@@ -169,7 +168,6 @@ export default class Rankings extends Component {
         console.log(index)
 
         
-        //subtracting if it's the lower ranked guy based off odd or even
         let newRank = this.state.votingPlayersLow[index].avg_rank -(index )
         let playerid = this.state.votingPlayersLow[index].id
         
@@ -345,7 +343,7 @@ export default class Rankings extends Component {
                                                     {row.avg_rank<row.ecr && 
                                                     <TableCell>{row.avg_rank.toFixed(1)}  <span style={{color: "red"}}>({(row.avg_rank.toFixed(1)-row.ecr).toFixed(1)})</span></TableCell>}
                                                     {row.avg_rank>=row.ecr && 
-                                                    <TableCell>{row.avg_rank.toFixed(1)}  <span style={{color: "green"}}>(+{(row.avg_rank.toFixed(1)-row.ecr).toFixed(1)})</span></TableCell>}
+                                                    <TableCell>{row.avg_rank.toFixed(1)}  <span style={{color: "green"}}>(+{(row.ecr).toFixed(1)-row.avg_rank.toFixed(1)})</span></TableCell>}
                                                 </TableRow>)
                                             )}
                                         </TableBody>
