@@ -319,11 +319,11 @@ export default class Rankings extends Component {
                                         <Table  aria-label="simple table">
                                           <TableHead>
                                             <TableRow>
-                                              <TableCell>Rank</TableCell>
+                                              <TableCell>User Consensus</TableCell>
                                               <TableCell>Player</TableCell>
                                               {/* <TableCell>Team</TableCell>
                                               <TableCell>Position</TableCell>  */}
-                                              <TableCell>User Consensus (vs. ADP)</TableCell>   
+                                              <TableCell>FAABLab Rank (vs. ADP)</TableCell>   
                                               {/* <TableCell>Positional Rank</TableCell> */}
                                             </TableRow>
                                           </TableHead>
@@ -336,14 +336,14 @@ export default class Rankings extends Component {
                                             
                                             {this.state.currentRankings.map((row,index) => (
                                                
-                                                <TableRow key={index}>
-                                                    <TableCell>{index+1}</TableCell>
+                                                <TableRow key={index+1}>
+                                                    <TableCell>{row.avg_rank.toFixed(1)}</TableCell>
                                                     <TableCell>{row.name} <br></br> ({row.position_type} | {row.abbreviation})</TableCell>
                                                     {/* <REPLACE 5 WITH THE ADP THAT YOU ADD TO MODELS*/}
-                                                    {row.avg_rank<row.ecr && 
-                                                    <TableCell>{row.avg_rank.toFixed(1)}  <span style={{color: "red"}}>({(row.avg_rank.toFixed(1)-row.ecr).toFixed(1)})</span></TableCell>}
-                                                    {row.avg_rank>=row.ecr && 
-                                                    <TableCell>{row.avg_rank.toFixed(1)}  <span style={{color: "green"}}>(+{(row.ecr).toFixed(1)-row.avg_rank.toFixed(1)})</span></TableCell>}
+                                                    {(index+1)>row.ecr && 
+                                                    <TableCell>{index+1}  <span style={{color: "red"}}>-({(index-row.ecr+1)})</span></TableCell>}
+                                                    {(index+1)<=row.ecr && 
+                                                    <TableCell>{index+1}  <span style={{color: "green"}}>(+{(row.ecr-index-1)})</span></TableCell>}
                                                 </TableRow>)
                                             )}
                                         </TableBody>
