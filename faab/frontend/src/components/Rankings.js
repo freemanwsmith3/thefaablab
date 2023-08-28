@@ -331,9 +331,9 @@ export default class Rankings extends Component {
                                                     <TableCell>{row.name} <br></br> ({row.position_type} | {row.abbreviation})</TableCell>
                                                     {/* <REPLACE 5 WITH THE ADP THAT YOU ADD TO MODELS*/}
                                                     {row.avg_rank<row.ecr && 
-                                                    <TableCell>{row.avg_rank.toFixed(1)}  <span style={{color: "red"}}>({(row.avg_rank-row.ecr).toFixed(1)})</span></TableCell>}
+                                                    <TableCell>{row.avg_rank.toFixed(1)}  <span style={{color: "red"}}>({(row.avg_rank.toFixed(1)-row.ecr).toFixed(1)})</span></TableCell>}
                                                     {row.avg_rank>=row.ecr && 
-                                                    <TableCell>{row.avg_rank.toFixed(1)}  <span style={{color: "green"}}>(+{(row.avg_rank-row.ecr).toFixed(1)})</span></TableCell>}
+                                                    <TableCell>{row.avg_rank.toFixed(1)}  <span style={{color: "green"}}>(+{(row.avg_rank.toFixed(1)-row.ecr).toFixed(1)})</span></TableCell>}
                                                 </TableRow>)
                                             )}
                                         </TableBody>
