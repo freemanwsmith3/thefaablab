@@ -17,15 +17,21 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
+import { slide as Menu } from 'react-burger-menu'
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { createTheme, ThemeProvider } from '@material-ui/core/styles';
+
 import customtheme from "../style/theme";
 function themeFunction(){
    
 }
 export default class Rankings extends Component {
     
+    showSettings (event) {
+        event.preventDefault();
 
+      }
+    
     constructor(props) {
         super(props);
         this.theme = themeFunction();
@@ -197,15 +203,11 @@ export default class Rankings extends Component {
                 <CssBaseline />
                 <header>
                     <AppBar position="relative">
-                        <Toolbar     sx={{
-                                    fill: 'green',
-                                    pt: 8,
-                                    pb: 6,
-                                }}>
+                        <Toolbar>
                         {/* <SportsFootballOutlinedIcon sx={{ mr: 2 }} /> */}
                         
                         <Typography variant="h3" color="inherit" noWrap>
-                            FAABLab
+                          FAABLab
                         </Typography>
                         {/* <ClickAwayListener onClickAway={this.handleClickAway}>
                             <Box sx={{ position: 'relative' }}>
@@ -240,7 +242,7 @@ export default class Rankings extends Component {
                                     </Typography>
                                     <ul><li>
                                     <Typography component='h5' variant='h5'>
-                                    You just voted for three rankings adjustments for the half ppr season long draft rankings
+                                    You just voted for three rankings adjustments for the half PPR season long draft rankings
                                     </Typography>
                                     </li>
                                     <li>
@@ -377,7 +379,7 @@ export default class Rankings extends Component {
                                         color="text.primary"
                                         gutterBottom
                                         
-                                        ><div >To view the crowdsourced rankings, choose who you'd draft higher (half ppr)</div>
+                                        ><div >To view the crowdsourced rankings, choose who you'd draft higher (half PPR)</div>
                                         </Typography>
                             
                             <Typography align="center">
