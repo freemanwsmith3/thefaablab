@@ -7,10 +7,11 @@ class PlayerRankingSerializer(serializers.ModelSerializer):
     team_name = serializers.SerializerMethodField()
     position_type = serializers.SerializerMethodField()
     avg_rank = serializers.SerializerMethodField()
+    ecr = serializers.SerializerMethodField()
 
     class Meta:
         model = Player
-        fields = ('id', 'name', 'team', 'team_name','abbreviation', 'position_type', 'link', 'image', 'avg_rank')
+        fields = ('id', 'name', 'team', 'team_name','abbreviation', 'position_type', 'link', 'image', 'avg_rank', 'ecr')
     def get_abbreviation(self, obj):
 
         abbreviation = obj.team.abbreviation
@@ -30,6 +31,13 @@ class PlayerRankingSerializer(serializers.ModelSerializer):
         
     def get_avg_rank(self, obj):
         return obj.avg_rank
+    
+    def get_ecr(self, obj):
+        ecr = None
+        if hasattr(obj, 'ecr'):
+            ecr = obj.ecr
+
+        return ecr
     
 class PlayerSerializer(serializers.ModelSerializer):
     class Meta:
