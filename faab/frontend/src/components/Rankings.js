@@ -341,9 +341,11 @@ export default class Rankings extends Component {
                                                     <TableCell>{row.name} <br></br> ({row.position_type} | {row.abbreviation})</TableCell>
                                                     {/* <REPLACE 5 WITH THE ADP THAT YOU ADD TO MODELS*/}
                                                     {(index+1)>row.ecr && 
-                                                    <TableCell>{index+1}  <span style={{color: "red"}}>-({(index-row.ecr+1)})</span></TableCell>}
-                                                    {(index+1)<=row.ecr && 
+                                                    <TableCell>{index+1}  <span style={{color: "red"}}>({(row.ecr-1-index)})</span></TableCell>}
+                                                    {(index+1)<row.ecr && 
                                                     <TableCell>{index+1}  <span style={{color: "green"}}>(+{(row.ecr-index-1)})</span></TableCell>}
+                                                    {(index+1)==row.ecr && 
+                                                    <TableCell>{index+1}  <span style={{color: "gray"}}>(-)</span></TableCell>}
                                                 </TableRow>)
                                             )}
                                         </TableBody>
