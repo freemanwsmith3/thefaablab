@@ -247,7 +247,7 @@ class RankingAPI(APIView):
                 ecr=Min('rankings__rank', filter=Q(rankings__week=week, rankings__user='fantasy_pros'))
             )
             .order_by('avg_rank')
-        )[0:25]
+        )[0:250]
         serializer = PlayerRankingSerializer(players_with_avg_rank_and_ecr, many=True)
         return Response(serializer.data)
 

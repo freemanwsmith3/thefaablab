@@ -1,6 +1,7 @@
 import { createTheme } from "@material-ui/core/styles";
 
 const myTheme = createTheme({
+
   mainheader: {
     paddingTop: '100px;,'
   },
@@ -21,7 +22,9 @@ const myTheme = createTheme({
     },  
 
     MuiTypography: {
-      
+      a: {
+        color: "#EAEAEA",
+      },
       body2: {
         paddingTop: "20px",
         marginTop: "10px",
