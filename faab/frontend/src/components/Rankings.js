@@ -240,12 +240,22 @@ export default class Rankings extends Component {
                                     </Typography>
                                     <ul><li>
                                     <Typography component='h5' variant='h5'>
-                                    You just voted for three rankings adjustments for this weke
+                                    You just voted for three rankings adjustments for the half ppr season long draft rankings
                                     </Typography>
                                     </li>
                                     <li>
                                     <Typography component='h5' variant='h5'>
                                     The rankings you see below is the consensus based off user rankings
+                                    </Typography>
+                                    </li>
+                                    <li>
+                                    <Typography component='h5' variant='h5'>
+                                    You also see the comparison to ADP (Average Draft Position) to show the sentiment of fantasy nerds versus the average of casual players
+                                    </Typography>
+                                    </li>
+                                    <li>
+                                    <Typography component='h5' variant='h5'>
+                                    Each week in the season this will be updated and compared to Expert Consensus Rankings
                                     </Typography>
                                     </li>
                                     {/* <li>
