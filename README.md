@@ -1,6 +1,7 @@
 To do: 
 
 add ADP rankings for comparison 
+maybe add more info on buttons (team/ranking/etc)
 remove console.log
 change colors
 add adverts
