@@ -148,10 +148,12 @@ export default class WRVegas extends Component {
                             
                                         <Typography align="center" component='h5' variant='h5' >
                                         <div>
+                                        <Link href="/" variant="body2">View/Contribute to Crowdsource Rankings</Link>
                                                     <h3>Vegas WR Lines vs. ADP</h3>
                                                     <p>The chart presented offers an in-depth analysis of fantasy football wide receivers. Rankings are determined based on their projected season long fantasy outputs, which have been derived from Las Vegas lines predicting receiving yards and touchdowns for the upcoming season.</p>
                                                     <p>These projections give us a predictive framework to assess a player's potential performance. The chart compares these projections against the average draft position (ADP) for wide receivers in standard fantasy football leagues. This comparative view allows fantasy managers to discern where the general consensus might be underestimating (or overestimating) a player's true value.</p>
                                                     <p>By capitalizing on these market inefficiencies and making well-informed drafting decisions, fantasy football managers can gain a significant edge over their competition, optimizing their roster for success throughout the season.</p>
+                                                    
                                                 </div>
 
                                         </Typography>
