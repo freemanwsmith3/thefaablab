@@ -38,7 +38,11 @@ const myTheme = createTheme({
       },
       h5: {
         marginTop: "20px",
-        backgroundColor: "#C0D6DF",
+        backgroundColor: "#EAEAEA",
+        color: "#4F6D7A"
+      },
+      h6: {
+
         color: "#4F6D7A"
       },
       h7: {
@@ -70,32 +74,39 @@ const myTheme = createTheme({
     MuiPaper: {
       root: {
         backgroundColor: "#EAEAEA",
-
+        // borderStyle: "solid",
+        // borderColor: "#4F6D7A",
       },
+    },
+    MuiGrid: {
+      root: {
+        backgroundColor: "#EAEAEA",
+        borderStyle: "solid",
+        borderColor: "#4F6D7A",
+      }
     },
     MuiCardActions: {
       root: {
         marginTop: "20px",
-        backgroundColor: "#C0D6DF",
+        backgroundColor: "#EAEAEA",
         color: "#4F6D7A"
       }
     },
     MuiCardMedia: {
       root: {
         
-        backgroundColor: "#C0D6DF",
-        // paddingBottom: "50px"
+        backgroundColor: "#EAEAEA",
       },
     },
     MuiCardContent: {
       root: {
-        backgroundColor: "#C0D6DF",
+        backgroundColor: "#EAEAEA",
         color: "#4F6D7A"
       },
     },
     MuiContainer: {
       root: {
-        backgroundColor: "#EAEAEA",
+        // backgroundColor: "#EAEAEA",
         color: "#4F6D7A"
       },
     },

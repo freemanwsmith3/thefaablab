@@ -2,6 +2,7 @@ import React, { Component} from "react";
 import ShowData from "./ShowData";
 import { BrowserRouter as Router, Switch, Route, Link, Redirect } from "react-router-dom";
 import BidPlayer from "./BidPlayer";
+import Ads from "./Ads";
 import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
 import Container from '@material-ui/core/Container';
@@ -12,6 +13,10 @@ import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import { createTheme, ThemeProvider } from '@material-ui/core/styles';
 import customtheme from "../style/theme";
+import Card from '@material-ui/core//Card';
+import CardActions from '@material-ui/core/CardActions';
+import CardContent from '@material-ui/core/CardContent';
+import CardMedia from '@material-ui/core/CardMedia';
 
 function themeFunction(){
 }
@@ -166,7 +171,7 @@ export default class ThisWeek extends Component {
                                         color="text.primary"
                                         gutterBottom
                                         >
-                                        Week: {this.weekNumber}
+                                        Week {this.weekNumber > 15 ? this.weekNumber - 14 : this.weekNumber}
                                         </Typography>
                                         <Typography align="center">
                                             <Button 
@@ -188,14 +193,50 @@ export default class ThisWeek extends Component {
                                     {/* End hero unit */}
                                         <Grid container spacing={4}>
 
-                                            {this.state.visibleTargets.map((visible, index) => {    
-                                                return visible ? ( 
-                                                    <ShowData weekNumber={this.weekNumber} target={this.state.targets[index]} name = {this.state.names[index]} team = {this.state.teams[index]} link = {this.state.links[index]}  image = {this.state.images[index]} position = {this.state.positions[index]} mean_value = {this.state.mean_values[index]} mode_value = {this.state.mode_values[index]} median_value = {this.state.median_values[index]} num_bid = {this.state.num_bids[index]} />
+                                        {this.state.visibleTargets.map((visible, index) => {
+                                            return (
+                                                <React.Fragment key={index}>
+                                                    {index ===2 && 
+                                                <Ads adIndex={index} />}
+                                                {index === 3 && 
+                                                <Ads adIndex={index} />}
+                                                {index === 5 && 
+                                                <Ads adIndex={index} />}
+                                                {index === 7 && 
+                                                <Ads adIndex={index} />}
+                                                {index === 9 && 
+                                                <Ads adIndex={index} />} 
+                                                {index === 10 && 
+                                                <Ads adIndex={index} />}                                                     
+                                                    {visible ? ( 
+                                                        <ShowData 
+                                                            weekNumber={this.weekNumber}
+                                                            target={this.state.targets[index]}
+                                                            name={this.state.names[index]}
+                                                            team={this.state.teams[index]}
+                                                            link={this.state.links[index]}
+                                                            image={this.state.images[index]}
+                                                            position={this.state.positions[index]}
+                                                            mean_value={this.state.mean_values[index]}
+                                                            mode_value={this.state.mode_values[index]}
+                                                            median_value={this.state.median_values[index]}
+                                                            num_bid={this.state.num_bids[index]}
+                                                        />
+                                                    ) : (
+                                                        <BidPlayer 
+                                                            weekNumber={this.weekNumber}
+                                                            target={this.state.targets[index]}
+                                                            name={this.state.names[index]}
+                                                            team={this.state.teams[index]}
+                                                            link={this.state.links[index]}
+                                                            image={this.state.images[index]}
+                                                            position={this.state.positions[index]}
+                                                        />
+                                                    )}
+                                                </React.Fragment>
+                                            );
+                                        })}
 
-                                                    ) :(
-                                                    <BidPlayer weekNumber={this.weekNumber} target={this.state.targets[index]}  name = {this.state.names[index]} team = {this.state.teams[index]}  link = {this.state.links[index]}  image = {this.state.images[index]} position = {this.state.positions[index]}  />
-                                                )
-                                            })}
                                         </Grid>
                                     </Container>        
                                 </Box>      
