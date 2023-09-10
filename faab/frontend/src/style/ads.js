@@ -20,7 +20,16 @@ const myTheme = createTheme({
       
       
     },  
-
+    MuiPaper: {
+      root: {
+        // borderStyle: "solid",
+        // borderColor: "#DD6E42",
+        paddingTop: "20px",
+        marginTop: "10px",
+        backgroundColor: "#EAEAEA",
+        color: "#EAEAEA"
+      }
+    },
     MuiTypography: {
       a: {
         color: "#EAEAEA",
@@ -38,7 +47,7 @@ const myTheme = createTheme({
       },
       h5: {
         marginTop: "20px",
-        backgroundColor: "#C0D6DF",
+        backgroundColor: "#EAEAEA",
         color: "#4F6D7A"
       },
       h7: {
@@ -67,28 +76,16 @@ const myTheme = createTheme({
         color: "#4F6D7A"
       },
     },  
-    MuiPaper: {
-      root: {
-        backgroundColor: "#EAEAEA",
-
-      },
-    },
-    MuiCardActions: {
-      root: {
-        marginTop: "20px",
-        backgroundColor: "#C0D6DF",
-        color: "#4F6D7A"
-      }
-    },
-    MuiCardMedia: {
-      root: {
-        
-        backgroundColor: "#C0D6DF",
-        // paddingBottom: "50px"
-      },
-    },
+    // MuiCardMedia: {
+    //   root: {
+    //     backgroundColor: "#C0D6DF",
+    //     paddingBottom: "50px"
+    //   },
+    // },
     MuiCardContent: {
       root: {
+        borderStyle: "solid",
+        borderColor: "#DD6E42",
         backgroundColor: "#C0D6DF",
         color: "#4F6D7A"
       },
@@ -99,6 +96,13 @@ const myTheme = createTheme({
         color: "#4F6D7A"
       },
     },
+    MuiGrid: {
+        root: {
+          backgroundColor: "#EAEAEA",
+          borderStyle: "solid",
+          borderColor: "#4F6D7A",
+        }
+      },
     MuiButton: {
         root: {
           borderStyle: "solid",

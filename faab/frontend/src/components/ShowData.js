@@ -10,6 +10,10 @@ import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import DetailedHistogram from "./DetailedHistogram";
 import { borders } from '@material-ui/system';
+import { createTheme, ThemeProvider } from '@material-ui/core/styles';
+import customtheme from "../style/bidtheme";
+function themeFunction(){
+}
 
 export default class ShowData extends Component {
     constructor(props) {
@@ -39,7 +43,7 @@ export default class ShowData extends Component {
 
     render() {
         return (
-       
+            <ThemeProvider theme={customtheme}> 
             <Grid  xs={12} sm={6} md={4 } >
                 <Card 
                 sx={{  height: '100%', display: 'flex', flexDirection: 'column'}} 
@@ -79,6 +83,7 @@ export default class ShowData extends Component {
                     </CardActions> */}
                 </Card>
             </Grid> 
+            </ThemeProvider>
         );
       }
     }

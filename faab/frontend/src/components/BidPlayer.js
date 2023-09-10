@@ -10,6 +10,11 @@ import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import Container from '@material-ui/core/Container';
+import { createTheme, ThemeProvider } from '@material-ui/core/styles';
+import customtheme from "../style/bidtheme";
+function themeFunction(){
+}
+
 
 export default class BidPlayer extends Component {
 
@@ -84,7 +89,7 @@ export default class BidPlayer extends Component {
 
         
         return (
-        
+        <ThemeProvider theme={customtheme}> 
         <Grid item key={this.index} xs={12} sm={6} md={4}>
             <Card
             sx={{ height: '100%', display: 'flex', flexDirection: 'column'}} 
@@ -93,7 +98,7 @@ export default class BidPlayer extends Component {
                     component="img"
                     sx={{
                     // 16:9
-                    pt: '56.25%',
+                    pt: '46.25%',
                     }}
                     image={this.image}
                     alt={this.name}
@@ -156,7 +161,8 @@ export default class BidPlayer extends Component {
                     </Container>
                 </CardActions>
             </Card>
-        </Grid> );
+        </Grid> 
+        </ThemeProvider>);
         }
     }
 
