@@ -18,12 +18,12 @@ export default class HomePage extends Component {
     render(){
         return <Router> 
             <Switch>
-                <Route exact path='/' component = {PostSeason} />
+                {/* <Route exact path='/' component = {PostSeason} /> */}
                 {/* This is how to redirect to in season weeks */}
-                {/* <Route exact path="/" render = {() => {
+                <Route exact path="/" render = {() => {
                     return(<Redirect to={`/week/${this.state.week}`}/>
                     );
-                }}/> */}
+                }}/>
                 <Route exact path='/rankings/:weekNumber' component = {Rankings} />
                 <Route exact path='/player' component = {BidPlayer} />
                 <Route exact path='/week/:weekNumber' component = {ThisWeek} />
