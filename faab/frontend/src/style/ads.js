@@ -20,16 +20,7 @@ const myTheme = createTheme({
       
       
     },  
-    MuiPaper: {
-      root: {
-        // borderStyle: "solid",
-        // borderColor: "#DD6E42",
-        paddingTop: "20px",
-        marginTop: "10px",
-        backgroundColor: "#EAEAEA",
-        color: "#EAEAEA"
-      }
-    },
+
     MuiTypography: {
       a: {
         color: "#EAEAEA",
@@ -96,13 +87,6 @@ const myTheme = createTheme({
         color: "#4F6D7A"
       },
     },
-    MuiGrid: {
-        root: {
-          backgroundColor: "#EAEAEA",
-          borderStyle: "solid",
-          borderColor: "#4F6D7A",
-        }
-      },
     MuiButton: {
         root: {
           borderStyle: "solid",
