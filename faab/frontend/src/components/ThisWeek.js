@@ -198,15 +198,11 @@ export default class ThisWeek extends Component {
                                                 <React.Fragment key={index}>
                                                     {index ===2 && 
                                                 <Ads adIndex={index} />}
-                                                {index === 3 && 
-                                                <Ads adIndex={index} />}
                                                 {index === 5 && 
-                                                <Ads adIndex={index} />}
-                                                {index === 7 && 
                                                 <Ads adIndex={index} />}
                                                 {index === 9 && 
                                                 <Ads adIndex={index} />} 
-                                                {index === 10 && 
+                                                {index === 12 && 
                                                 <Ads adIndex={index} />}                                                     
                                                     {visible ? ( 
                                                         <ShowData 
