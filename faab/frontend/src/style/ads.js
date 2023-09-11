@@ -67,12 +67,20 @@ const myTheme = createTheme({
         color: "#4F6D7A"
       },
     },  
-    // MuiCardMedia: {
-    //   root: {
-    //     backgroundColor: "#C0D6DF",
-    //     paddingBottom: "50px"
-    //   },
-    // },
+    MuiPaper: {
+      root: {
+        backgroundColor: "#EAEAEA",
+        // borderStyle: "solid",
+        // borderColor: "#4F6D7A",
+      }
+    },
+    MuiGrid: {
+      root: {
+        paddingTop: "30px",
+        borderStyle: "solid",
+        borderColor: "#4F6D7A",
+      }
+    },
     MuiCardContent: {
       root: {
         borderStyle: "solid",
