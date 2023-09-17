@@ -15,17 +15,20 @@ Including another URLconf
 """
 
 from django.urls import path
-from .views import PlayerView, BidView,GetWeek, TargetsAPI, DataAPI, RankingAPI, VotingAPI, VoteView
+from .views import PlayerView, BidView,GetWeek, TargetsAPI, DataAPI, RankingAPI, VotingAPI, VoteView, WeeklyRankingAPI, WeeklyVotingAPI
 
 
 urlpatterns = [
     path('player', PlayerView.as_view()),
     path('bid', BidView.as_view()), 
     path('vote', VoteView.as_view()), 
+    # path('weekly-vote', WeeklyVoteView.as_view()), 
     path('get-week', GetWeek.as_view() ),
     path('get-targets', TargetsAPI.as_view()),
     path('get-data', DataAPI.as_view()),
+    path('get-weekly-rankings', WeeklyRankingAPI.as_view()),
     path('get-rankings', RankingAPI.as_view()),
+    path('get-weekly-voting', WeeklyVotingAPI.as_view()),
     path('get-voting', VotingAPI.as_view()),
 ]
 

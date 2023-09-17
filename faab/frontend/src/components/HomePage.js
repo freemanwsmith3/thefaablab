@@ -4,6 +4,7 @@ import BidPlayer from "./BidPlayer";
 import ThisWeek from "./ThisWeek";
 import PostSeason from "./PostSeason"
 import Rankings from "./Rankings"
+import WeeklyRankings from "./WeeklyRankings"
 import WRVegas from "./WRVegas"
 
 export default class HomePage extends Component {
@@ -25,6 +26,7 @@ export default class HomePage extends Component {
                     );
                 }}/>
                 <Route exact path='/rankings/:weekNumber' component = {Rankings} />
+                <Route exact path='/weeklyrankings/:weekNumber' component = {WeeklyRankings} />
                 <Route exact path='/player' component = {BidPlayer} />
                 <Route exact path='/week/:weekNumber' component = {ThisWeek} />
                 <Route exact path='/articles/vegas-versus-wr-adp' component = {WRVegas} />
