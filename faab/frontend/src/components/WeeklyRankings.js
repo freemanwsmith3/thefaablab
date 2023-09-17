@@ -69,7 +69,7 @@ export default class WeeklyRankings extends Component {
         .then((data) => {
             console.log(data)
             this.setState({
-
+                loading:false,
                 votingQBs: data.slice(0,3),
                 votingWRS: data.slice(3,6),
                 votingRBs: data.slice(6,9),
@@ -80,23 +80,20 @@ export default class WeeklyRankings extends Component {
                 // num_bids: data.num_bids,
                 // visibleTargets: data.visibleTargets
             });
-            console.log(this.state.votingQBs)
-            console.log(this.state.votingWRS)
-            console.log(this.state.votingRBs)
-            console.log(this.state.votingTEs)
+
         });
         fetch('/api/get-weekly-rankings'+ "?week=" + this.weekNumber)
         .then((response)=> response.json())
         .then((data) => {
             this.setState({
 
-                loading: false,
                 rankingQBs: data.slice(0,25),
                 rankingWRs: data.slice(25,75),
                 rankingRBs: data.slice(125,175),
                 rankingTEs: data.slice(175,20),
-                currentRankings : rankingsQBs,
+                currentRankings : data.slice(0,25)
             });
+            console.log(this.state.currentRankings)
             document.getElementById("qbButton").style.backgroundColor = "#DD6E42";
         });
     }
@@ -107,7 +104,7 @@ export default class WeeklyRankings extends Component {
         document.getElementById("rbButton").style.backgroundColor = "#4F6D7A";
         document.getElementById("teButton").style.backgroundColor = "#4F6D7A";
         this.setState({
-            currentRankings : rankingsQBs,
+            currentRankings : this.state.rankingsQBs,
 
         })
 
@@ -120,7 +117,7 @@ export default class WeeklyRankings extends Component {
         document.getElementById("rbButton").style.backgroundColor = "#4F6D7A";
         document.getElementById("teButton").style.backgroundColor = "#4F6D7A";
         this.setState({
-            currentRankings : rankingsWRs,
+            currentRankings : this.state.rankingsWRs,
 
         })
 
@@ -134,7 +131,7 @@ export default class WeeklyRankings extends Component {
         document.getElementById("qbButton").style.backgroundColor = "#4F6D7A";
         document.getElementById("teButton").style.backgroundColor = "#4F6D7A";
         this.setState({
-            currentRankings : rankingsRBs,
+            currentRankings : this.state.rankingsRBs,
 
 
         })
@@ -148,7 +145,7 @@ export default class WeeklyRankings extends Component {
         document.getElementById("rbButton").style.backgroundColor = "#4F6D7A";
         document.getElementById("qbButton").style.backgroundColor = "#4F6D7A";
         this.setState({
-            currentRankings : rankingsTEs,
+            currentRankings : this.state.rankingsTEs,
 
         })
 
