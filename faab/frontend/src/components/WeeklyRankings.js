@@ -47,7 +47,7 @@ export default class WeeklyRankings extends Component {
             votedWR: false,
             votedRB: false,
             votedTE: false,
-            loading: false,
+            loading: true,
         };
         
         this.weekNumber = this.props.match.params.weekNumber;
