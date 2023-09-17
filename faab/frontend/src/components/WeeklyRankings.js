@@ -91,7 +91,7 @@ export default class WeeklyRankings extends Component {
                 rankingQBs: data.slice(0,25),
                 rankingWRs: data.slice(25,75),
                 rankingRBs: data.slice(125,175),
-                rankingTEs: data.slice(175,20),
+                rankingTEs: data.slice(175,200),
             });
             document.getElementById("qbButton").style.backgroundColor = "#DD6E42";
         });
