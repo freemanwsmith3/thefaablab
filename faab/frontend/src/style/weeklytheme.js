@@ -38,7 +38,6 @@ const myTheme = createTheme({
       },
       h5: {
         marginTop: "20px",
-        backgroundColor: "#C0D6DF",
         color: "#4F6D7A"
       },
       h7: {
@@ -99,11 +98,30 @@ const myTheme = createTheme({
         color: "#4F6D7A"
       },
     },
+    MuiButtonBase: {
+      root: {
+        borderStyle: "solid",
+        borderColor: "#DD6E42",
+        margin: "12px",
+      },
+      contained: {
+        borderStyle: "solid",
+        // borderColor: "#DD6E42",
+        // backgroundColor: "#4F6D7A",
+        color: "#EAEAEA"
+      },
+      containedPrimary: {
+        borderStyle: "solid",
+        borderColor: "#DD6E42",
+        backgroundColor: "#4F6D7A",
+        color: "#EAEAEA"
+      },
+    },
     MuiButton: {
         root: {
           borderStyle: "solid",
           borderColor: "#DD6E42",
-          margin: "20px",
+          margin: "12px",
         },
         contained: {
           borderStyle: "solid",

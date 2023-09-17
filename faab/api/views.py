@@ -303,3 +303,105 @@ class VoteView(APIView):
         except Exception as e:
             print(e)     
             return Response({'Bad Request':'Invalid Rank'}, status=status.HTTP_400_BAD_REQUEST)
+
+class WeeklyRankingAPI(APIView):
+    week_target = 'week'
+
+    def get(self,request, format=None):
+        week_name = request.GET.get(self.week_target).split('?week=')
+
+        week = week_name[0]
+        print(week)
+        qbs = (Player.objects
+                .filter(position_id=3)
+                .annotate(
+                    avg_rank=Avg('rankings__rank', filter=Q(rankings__week=week, position_id = 3)),
+                    ecr=Min('rankings__rank', filter=Q(rankings__week=week, rankings__user='fantasy_pros'))
+                )
+                .order_by('avg_rank')
+        )[0:25]
+        wrs = (Player.objects
+                .filter(position_id=2)
+                .annotate(
+                    avg_rank=Avg('rankings__rank', filter=Q(rankings__week=week, position_id = 2)),
+                    ecr=Min('rankings__rank', filter=Q(rankings__week=week, rankings__user='fantasy_pros'))
+                )
+                .order_by('avg_rank')
+        )[0:50]
+        rbs = (Player.objects
+                .filter(position_id=1)
+                .annotate(
+                    avg_rank=Avg('rankings__rank', filter=Q(rankings__week=week, position_id = 1)),
+                    ecr=Min('rankings__rank', filter=Q(rankings__week=week, rankings__user='fantasy_pros'))
+                )
+                .order_by('avg_rank')
+        )[0:50]
+        tes = (Player.objects
+                .filter(position_id=4)
+                .annotate(
+                    avg_rank=Avg('rankings__rank', filter=Q(rankings__week=week, position_id = 4)),
+                    ecr=Min('rankings__rank', filter=Q(rankings__week=week, rankings__user='fantasy_pros'))
+                )
+                .order_by('avg_rank')
+        )[0:25]
+        players_with_avg_rank_and_ecr = chain( qbs, wrs, rbs, tes)
+        serializer = PlayerRankingSerializer(players_with_avg_rank_and_ecr, many=True)
+        return Response(serializer.data)
+
+class WeeklyVotingAPI(APIView):
+    week_target = 'week'
+    def get(self,request, format=None):
+        week_name = request.GET.get(self.week_target).split('?week=')
+
+        week = week_name[0]
+
+        qb_ran = random.randint(1, 23)
+        rb_tier = random.randint(1, 48)
+        wr_tier = random.randint(1, 48)
+        te_tier = random.randint(1, 23)
+        qbs = (Player.objects.filter(position_id=3)
+                                .annotate(avg_rank=Avg('rankings__rank',  filter=Q(rankings__week=week)))
+                                .order_by('avg_rank'))[qb_ran:qb_ran+3]
+        wrs = (Player.objects.filter(position_id=2)
+                                .annotate(avg_rank=Avg('rankings__rank', filter=Q(rankings__week=week)))
+                                .order_by('avg_rank'))[wr_tier:wr_tier+3]
+        rbs = (Player.objects.filter(position_id=1)
+                                .annotate(avg_rank=Avg('rankings__rank',  filter=Q(rankings__week=week)))
+                                .order_by('avg_rank'))[rb_tier:rb_tier+3]    
+        tes = (Player.objects.filter(position_id=4)
+                                .annotate(avg_rank=Avg('rankings__rank', filter=Q(rankings__week=week)))
+                                .order_by('avg_rank'))[te_tier:te_tier+3]    
+                            
+        voting_players = chain( qbs, wrs, rbs, tes)
+        print(voting_players)
+        serializer = PlayerRankingSerializer(voting_players, many=True)
+        # for player in categories_with_avg_rank:
+        #     print(player)
+        #@sorted_players = sort_queryset_by_ids(players, player_ids)
+        #print(type(sorted_players))
+
+        return Response(serializer.data)
+
+# class WeeklyVoteView(APIView):
+#     serializer_class = RankingSerializer
+#     def post(self, request, format=None):
+
+#         ###############
+#         ##  SESSION KEY HERE
+#         ##############
+#         if not self.request.session.exists(self.request.session.session_key):
+#             self.request.session.create()
+#         print(self.request.session.session_key)
+#         data=request.data
+#         user = self.request.session.session_key 
+#         player = Player.objects.get(id=data['playerid'])
+        
+#         #print(serializer.data)
+#         try:  
+    
+#             ranking = Ranking(user=user,rank=data['rank'], Player=player, week = data['week'])
+#             ranking.save()
+#             return Response(RankingSerializer(ranking).data, status=status.HTTP_201_CREATED)
+#         except Exception as e:
+#             print(e)     
+#             return Response({'Bad Request':'Invalid Rank'}, status=status.HTTP_400_BAD_REQUEST)

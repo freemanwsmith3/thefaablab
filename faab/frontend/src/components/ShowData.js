@@ -12,8 +12,7 @@ import DetailedHistogram from "./DetailedHistogram";
 import { borders } from '@material-ui/system';
 import { createTheme, ThemeProvider } from '@material-ui/core/styles';
 import customtheme from "../style/bidtheme";
-function themeFunction(){
-}
+
 
 export default class ShowData extends Component {
     constructor(props) {

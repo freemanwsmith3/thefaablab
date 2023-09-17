@@ -15,7 +15,7 @@ soup = BeautifulSoup(data, 'html.parser')
 
 ####################
 # change week below
-week = 15
+week = 16
 #############
 print('Classes of each table:')
 
@@ -45,12 +45,16 @@ for i in range(count-1):
     name = res.get('player_name')
     position = res.get('player_position_id')
     team = res.get('player_team_id')
-
+    print(res)
     player_id = None
     team_id = None
     try:         
         curr.execute("""select id from api_player ap where name = %s;""",[res.get('player_name'),] )
         player_id = curr.fetchone()[0]
+        curr.execute("""select id from api_target ap where player_id = %s;""",[player_id,] )
+        # if(curr.fetchone()[0]):
+        #     #this skips if already in there
+        #     print(curr.fetchone())
         curr.execute("""insert into api_target (week, player_id) values (%s, %s);""", [week, player_id,] )
     except Exception as e:
         if position != 'DST' and position != 'K':
@@ -135,14 +139,16 @@ for i in range(count-1):
             if position == "K":
                 pos_id = 6       
 
-
+            
             link  = 'https://www.nfl.com/players/' + slugify(name) + '/'
-            curr.execute("""insert into api_player (name, team_id, position_id, link, image) values (%s, %s, %s, %s, %s);""", [name, team_id, pos_id, link, name] )
-
+            try:
+                curr.execute("""insert into api_player (name, team_id, position_id, link, image) values (%s, %s, %s, %s, %s);""", [name, team_id, pos_id, link, name] )
+            except Exception as e:
+                print(e)
         else:
             print("DEFENSE", name)
         # curr.execute("""insert into api (week, player_id) values (%s, %s);""", [week, player_id] )
-        print(e)
+
 
 
     #curr.execute("""insert into api_target (week, player_id) values (%s, %s);""", [week, player_id,] )
