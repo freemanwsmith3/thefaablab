@@ -42,6 +42,7 @@ export default class WeeklyRankings extends Component {
             rankingWRs: [],
             rankingRBs: [],
             rankingTEs: [],
+            showRankings: 'QB',
             openPop: false,
             votedQB: false,
             votedWR: false,
@@ -91,9 +92,7 @@ export default class WeeklyRankings extends Component {
                 rankingWRs: data.slice(25,75),
                 rankingRBs: data.slice(125,175),
                 rankingTEs: data.slice(175,20),
-                currentRankings : data.slice(0,25)
             });
-            console.log(this.state.currentRankings)
             document.getElementById("qbButton").style.backgroundColor = "#DD6E42";
         });
     }
@@ -103,10 +102,8 @@ export default class WeeklyRankings extends Component {
         document.getElementById("wrButton").style.backgroundColor = "#4F6D7A";
         document.getElementById("rbButton").style.backgroundColor = "#4F6D7A";
         document.getElementById("teButton").style.backgroundColor = "#4F6D7A";
-        this.setState({
-            currentRankings : this.state.rankingsQBs,
+        this.setState({showRankings:'QB'})
 
-        })
 
         //this.reloadPage;
     }
@@ -116,10 +113,8 @@ export default class WeeklyRankings extends Component {
         document.getElementById("qbButton").style.backgroundColor = "#4F6D7A";
         document.getElementById("rbButton").style.backgroundColor = "#4F6D7A";
         document.getElementById("teButton").style.backgroundColor = "#4F6D7A";
-        this.setState({
-            currentRankings : this.state.rankingsWRs,
+        this.setState({showRankings:'WR'})
 
-        })
 
         //this.reloadPage;
     }
@@ -130,11 +125,9 @@ export default class WeeklyRankings extends Component {
         document.getElementById("wrButton").style.backgroundColor = "#4F6D7A";
         document.getElementById("qbButton").style.backgroundColor = "#4F6D7A";
         document.getElementById("teButton").style.backgroundColor = "#4F6D7A";
-        this.setState({
-            currentRankings : this.state.rankingsRBs,
+        this.setState({showRankings:'RB'})
 
 
-        })
 
         //this.reloadPage;
     }
@@ -144,10 +137,8 @@ export default class WeeklyRankings extends Component {
         document.getElementById("wrButton").style.backgroundColor = "#4F6D7A";
         document.getElementById("rbButton").style.backgroundColor = "#4F6D7A";
         document.getElementById("qbButton").style.backgroundColor = "#4F6D7A";
-        this.setState({
-            currentRankings : this.state.rankingsTEs,
+        this.setState({showRankings:'TE'})
 
-        })
 
         //this.reloadPage;
     }
@@ -459,7 +450,9 @@ export default class WeeklyRankings extends Component {
                                                     <TableCell>asdfd</TableCell>
                                                 </TableRow> */}
                                                 
-                                                {this.state.currentRankings.map((row,index) => (
+                                                {
+                                                this.state.showRankings == 'QB' &&
+                                                this.state.rankingQBs.map((row,index) => (
                                                 
                                                     <TableRow key={index+1}>
                                                         <TableCell>{index+1}</TableCell>
@@ -472,7 +465,56 @@ export default class WeeklyRankings extends Component {
                                                         {(index+1)==row.ecr && 
                                                         <TableCell>{row.ecr}  <span style={{color: "gray"}}>(-)</span></TableCell>}
                                                     </TableRow>)
-                                                )}
+                                                ) }
+                                                                                                {
+                                                this.state.showRankings == 'WR' &&
+                                                this.state.rankingWRs.map((row,index) => (
+                                                
+                                                    <TableRow key={index+1}>
+                                                        <TableCell>{index+1}</TableCell>
+                                                        <TableCell>{row.name} <br></br> ({row.position_type} | {row.abbreviation})</TableCell>
+                                                        {/* <REPLACE 5 WITH THE ADP THAT YOU ADD TO MODELS*/}
+                                                        {(index+1)>row.ecr && 
+                                                        <TableCell>{row.ecr}  <span style={{color: "red"}}>({(row.ecr-1-index)})</span></TableCell>}
+                                                        {(index+1)<row.ecr && 
+                                                        <TableCell>{row.ecr}  <span style={{color: "green"}}>(+{(row.ecr-index-1)})</span></TableCell>}
+                                                        {(index+1)==row.ecr && 
+                                                        <TableCell>{row.ecr}  <span style={{color: "gray"}}>(-)</span></TableCell>}
+                                                    </TableRow>)
+                                                ) }
+                                                                                                {
+                                                this.state.showRankings == 'RB' &&
+                                                this.state.rankingRBs.map((row,index) => (
+                                                
+                                                    <TableRow key={index+1}>
+                                                        <TableCell>{index+1}</TableCell>
+                                                        <TableCell>{row.name} <br></br> ({row.position_type} | {row.abbreviation})</TableCell>
+                                                        {/* <REPLACE 5 WITH THE ADP THAT YOU ADD TO MODELS*/}
+                                                        {(index+1)>row.ecr && 
+                                                        <TableCell>{row.ecr}  <span style={{color: "red"}}>({(row.ecr-1-index)})</span></TableCell>}
+                                                        {(index+1)<row.ecr && 
+                                                        <TableCell>{row.ecr}  <span style={{color: "green"}}>(+{(row.ecr-index-1)})</span></TableCell>}
+                                                        {(index+1)==row.ecr && 
+                                                        <TableCell>{row.ecr}  <span style={{color: "gray"}}>(-)</span></TableCell>}
+                                                    </TableRow>)
+                                                ) }
+                                                                                                {
+                                                this.state.showRankings == 'TE' &&
+                                                this.state.rankingTEs.map((row,index) => (
+                                                
+                                                    <TableRow key={index+1}>
+                                                        <TableCell>{index+1}</TableCell>
+                                                        <TableCell>{row.name} <br></br> ({row.position_type} | {row.abbreviation})</TableCell>
+                                                        {/* <REPLACE 5 WITH THE ADP THAT YOU ADD TO MODELS*/}
+                                                        {(index+1)>row.ecr && 
+                                                        <TableCell>{row.ecr}  <span style={{color: "red"}}>({(row.ecr-1-index)})</span></TableCell>}
+                                                        {(index+1)<row.ecr && 
+                                                        <TableCell>{row.ecr}  <span style={{color: "green"}}>(+{(row.ecr-index-1)})</span></TableCell>}
+                                                        {(index+1)==row.ecr && 
+                                                        <TableCell>{row.ecr}  <span style={{color: "gray"}}>(-)</span></TableCell>}
+                                                    </TableRow>)
+                                                ) }
+                                                
                                             </TableBody>
                                             </Table>
                                         </TableContainer>
