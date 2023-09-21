@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
-from django.db.models import Count, Case, When, Avg, Q, IntegerField, Min
+from django.db.models import Count, Case, When, Avg, Q, IntegerField, Min, OuterRef, Subquery
 from rest_framework import generics, status
 from .serializers import *
 from .models import Player, Bid, Target, Ranking
@@ -355,21 +355,29 @@ class WeeklyVotingAPI(APIView):
 
         week = week_name[0]
 
+        opponent_subquery = Ranking.objects.filter(
+            Player_id=OuterRef('id'),
+            week=week,
+            user='fantasy_pros'
+        ).values('opponent__abbreviation')[:1]
+
+
+
         qb_ran = random.randint(1, 23)
         rb_tier = random.randint(1, 48)
         wr_tier = random.randint(1, 48)
         te_tier = random.randint(1, 23)
         qbs = (Player.objects.filter(position_id=3)
-                                .annotate(avg_rank=Avg('rankings__rank',  filter=Q(rankings__week=week)))
+                                .annotate(avg_rank=Avg('rankings__rank',  filter=Q(rankings__week=week)), opp=Subquery(opponent_subquery))
                                 .order_by('avg_rank'))[qb_ran:qb_ran+3]
         wrs = (Player.objects.filter(position_id=2)
-                                .annotate(avg_rank=Avg('rankings__rank', filter=Q(rankings__week=week)))
+                                .annotate(avg_rank=Avg('rankings__rank', filter=Q(rankings__week=week)), opp=Subquery(opponent_subquery))
                                 .order_by('avg_rank'))[wr_tier:wr_tier+3]
         rbs = (Player.objects.filter(position_id=1)
-                                .annotate(avg_rank=Avg('rankings__rank',  filter=Q(rankings__week=week)))
+                                .annotate(avg_rank=Avg('rankings__rank',  filter=Q(rankings__week=week)), opp=Subquery(opponent_subquery))
                                 .order_by('avg_rank'))[rb_tier:rb_tier+3]    
         tes = (Player.objects.filter(position_id=4)
-                                .annotate(avg_rank=Avg('rankings__rank', filter=Q(rankings__week=week)))
+                                .annotate(avg_rank=Avg('rankings__rank', filter=Q(rankings__week=week)), opp=Subquery(opponent_subquery))
                                 .order_by('avg_rank'))[te_tier:te_tier+3]    
                             
         voting_players = chain( qbs, wrs, rbs, tes)

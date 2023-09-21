@@ -556,7 +556,7 @@ export default class WeeklyRankings extends Component {
                                             variant="contained" 
                                             color="primary" 
                                             onClick={() => this.handleVotedTE(index)}>
-                                            <h4><span style={{fontSize: 'large'}}>{row.name}</span> <br></br>{row.position_type} |  {row.abbreviation}</h4>
+                                            <h4><span style={{fontSize: 'large'}}>{row.name}</span> <br></br>{row.position_type} |  {row.abbreviation} <br></br> vs. {row.opp}</h4>
                                             </Button>
                                                 ))}
                                         <Typography
@@ -594,7 +594,7 @@ export default class WeeklyRankings extends Component {
                                             variant="contained" 
                                             color="primary" 
                                             onClick={() => this.handleVotedRB(index)}>
-                                            <h4><span style={{fontSize: 'large'}}>{row.name}</span> <br></br>{row.position_type} |  {row.abbreviation}</h4>
+                                            <h4><span style={{fontSize: 'large'}}>{row.name}</span> <br></br>{row.position_type} |  {row.abbreviation} <br></br> vs. {row.opp}</h4>
                                             </Button>
                                                 ))}
                                         <Typography
@@ -633,7 +633,7 @@ export default class WeeklyRankings extends Component {
                                         variant="contained" 
                                         color="primary" 
                                         onClick={() => this.handleVotedWR(index)}>
-                                        <h4><span style={{fontSize: 'large'}}>{row.name}</span> <br></br>{row.position_type} |  {row.abbreviation}</h4>
+                                        <h4><span style={{fontSize: 'large'}}>{row.name}</span> <br></br>{row.position_type} |  {row.abbreviation} <br></br> vs. {row.opp}</h4>
                                         </Button>
                                                 ))}
                                         <Typography
@@ -673,7 +673,7 @@ export default class WeeklyRankings extends Component {
                                             variant="contained" 
                                             color="primary" 
                                             onClick={() => this.handlevotedQB(index)}>
-                                            <h4><span style={{fontSize: 'large'}}>{row.name}</span> <br></br>{row.position_type} |  {row.abbreviation}</h4>
+                                            <h4><span style={{fontSize: 'large'}}>{row.name}</span> <br></br>{row.position_type} |  {row.abbreviation} <br></br> vs. {row.opp}</h4>
                                             </Button>
                                                 )))}
                                             <Typography
