@@ -80,7 +80,7 @@ for week in range(2, 15):
             weekly_cost = cost + weekly_cost
             
             
-            print(f"Average value for {player_name} starting after week {week} is {average_value:.2f}")
+            print(f"Average value for {player_name} starting after week {week} is {average_value:.2f} at a cost of: {cost}")
         except:
             continue
 

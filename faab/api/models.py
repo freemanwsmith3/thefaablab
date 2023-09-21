@@ -59,5 +59,4 @@ class Ranking(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     week = models.IntegerField(null=False, validators=[MinValueValidator(0), MaxValueValidator(20)])
     user = models.CharField(max_length=50)
-
-
+    opponent = models.ForeignKey(Team,  on_delete=models.CASCADE, related_name="opponents", null=True)

@@ -98,29 +98,32 @@ try:
     ##### SET WEEK
 
 
-    week = 2
+    week = 3
     dfs = []
-    dfs.append((1, pd.read_csv(f'./faab/faab/stats/FantasyPros_2023_Week_{week}_RB_Rankings.csv')))
-    dfs.append((2, pd.read_csv(f'./faab/faab/stats/FantasyPros_2023_Week_{week}_WR_Rankings.csv')))
-    dfs.append((3, pd.read_csv(f'./faab/faab/stats/FantasyPros_2023_Week_{week}_QB_Rankings.csv')))
-    dfs.append((4, pd.read_csv(f'./faab/faab/stats/FantasyPros_2023_Week_{week}_TE_Rankings.csv')))
+    dfs.append((1, pd.read_csv(f'./faab/faab/weekly_rankings/FantasyPros_2023_Week_{week}_RB_Rankings.csv')))
+    dfs.append((2, pd.read_csv(f'./faab/faab/weekly_rankings/FantasyPros_2023_Week_{week}_WR_Rankings.csv')))
+    dfs.append((3, pd.read_csv(f'./faab/faab/weekly_rankings/FantasyPros_2023_Week_{week}_QB_Rankings.csv')))
+    dfs.append((4, pd.read_csv(f'./faab/faab/weekly_rankings/FantasyPros_2023_Week_{week}_TE_Rankings.csv')))
     #dfs.append(pd.read_csv('./faab/faab/stats/FantasyPros_2023_Week_2_QB_Rankings.csv'))
 
     # Create a new column 'in_set' which is True if the player's name is in 'my_set' and False otherwise
     for df_tuple in dfs:
         df = df_tuple[1]
+        print(df)
         pos_id = df_tuple[0]
         for index,row in  df.iterrows():
             if row['PLAYER NAME'] not in players_set:
                 print("===========================")
             
                 name = row['PLAYER NAME']
+
                 position = 3
                 player_id = None
                 team_id = None
 
                 team = row['TEAM']
                 try:
+
 
                     team_id = get_team_id(team)
                     ######################
@@ -142,8 +145,9 @@ try:
                     print("TEAM: ", team_id)
                     print("position_id: ", pos_id)
                     print("LINK: ", link)
+
                     try:
-                        cur.execute("""insert into api_player (name, team_id, position_id, link, image) values (%s, %s, %s, %s, %s);""", [name, team_id, pos_id, link, name] )
+                        cur.execute("""insert into api_player (name, team_id, position_id, link, image,) values (%s, %s, %s, %s, %s);""", [name, team_id, pos_id, link, name] )
                         con.commit()
                     except Exception as e:
                         print(e)
@@ -160,9 +164,17 @@ try:
 
         ranking_to_insert = []
         for index,row in  df.iterrows():
-            insert_tuple = (row["RK"], player_id_dict[row["PLAYER NAME"]], 'fantasy_pros', week, "now")
+            opp = row['OPP']
+            if opp[0] == 'a':
+                opp_abr = opp[3:]
+            elif opp[0] == 'v':
+                opp_abr = opp[4:]
+            else: 
+                opp_abr = 'FA'
+            opponent_id = get_team_id(opp_abr)
+            insert_tuple = (row["RK"], player_id_dict[row["PLAYER NAME"]], 'fantasy_pros', week, "now", opponent_id)
             ranking_to_insert.append(insert_tuple)
-        insert_query = """INSERT INTO api_ranking ("rank", "Player_id", "user", "week", "created_at") VALUES (%s, %s, %s, %s, %s)"""
+        insert_query = """INSERT INTO api_ranking ("rank", "Player_id", "user", "week", "created_at", "opponent_id") VALUES (%s, %s, %s, %s,%s, %s)"""
         cur.executemany(insert_query, ranking_to_insert)
         cur.execute("""delete from api_ranking ar where "rank" <0""")
         con.commit()
