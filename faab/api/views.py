@@ -32,7 +32,7 @@ class GetWeek(APIView):
         week = request.GET.get(self.lookup_url_kwarg)
         if week != None:
             targets = Target.objects.filter(week=week)
-            if 0 <= int(week) < 18:
+            if 0 <= int(week) :
                 data = TargetSerializer(targets, many=True).data
                 #data['is_user'] = self.request.session.session_key == bid.host
 
