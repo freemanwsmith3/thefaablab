@@ -60,7 +60,7 @@ class BidView(APIView):
             target = serializer.data.get('target')
             week = serializer.data.get('week')
             user = self.request.session.session_key
-            if 0 <= value <= 100 and 0 <= week <=17:
+            if 0 <= value <= 100 and 0 <= week:
 
                 ###############
                 ## make a better way to avoid zero bids
