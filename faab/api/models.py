@@ -50,7 +50,7 @@ class Bid(models.Model):
     value = models.IntegerField(null=False, default=0,  validators=[MinValueValidator(0), MaxValueValidator(100)])
     target = models.ForeignKey(Target, on_delete=models.CASCADE, related_name="bids")
     created_at = models.DateTimeField(auto_now_add=True)
-    week = models.IntegerField(null=False, validators=[MinValueValidator(0), MaxValueValidator(17)])
+    week = models.IntegerField(null=False, validators=[MinValueValidator(0), MaxValueValidator(2000)])
     user = models.CharField(max_length=50)
 
 class Ranking(models.Model):
