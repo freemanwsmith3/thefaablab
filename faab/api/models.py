@@ -24,7 +24,7 @@ class Player(models.Model):
 
 class Target(models.Model):
     player = models.ForeignKey(Player,  on_delete=models.CASCADE, related_name="targets")
-    week = models.IntegerField(null=False, validators=[MinValueValidator(0), MaxValueValidator(17)])
+    week = models.IntegerField(null=False, validators=[MinValueValidator(0), MaxValueValidator(2000)])
 
     @property
     def num_valid_bids(self):
@@ -57,6 +57,6 @@ class Ranking(models.Model):
     rank = models.IntegerField(null=False, default=0,  validators=[MinValueValidator(0), MaxValueValidator(200)])
     Player = models.ForeignKey(Player, on_delete=models.CASCADE, related_name="rankings")
     created_at = models.DateTimeField(auto_now_add=True)
-    week = models.IntegerField(null=False, validators=[MinValueValidator(0), MaxValueValidator(20)])
+    week = models.IntegerField(null=False, validators=[MinValueValidator(0), MaxValueValidator(2000)])
     user = models.CharField(max_length=50)
     opponent = models.ForeignKey(Team,  on_delete=models.CASCADE, related_name="opponents", null=True)
