@@ -54,13 +54,13 @@ class BidView(APIView):
         data=request.data
         data['user'] = self.request.session.session_key 
         serializer = self.serializer_class(data=data)
-
+        print(data)
         if serializer.is_valid():
             value = serializer.data.get('value')
             target = serializer.data.get('target')
             week = serializer.data.get('week')
             user = self.request.session.session_key
-            if 0 <= value <= 100 and 0 <= week:
+            if 0 <= value <= 100 :
 
                 ###############
                 ## make a better way to avoid zero bids
@@ -97,6 +97,7 @@ class BidView(APIView):
             else:
                 return Response({'Bad Request':'Invalid Value or Week'}, status=status.HTTP_400_BAD_REQUEST)
         else:
+            print('invalid serializer')
             return Response({'Bad Request':'Invalid Bid'}, status=status.HTTP_400_BAD_REQUEST)
 
 class TargetsAPI(APIView):
