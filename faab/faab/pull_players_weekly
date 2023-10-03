@@ -15,7 +15,7 @@ soup = BeautifulSoup(data, 'html.parser')
 
 ####################
 # change week below
-week = 18
+week = 19
 #############
 print('Classes of each table:')
 
