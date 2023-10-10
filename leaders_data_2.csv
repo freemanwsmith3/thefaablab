@@ -1,0 +1,134 @@
+,Name,G,Attempts,Conversions,Conversion %
+1,Utah,5,66,14,21.21
+2,Michigan State,5,65,15,23.08
+3,Texas A&M,5,64,15,23.44
+4,Marshall,4,59,14,23.73
+5,Memphis,5,63,15,23.81
+6,Georgia,5,69,17,24.64
+7,Ohio,5,62,16,25.81
+8,Penn State,5,65,17,26.15
+9,Texas,5,67,18,26.87
+10,James Madison,5,80,22,27.50
+11,Oklahoma,5,76,21,27.63
+12,West Virginia,5,72,20,27.78
+13,Jacksonville State,6,94,27,28.72
+14,Air Force,5,55,16,29.09
+15,Florida,5,58,17,29.31
+16,Fresno State,5,71,21,29.58
+17,North Carolina State,5,64,19,29.69
+18,Liberty,5,66,20,30.30
+19,Georgia Southern,5,65,20,30.77
+20,Wake Forest,4,58,18,31.03
+21,Oregon State,5,64,20,31.25
+22,Michigan,5,60,19,31.67
+23,California,5,63,20,31.75
+24,Tulane,5,66,21,31.82
+25,Bowling Green,5,47,15,31.91
+26,Tennessee,5,84,27,32.14
+27,Louisiana-Lafayette,5,71,23,32.39
+28,Kansas State,5,74,24,32.43
+29,Army,4,52,17,32.69
+30,Oregon,5,73,24,32.88
+31,Iowa State,5,76,25,32.89
+32,Indiana,5,63,21,33.33
+32,Alabama,5,78,26,33.33
+34,Louisiana Tech,7,107,36,33.64
+35,Iowa,5,86,29,33.72
+36,South Florida,5,74,25,33.78
+37,Louisville,5,68,23,33.82
+37,UNLV,5,68,23,33.82
+39,Northern Illinois,5,67,23,34.33
+40,Auburn,5,66,23,34.85
+41,UTSA,4,63,22,34.92
+42,Clemson,5,77,27,35.06
+43,SMU,5,74,26,35.14
+44,Maryland,5,68,24,35.29
+44,Rutgers,5,68,24,35.29
+46,Cincinnati,5,62,22,35.48
+46,Toledo,5,62,22,35.48
+48,Old Dominion,5,76,27,35.53
+49,Akron,5,73,26,35.62
+50,Florida State,4,56,20,35.71
+50,Ohio State,4,56,20,35.71
+52,Syracuse,5,81,29,35.80
+53,Pittsburgh,5,67,24,35.82
+53,Troy,5,67,24,35.82
+55,Baylor,5,61,22,36.07
+56,BYU,5,69,25,36.23
+57,North Carolina,4,52,19,36.54
+58,Miami (Ohio),5,68,25,36.76
+59,Missouri,5,76,28,36.84
+60,UCLA,4,65,24,36.92
+61,USC,5,78,29,37.18
+62,Miami (Florida),4,56,21,37.50
+62,Southern Mississippi,5,56,21,37.50
+64,Notre Dame,6,92,35,38.04
+65,South Alabama,5,63,24,38.10
+66,Buffalo,5,65,25,38.46
+66,TCU,5,78,30,38.46
+68,Northwestern,5,70,27,38.57
+69,Oklahoma State,5,75,29,38.67
+70,Appalachian State,5,64,25,39.06
+71,Sam Houston State,5,69,27,39.13
+72,Duke,5,74,29,39.19
+73,New Mexico,5,56,22,39.29
+74,Wisconsin,4,61,24,39.34
+75,Arizona,5,71,28,39.44
+76,Eastern Michigan,5,63,25,39.68
+77,Rice,5,73,29,39.73
+78,Florida International,6,83,33,39.76
+79,Washington State,4,55,22,40.00
+79,Arkansas,5,65,26,40.00
+79,Nebraska,6,90,36,40.00
+82,Navy,4,52,21,40.38
+83,Connecticut,5,69,28,40.58
+83,Mississippi State,5,69,28,40.58
+85,Massachusetts,6,59,24,40.68
+86,Arizona State,5,76,31,40.79
+87,Houston,5,66,27,40.91
+88,Ball State,5,61,25,40.98
+88,Western Michigan,5,61,25,40.98
+90,Western Kentucky,6,95,39,41.05
+91,Virginia Tech,5,68,28,41.18
+92,Utah State,5,72,30,41.67
+93,Washington,5,79,33,41.77
+94,Virginia,5,69,29,42.03
+95,Boise State,5,59,25,42.37
+95,Florida Atlantic,4,59,25,42.37
+95,North Texas,4,59,25,42.37
+98,Kentucky,5,73,31,42.47
+99,San Diego State,6,75,32,42.67
+100,Kansas,5,63,27,42.86
+101,Temple,5,67,29,43.28
+102,UCF,5,76,33,43.42
+103,Mississippi,5,78,34,43.59
+104,South Carolina,5,71,31,43.66
+105,Tulsa,5,64,28,43.75
+106,Charlotte,5,66,29,43.94
+107,Texas Tech,5,79,35,44.30
+108,East Carolina,5,65,29,44.62
+109,Colorado,5,67,30,44.78
+109,Georgia Tech,5,67,30,44.78
+111,Boston College,5,58,26,44.83
+112,Central Michigan,5,66,30,45.45
+113,New Mexico State,6,81,37,45.68
+114,Arkansas State,5,72,33,45.83
+115,Colorado State,4,63,29,46.03
+116,Nevada,5,52,24,46.15
+116,Illinois,6,91,42,46.15
+118,Wyoming,5,82,38,46.34
+119,Coastal Carolina,5,71,33,46.48
+120,Purdue,5,73,34,46.58
+121,UTEP,6,77,36,46.75
+122,LSU,5,68,32,47.06
+123,Vanderbilt,6,87,41,47.13
+124,Georgia State,5,79,38,48.10
+124,Hawai'i,6,79,38,48.10
+126,Middle Tennessee,6,93,46,49.46
+127,San Jose State,5,64,32,50.00
+127,Minnesota,5,66,33,50.00
+129,Texas State,5,91,46,50.55
+130,Louisiana-Monroe,4,57,29,50.88
+131,Kent State,5,62,32,51.61
+132,UAB,5,59,32,54.24
+133,Stanford,5,63,35,55.56

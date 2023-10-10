@@ -109,7 +109,7 @@ class TargetsAPI(APIView):
 
 
         ###################
-        current_week = 19
+        current_week = 20
         ########################
 
         if not self.request.session.exists(self.request.session.session_key):

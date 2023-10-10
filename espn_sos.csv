@@ -1,0 +1,267 @@
+GC,CONF,REM SOS,FPI,SOS,AVGWP,SOR,AP/CFP,Team
+,Big Ten,14,1,51,20,3,4,Ohio State Buckeyes
+,Big 12,26,2,84,6,4,12,Oklahoma Sooners
+,SEC,25,3,18,35,16,11,Alabama Crimson Tide
+,Big 12,12,4,17,13,1,3,Texas Longhorns
+,Pac-12,22,5,105,10,13,8,Oregon Ducks
+,Big Ten,16,6,100,8,9,6,Penn State Nittany Lions
+,SEC,35,7,95,21,7,1,Georgia Bulldogs
+,Big Ten,9,8,112,2,18,2,Michigan Wolverines
+,Pac-12,15,9,92,1,5,7,Washington Huskies
+,ACC,60,10,31,43,2,5,Florida State Seminoles
+,FBS Indep.,61,11,10,14,14,10,Notre Dame Fighting Irish
+,Pac-12,1,12,119,4,21,9,USC Trojans
+,SEC,42,13,4,44,8,16,Ole Miss Rebels
+,SEC,34,14,5,48,33,23,LSU Tigers
+,ACC,38,15,104,5,12,17,Miami Hurricanes
+,SEC,4,16,39,18,23,--,Texas A&M Aggies
+,ACC,49,17,21,31,39,--,Clemson Tigers
+,SEC,10,18,96,26,42,22,Tennessee Volunteers
+,Pac-12,33,19,89,24,40,15,Oregon State Beavers
+,ACC,53,20,101,25,10,14,North Carolina Tar Heels
+,ACC,56,21,79,32,38,--,Syracuse Orange
+,Big 12,41,22,73,50,55,--,Kansas State Wildcats
+,ACC,46,23,52,17,27,19,Duke Blue Devils
+,Big Ten,37,24,94,47,43,--,Wisconsin Badgers
+,Big Ten,2,25,121,11,22,--,Maryland Terrapins
+,Pac-12,17,26,58,54,25,18,Utah Utes
+,Big 12,6,27,102,27,66,--,TCU Horned Frogs
+,ACC,45,28,109,30,17,25,Louisville Cardinals
+,Pac-12,54,29,99,37,48,--,UCLA Bruins
+,SEC,7,30,123,7,24,20,Kentucky Wildcats
+,Big 12,36,31,71,33,67,--,UCF Knights
+,SEC,31,32,11,59,41,--,Auburn Tigers
+,Big 12,40,33,43,56,83,--,Texas Tech Red Raiders
+,American,98,34,8,46,58,--,SMU Mustangs
+,SEC,24,35,29,58,93,--,Arkansas Razorbacks
+,SEC,18,36,38,68,44,--,Florida Gators
+,SEC,28,37,106,23,15,21,Missouri Tigers
+,Pac-12,20,38,93,3,6,13,Washington State Cougars
+,Big Ten,68,39,22,52,26,--,Iowa Hawkeyes
+,SEC,55,40,2,93,54,--,South Carolina Gamecocks
+,Big 12,73,41,34,69,82,--,Cincinnati Bearcats
+,Pac-12,19,42,41,70,60,--,California Golden Bears
+,Big 12,39,43,6,64,11,--,West Virginia Mountaineers
+,Big Ten,5,44,42,15,37,--,Rutgers Scarlet Knights
+,Mountain West,100,45,131,12,32,--,Air Force Falcons
+,SEC,52,46,15,97,70,--,Mississippi State Bulldogs
+,American,84,47,82,19,46,--,Tulane Green Wave
+,Mountain West,95,48,117,16,19,24,Fresno State Bulldogs
+,Big Ten,13,49,69,62,63,--,Minnesota Golden Gophers
+,Big 12,47,50,12,90,79,--,Iowa State Cyclones
+,Big 12,48,51,28,40,34,--,Kansas Jayhawks
+,ACC,59,52,65,55,61,--,NC State Wolfpack
+,Big Ten,21,53,68,84,78,--,Purdue Boilermakers
+,Big 12,50,54,88,83,64,--,Oklahoma State Cowboys
+,Pac-12,51,55,66,81,68,--,Arizona Wildcats
+,Big 12,8,56,78,41,35,--,BYU Cougars
+,American,83,57,114,45,49,--,Memphis Tigers
+,ACC,32,58,70,114,115,--,Pittsburgh Panthers
+,Pac-12,64,59,1,112,29,--,Colorado Buffaloes
+,Big Ten,3,60,53,89,86,--,Michigan State Spartans
+,Sun Belt,77,61,130,51,31,--,Marshall Thundering Herd
+,Mountain West,82,62,32,79,84,--,Boise State Broncos
+,Big 12,44,63,74,98,91,--,Houston Cougars
+,Big 12,63,64,25,103,77,--,Baylor Bears
+,Sun Belt,89,65,85,22,45,--,Georgia Southern Eagles
+,CUSA,117,66,133,9,36,--,Liberty Flames
+,ACC,27,67,37,74,90,--,Georgia Tech Yellow Jackets
+,Big Ten,72,68,47,76,75,--,Nebraska Cornhuskers
+,ACC,11,69,132,65,72,--,Wake Forest Demon Deacons
+,MAC,118,70,128,34,62,--,Toledo Rockets
+,ACC,57,71,97,88,92,--,Virginia Tech Hokies
+,Big Ten,67,72,19,128,71,--,Northwestern Wildcats
+,Big Ten,70,73,36,119,96,--,Illinois Fighting Illini
+,Sun Belt,105,74,77,85,101,--,Coastal Carolina Chanticleers
+,Sun Belt,108,75,76,73,73,--,Troy Trojans
+,Sun Belt,99,76,118,28,20,--,James Madison Dukes
+,MAC,120,77,55,61,30,--,Miami (OH) RedHawks
+,Sun Belt,103,78,75,77,74,--,Appalachian State Mountaineers
+,American,97,79,63,122,97,--,UTSA Roadrunners
+,Mountain West,80,80,23,63,28,--,Wyoming Cowboys
+,Big Ten,23,81,7,108,85,--,Indiana Hoosiers
+,FBS Indep.,69,82,83,42,80,--,Army Black Knights
+,CUSA,121,83,14,53,59,--,Western Kentucky Hilltoppers
+,Sun Belt,109,84,98,91,98,--,South Alabama Jaguars
+,Sun Belt,104,85,120,38,51,--,Texas State Bobcats
+,Sun Belt,112,86,115,49,87,--,Louisiana Ragin' Cajuns
+,MAC,128,87,122,36,52,--,Ohio Bobcats
+,Sun Belt,71,88,125,29,53,--,Georgia State Panthers
+,American,86,89,30,60,65,--,Rice Owls
+,Mountain West,81,90,40,39,47,--,UNLV Rebels
+,American,107,91,54,57,69,--,South Florida Bulls
+,Mountain West,111,92,91,120,100,--,Utah State Aggies
+,ACC,65,93,57,113,94,--,Boston College Eagles
+,American,88,94,35,106,122,--,East Carolina Pirates
+,Mountain West,106,95,26,104,111,--,San José State Spartans
+,CUSA,101,96,126,67,57,--,Jacksonville State Gamecocks
+,Pac-12,29,97,56,107,110,--,Arizona State Sun Devils
+,ACC,58,98,46,109,130,--,Virginia Cavaliers
+,American,115,99,27,118,118,--,UAB Blazers
+,American,76,100,3,87,50,--,Tulsa Golden Hurricane
+,American,96,101,64,102,106,--,Florida Atlantic Owls
+,SEC,30,102,87,100,113,--,Vanderbilt Commodores
+,MAC,123,103,45,101,56,--,Central Michigan Chippewas
+,Pac-12,43,104,9,94,107,--,Stanford Cardinal
+,MAC,125,105,33,115,89,--,Bowling Green Falcons
+,MAC,133,106,110,116,123,--,Northern Illinois Huskies
+,American,110,107,49,123,116,--,Charlotte 49ers
+,Mountain West,116,108,50,105,103,--,San Diego State Aztecs
+,CUSA,79,109,124,66,114,--,New Mexico State Aggies
+,Mountain West,90,110,116,78,88,--,Colorado State Rams
+,CUSA,122,111,90,111,120,--,Louisiana Tech Bulldogs
+,American,78,112,60,95,117,--,Navy Midshipmen
+,Sun Belt,91,113,24,72,76,--,Arkansas State Red Wolves
+,CUSA,132,114,81,121,130,--,Sam Houston Bearkats
+,CUSA,127,115,13,110,126,--,Middle Tennessee Blue Raiders
+,MAC,102,116,62,86,95,--,Western Michigan Broncos
+,Mountain West,94,117,61,99,105,--,New Mexico Lobos
+,Sun Belt,85,118,111,75,104,--,Old Dominion Monarchs
+,MAC,113,119,80,126,124,--,Buffalo Bulls
+,Sun Belt,87,120,48,124,125,--,Southern Miss Golden Eagles
+,Mountain West,114,121,16,133,112,--,Hawai'i Rainbow Warriors
+,American,75,122,129,71,99,--,North Texas Mean Green
+,Sun Belt,66,123,67,82,81,--,UL Monroe Warhawks
+,MAC,124,124,20,132,121,--,Ball State Cardinals
+,American,93,125,72,117,102,--,Temple Owls
+,MAC,129,126,113,92,109,--,Eastern Michigan Eagles
+,FBS Indep.,74,127,107,129,130,--,UConn Huskies
+,MAC,119,128,103,96,127,--,Akron Zips
+,CUSA,131,129,108,125,128,--,UTEP Miners
+,Mountain West,126,130,44,131,130,--,Nevada Wolf Pack
+,FBS Indep.,62,131,86,130,129,--,Massachusetts Minutemen
+,MAC,130,132,59,127,119,--,Kent State Golden Flashes
+,CUSA,92,133,127,80,108,--,Florida International Panthers
+9,,,,,,,,
+2,,,,,,,,
+18,,,,,,,,
+4,,,,,,,,
+12,,,,,,,,
+8,,,,,,,,
+24,,,,,,,,
+3,,,,,,,,
+1,,,,,,,,
+16,,,,,,,,
+7,,,,,,,,
+6,,,,,,,,
+21,,,,,,,,
+15,,,,,,,,
+10,,,,,,,,
+11,,,,,,,,
+13,,,,,,,,
+25,,,,,,,,
+23,,,,,,,,
+19,,,,,,,,
+43,,,,,,,,
+49,,,,,,,,
+17,,,,,,,,
+39,,,,,,,,
+22,,,,,,,,
+36,,,,,,,,
+33,,,,,,,,
+42,,,,,,,,
+44,,,,,,,,
+20,,,,,,,,
+34,,,,,,,,
+31,,,,,,,,
+45,,,,,,,,
+32,,,,,,,,
+48,,,,,,,,
+50,,,,,,,,
+30,,,,,,,,
+5,,,,,,,,
+37,,,,,,,,
+51,,,,,,,,
+52,,,,,,,,
+66,,,,,,,,
+35,,,,,,,,
+14,,,,,,,,
+38,,,,,,,,
+74,,,,,,,,
+27,,,,,,,,
+28,,,,,,,,
+56,,,,,,,,
+79,,,,,,,,
+46,,,,,,,,
+59,,,,,,,,
+77,,,,,,,,
+90,,,,,,,,
+87,,,,,,,,
+47,,,,,,,,
+76,,,,,,,,
+109,,,,,,,,
+68,,,,,,,,
+82,,,,,,,,
+88,,,,,,,,
+60,,,,,,,,
+99,,,,,,,,
+91,,,,,,,,
+26,,,,,,,,
+29,,,,,,,,
+54,,,,,,,,
+67,,,,,,,,
+103,,,,,,,,
+85,,,,,,,,
+92,,,,,,,,
+104,,,,,,,,
+119,,,,,,,,
+93,,,,,,,,
+70,,,,,,,,
+41,,,,,,,,
+53,,,,,,,,
+75,,,,,,,,
+101,,,,,,,,
+63,,,,,,,,
+89,,,,,,,,
+40,,,,,,,,
+58,,,,,,,,
+97,,,,,,,,
+65,,,,,,,,
+69,,,,,,,,
+64,,,,,,,,
+55,,,,,,,,
+61,,,,,,,,
+57,,,,,,,,
+62,,,,,,,,
+123,,,,,,,,
+110,,,,,,,,
+100,,,,,,,,
+83,,,,,,,,
+118,,,,,,,,
+98,,,,,,,,
+80,,,,,,,,
+111,,,,,,,,
+72,,,,,,,,
+86,,,,,,,,
+120,,,,,,,,
+95,,,,,,,,
+71,,,,,,,,
+108,,,,,,,,
+124,,,,,,,,
+106,,,,,,,,
+105,,,,,,,,
+115,,,,,,,,
+94,,,,,,,,
+129,,,,,,,,
+81,,,,,,,,
+84,,,,,,,,
+116,,,,,,,,
+112,,,,,,,,
+73,,,,,,,,
+107,,,,,,,,
+96,,,,,,,,
+127,,,,,,,,
+128,,,,,,,,
+132,,,,,,,,
+102,,,,,,,,
+78,,,,,,,,
+125,,,,,,,,
+122,,,,,,,,
+117,,,,,,,,
+130,,,,,,,,
+113,,,,,,,,
+131,,,,,,,,
+121,,,,,,,,
+133,,,,,,,,
+114,,,,,,,,
+126,,,,,,,,
