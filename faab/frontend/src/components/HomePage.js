@@ -12,7 +12,7 @@ export default class HomePage extends Component {
         super(props);
         this.state= {
             // This is where you set which week it is in season, use the README for more info
-            week: 23,
+            week: 24,
         };
     }
 
