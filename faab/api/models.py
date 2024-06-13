@@ -46,9 +46,16 @@ class Target(models.Model):
         return Bid.objects.filter(target = self.id, value__range = [1, 100]).values("value").annotate(count=Count('value')).order_by("-count")[0]['value']
 
 
-class Bid(models.Model):
+class BidOriginal(models.Model):
     value = models.IntegerField(null=False, default=0,  validators=[MinValueValidator(0), MaxValueValidator(100)])
     target = models.ForeignKey(Target, on_delete=models.CASCADE, related_name="bids")
+    created_at = models.DateTimeField(auto_now_add=True)
+    week = models.IntegerField(null=False, validators=[MinValueValidator(0), MaxValueValidator(2000)])
+    user = models.CharField(max_length=50)
+
+class Bid(models.Model):
+    value = models.IntegerField(null=False, default=0,  validators=[MinValueValidator(0), MaxValueValidator(100)])
+    player = models.ForeignKey(Player, on_delete=models.CASCADE, related_name="bids")
     created_at = models.DateTimeField(auto_now_add=True)
     week = models.IntegerField(null=False, validators=[MinValueValidator(0), MaxValueValidator(2000)])
     user = models.CharField(max_length=50)

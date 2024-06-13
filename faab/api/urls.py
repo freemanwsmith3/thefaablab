@@ -15,7 +15,7 @@ Including another URLconf
 """
 
 from django.urls import path
-from .views import PlayerView, BidView,GetWeek, TargetsAPI, DataAPI, RankingAPI, VotingAPI, VoteView, WeeklyRankingAPI, WeeklyVotingAPI
+from .views import PlayerView, BidView,GetWeek, TargetsAPI, RankingAPI, VotingAPI, VoteView, WeeklyRankingAPI, WeeklyVotingAPI
 
 
 urlpatterns = [
@@ -25,7 +25,7 @@ urlpatterns = [
     # path('weekly-vote', WeeklyVoteView.as_view()), 
     path('get-week', GetWeek.as_view() ),
     path('get-targets', TargetsAPI.as_view()),
-    path('get-data', DataAPI.as_view()),
+    # path('get-data', DataAPI.as_view()),
     path('get-weekly-rankings', WeeklyRankingAPI.as_view()),
     path('get-rankings', RankingAPI.as_view()),
     path('get-weekly-voting', WeeklyVotingAPI.as_view()),
