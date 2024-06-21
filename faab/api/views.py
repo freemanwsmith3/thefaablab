@@ -3,12 +3,18 @@ from django.http import HttpResponse, JsonResponse
 from django.db.models import Count, Case, When, Avg, Q, IntegerField, Min, OuterRef, Subquery
 from rest_framework import generics, status
 from .serializers import *
-from .models import Player, Bid, Target, Ranking
+from .models import *
 from rest_framework.views import APIView
 from rest_framework.response import Response
 import random
 from itertools import chain
 from scipy import stats
+from django.contrib.sessions.backends.db import SessionStore  # 
+from rest_framework.response import Response
+from rest_framework import status
+from collections import defaultdict
+import numpy as np
+from statistics import mean, median, mode
 
 def sort_queryset_by_ids(queryset, ids):
     # Prepare the ordering using the Case/When expressions
@@ -27,14 +33,15 @@ class GetWeek(APIView):
 
 
     def get(self, request, format=None):
-        if not self.request.session.exists(self.request.session.session_key):
-            self.request.session.create()
+        if not request.session.exists(request.session.session_key):
+            request.session.create()
         week = request.GET.get(self.lookup_url_kwarg)
         if week != None:
+            print('targets')
             targets = Target.objects.filter(week=week)
             if 0 <= int(week) :
                 data = TargetSerializer(targets, many=True).data
-                #data['is_user'] = self.request.session.session_key == bid.host
+                #data['is_user'] = request.session.session_key == bid.host
 
 
                 return Response(data, status=status.HTTP_200_OK)
@@ -45,53 +52,56 @@ class BidView(APIView):
     serializer_class = BidSerializer
 
     def post(self, request, format=None):
-
+        # print(request.session.session_key)
+        # print(';;;;;;;;;;;')
         ###############
         ##  SESSION KEY HERE
         ##############
-        if not self.request.session.exists(self.request.session.session_key):
-            self.request.session.create()
+        # if not request.session.exists(request.session.session_key):
+        #     print('creating session')
+        #     request.session.create()
+
         data=request.data
-        data['user'] = self.request.session.session_key 
-        serializer = self.serializer_class(data=data)
-        print(data)
+        data['user'] = 'none'
+        serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
             value = serializer.data.get('value')
-            target = serializer.data.get('target')
+            player = serializer.data.get('player')
             week = serializer.data.get('week')
-            user = self.request.session.session_key
+            user = 'none'
             if 0 <= value <= 100 :
 
                 ###############
                 ## make a better way to avoid zero bids
                 ############
-                bid = Bid(user=user, value = value, week = week, target = Target.objects.get(id = target))
+                bid = Bid(user=user, value = value, week = week, player = Player.objects.get(id = player))
                 bid.save()
 
 
-                try:
-
-                    this_week_vis_dict = self.request.session.get('visible_targets')
-                    #print("OLD DICTK", this_week_vis_dict)
-                    this_week_vis_list = this_week_vis_dict[str(week)]
-                    this_week_vis_list.append(target)
-                    this_week_vis_dict[str(week)] = this_week_vis_list
-                    self.request.session['visible_targets'] = this_week_vis_dict
-                    #print("NEW_DICT", self.request.session['visible_targets'][str(week)])
-                except Exception as e:
-                    print("No Session Key", e)
-
+                # try:
+                #     # print(request.session.session_key)
+                #     this_week_vis_dict = request.session.get('visible_targets')
+                #     # print("OLD DICTK", this_week_vis_dict)
+                #     this_week_vis_list = this_week_vis_dict[str(week)]
+                #     this_week_vis_list.append(player)
+                #     this_week_vis_dict[str(week)] = this_week_vis_list
+                #     request.session['visible_targets'] = this_week_vis_dict
+                #     #print("NEW_DICT", request.session['visible_targets'][str(week)])
+                # except KeyError as e:
+                #     print("No Session Key", e)
+                # except Exception as e:
+                #     print("No Session Key", e)
                 # targets_dict = {}
                 # weekly_bids = []
 
-                # if str(week) not in self.request.session.get('visible_targets'):
-                #     self.request.session.get('visible_targets')[str(week)] = weekly_bids
+                # if str(week) not in request.session.get('visible_targets'):
+                #     request.session.get('visible_targets')[str(week)] = weekly_bids
                 #     print(weekly_bids)
                         
                 # if target not in weekly_bids:
                 #     weekly_bids.append(target)
                 # targets_dict[str(week)] = weekly_bids
-                # self.request.session['visible_targets']= targets_dict
+                # request.session['visible_targets']= targets_dict
 
                 return Response(BidSerializer(bid).data, status=status.HTTP_201_CREATED)
             else:
@@ -99,141 +109,204 @@ class BidView(APIView):
         else:
             print('invalid serializer')
             return Response({'Bad Request':'Invalid Bid'}, status=status.HTTP_400_BAD_REQUEST)
-
+        
 class TargetsAPI(APIView):
-
-    week = 'week'
-
-    def get(self,request,format=None):
-        week = request.GET.get(self.week)
-
-
-        ###################
-        current_week = 26
-        ########################
-
-        if not self.request.session.exists(self.request.session.session_key):
-            self.request.session.create()
-            
-        vis_targs_bool = []
-        
+    def get(self, request, format=None):
+        week = request.query_params.get('week')
         targets = Target.objects.filter(week=week)
-        targets = sorted(targets, key=lambda t: t.num_valid_bids, reverse=True)
-        if not self.request.session.get('visible_targets') or str(week) not in self.request.session.get('visible_targets'):
-            target_dict = {}
-            target_dict[str(week)] = []
-            self.request.session['visible_targets'] = target_dict
-            
+        players = Player.objects.filter(targets__in=targets).distinct()
+        serializer = PlayerSerializer(players, many=True)
+        return Response({
+            'players': serializer.data
+        }, status=status.HTTP_200_OK)
 
-        names = []
-        teams = []
-        links = []
-        images = []
-        positions = []
-        mean_values = []
-        mode_values = []
-        median_values = []
-        num_bids = []
-        target_ids = []
-        vis_targs_bool = []
-        
-        for d in targets:
+### this is the old version with sessions and before i split it into two: 
+# class TargetsAPI(APIView):
 
-            if d.id in self.request.session.get('visible_targets')[str(week)] or current_week > int(week):
-                vis_targs_bool.append(True)
 
+#     def get(self, request, format=None):
+
+#         week = request.query_params.get('week')
+#         print(week)
+
+#         # if not request.session.exists(request.session.session_key):
+#         #     request.session.create()
+#         #     print('Creating session')
+#         # else:
+#         #     print('Session exists:', request.session.session_key)
+
+
+#         targets = Target.objects.filter(week=week)
+
+
+#         # Step 2: Initialize the dictionary to store bids by target ID
+#         binned_data_dict = defaultdict(list)
+#         stats_dict = {}
+#         # Step 3: For each target, retrieve the associated bids by matching the week and player
+#         for target in targets:
+#             player_id = target.player.id
+#             target_bids = Bid.objects.filter(week=week, player=target.player)
+#             bid_values = list(target_bids.values_list('value', flat=True))
+
+#             # Step 4: Bin the bid values into 5 bins and format the data
+#             if bid_values:
+#                 average_bid = round(mean(bid_values), 1)
+#                 median_bid = round(median(bid_values), 1)
+#                 try:
+#                     most_common_bid = mode(bid_values)
+#                 except:
+#                     most_common_bid = None  # Handle the case where there is no single mode
+#                 number_of_bids = len(bid_values)
+#                 bins = np.linspace(min(bid_values), max(bid_values), 5)  # Create 5 equal bins
+#                 binned_data, _ = np.histogram(bid_values, bins=bins)
+#                 bins = np.round(bins).astype(int)  # Round bins to integers
+#                 for i in range(len(binned_data)):
+#                     bin_key = f'{bins[i]} - {bins[i+1]}'
+#                     binned_data_dict[str(player_id)].append({
+#                         'label': bin_key,
+#                         'bids': int(binned_data[i])
+#                     })
+#             else:
+#                 # Default values when there are no bids
+#                 average_bid = 'NA'
+#                 median_bid = 'NA'
+#                 most_common_bid = 'NA'
+#                 number_of_bids = """You're the 1st bid"""
+#                 binned_data = {}
+#             stats_dict[str(player_id)] = {
+#                 'averageBid': average_bid,
+#                 'medianBid': median_bid,
+#                 'mostCommonBid': most_common_bid,
+#                 'numberOfBids': number_of_bids
+#             }
+#         # targets = sorted(targets, key=lambda t: t.num_valid_bids, reverse=True)
+#         # Handle session visible_targets
+#         # if not request.session.get('visible_targets'):
+#         #     print('visible_targets key not found in session')
+#         #     request.session['visible_targets'] = {}
+
+#         # if str(week) not in request.session['visible_targets']:
+#         #     print(f'Week {week} not in visible_targets')
+#         #     request.session['visible_targets'][str(week)] = []
+
+#         # print('visible_targets:', request.session['visible_targets'])
+
+#         # # Save session explicitly
+#         # request.session.modified = True
+#         # request.session.save()
+#         # print('Session data saved:', request.session.items())
+#         # print('Session:', request.session)
+
+#         targets = Target.objects.filter(week=week)
+
+#         # Serialize the Player data with related Targets and Bids
+#         players = Player.objects.filter(targets__in=targets).distinct()
+#         serializer = PlayerSerializer(players, many=True)
+#         # print(request.session.items())
+#         # print(request.session.session_key)
+#         return Response({
+#             'players': serializer.data,
+#             'binned_data': dict(binned_data_dict),
+#             'stats': stats_dict
+#         }, status=status.HTTP_200_OK)
+
+class StatsAPI(APIView):
+
+    def get(self, request, format=None):
+        week = request.query_params.get('week')
+        targets = Target.objects.filter(week=week)
+
+        binned_data_dict = defaultdict(list)
+        stats_dict = {}
+
+        for target in targets:
+            player_id = target.player.id
+            target_bids = Bid.objects.filter(week=week, player=target.player)
+            bid_values = list(target_bids.values_list('value', flat=True))
+
+            if bid_values:
+                average_bid = round(mean(bid_values), 1)
+                median_bid = round(median(bid_values), 1)
+                try:
+                    most_common_bid = mode(bid_values)
+                except:
+                    most_common_bid = None
+                number_of_bids = len(bid_values)
+                bins = np.linspace(min(bid_values), max(bid_values), 5)
+                binned_data, _ = np.histogram(bid_values, bins=bins)
+                bins = np.round(bins).astype(int)
+                for i in range(len(binned_data)):
+                    bin_key = f'{bins[i]} - {bins[i+1]}'
+                    binned_data_dict[str(player_id)].append({
+                        'label': bin_key,
+                        'bids': int(binned_data[i])
+                    })
             else:
-                vis_targs_bool.append(False)
+                average_bid = 'NA'
+                median_bid = 'NA'
+                most_common_bid = 'NA'
+                number_of_bids = """You're the 1st bid"""
+                binned_data = {}
+            stats_dict[str(player_id)] = {
+                'averageBid': average_bid,
+                'medianBid': median_bid,
+                'mostCommonBid': most_common_bid,
+                'numberOfBids': number_of_bids
+            }
 
-            names.append(d.player.name)
-            teams.append(d.player.team.team_name)
-            links.append(d.player.link)
-            images.append(d.player.image)
-            positions.append(d.player.position.position_type)
-            target_ids.append(d.id)
-            num_bids.append(d.num_valid_bids)
-            try:
-                mean_values.append(round(d.mean_value, 2))
-            except:
-                mean_values.append(0)
-            
-            try:
-                median_values.append(round(d.median_value, 2))
-            except:
-                median_values.append(0)
-            try:
-                mode_values.append(round(d.mode_value, 2))
-            except:
-                mode_values.append(0)                
+        return Response({
+            'binned_data': dict(binned_data_dict),
+            'stats': stats_dict
+        }, status=status.HTTP_200_OK)
 
-
-
-            #bids = Bid.objects.filter(target = d.id, value__range = [1, 100]).values_list('value', flat=True)
+# class DataAPI(APIView):
+#     #week_target = 'week'
+#     def get(self,request,format=None):
+#         week = request.query_params.get('week')
+#         # target_id = request.query_params.get('target')
+    
 
 
+#         # week = week_name[0]
+#         # target_id = week_name[1]
+#         flat_vals = list(Bid.objects.filter(week=week, target_id=target_id, value__range = [1, 100]).order_by('value').values_list('value', flat=True))
 
-        data = {
-            'visibleTargets': vis_targs_bool,
-            'names': names,
-            'teams': teams,
-            'links' : links,
-            'images': images,
-            'targets': target_ids,
-            'positions': positions,
-            'mean_values' : mean_values,
-            'mode_values' : mode_values,
-            'median_values' : median_values,
-            'num_bids': num_bids,
-        }
+
+#         if flat_vals:
+#             low_range = flat_vals[int(len(flat_vals)*.1)]
+#             high_range = flat_vals[int(len(flat_vals)*.9)]
+
+
+#         ###############################
+#         ######## Be careful of weird random bins 
+#         ##############################
+#         bins_array = []
+#         bins_array.append(Bid.objects.filter(week=week, target_id=target_id, value__range = [low_range,  round((1)*(high_range- low_range)/6 +  low_range)]).count())
+#         bins_array.append(Bid.objects.filter(week=week, target_id=target_id, value__range = [ round((1)*(high_range- low_range)/6 +  low_range), round((2)*(high_range- low_range)/6 +  low_range)]).count())
+#         bins_array.append(Bid.objects.filter(week=week, target_id=target_id, value__range = [ round((2)*(high_range- low_range)/6 +  low_range), round((3)*(high_range- low_range)/6 +  low_range)]).count())
+#         bins_array.append(Bid.objects.filter(week=week, target_id=target_id, value__range =[ round((3)*(high_range- low_range)/6 +  low_range), round((4)*(high_range- low_range)/6 +  low_range)]).count())
+#         bins_array.append(Bid.objects.filter(week=week, target_id=target_id, value__range =[ round((4)*(high_range- low_range)/6 +  low_range), round((5)*(high_range- low_range)/6 +  low_range)]).count())
+#         bins_array.append(Bid.objects.filter(week=week, target_id=target_id, value__range = [ round((5)*(high_range- low_range)/6 +  low_range), high_range]).count())
         
+#         bin_dict_array = []
+#         for bin_data in bins_array:
+#             bin_dict = {}
+#             bin_dict['bin'] = bin_data
+#             bin_dict_array.append(bin_dict)
         
-        return JsonResponse(data, status=status.HTTP_200_OK)
 
-class DataAPI(APIView):
-    week_target = 'week'
-    def get(self,request,format=None):
-        
+#         print(bin_dict_array)
+#         data = {
+#             'bins': bin_dict_array,
+#             "first_name": str(low_range) + '-' + str(round((1)*(high_range- low_range)/6 +low_range)),
+#             "second_name": str(round((1)*(high_range- low_range)/6 +low_range)) + '-' + str(round((2)*(high_range- low_range)/6 +low_range)),
+#             "third_name": str(round((2)*(high_range- low_range)/6 +low_range)) + '-' + str(round((3)*(high_range- low_range)/6 +low_range)),
+#             "fourth_name": str(round((3)*(high_range- low_range)/6 +low_range)) + '-' + str(round((4)*(high_range- low_range)/6 +low_range)),
+#             "fifth_name": str(round((4)*(high_range- low_range)/6 +low_range)) + '-' + str(round((5)*(high_range- low_range)/6 +low_range)),
+#             "sixth_name": str(round((5)*(high_range- low_range)/6 +low_range)) + '-' + str(high_range),
 
-        week_name = request.GET.get(self.week_target).split('?target=')
-
-        week = week_name[0]
-        target_id = week_name[1]
-        flat_vals = list(Bid.objects.filter(week=week, target_id=target_id, value__range = [1, 100]).order_by('value').values_list('value', flat=True))
-
-
-        if flat_vals:
-            low_range = flat_vals[int(len(flat_vals)*.1)]
-            high_range = flat_vals[int(len(flat_vals)*.9)]
-
-
-        ###############################ge
-        ######## Be careful of weird random bins 
-        ##############################
-
-        first_bin = Bid.objects.filter(week=week, target_id=target_id, value__range = [low_range,  round((1)*(high_range- low_range)/6 +  low_range)]).count()
-        second_bin = Bid.objects.filter(week=week, target_id=target_id, value__range = [ round((1)*(high_range- low_range)/6 +  low_range), round((2)*(high_range- low_range)/6 +  low_range)]).count()
-        third_bin = Bid.objects.filter(week=week, target_id=target_id, value__range = [ round((2)*(high_range- low_range)/6 +  low_range), round((3)*(high_range- low_range)/6 +  low_range)]).count()
-        fourth_bin = Bid.objects.filter(week=week, target_id=target_id, value__range =[ round((3)*(high_range- low_range)/6 +  low_range), round((4)*(high_range- low_range)/6 +  low_range)]).count()
-        fifth_bin = Bid.objects.filter(week=week, target_id=target_id, value__range =[ round((4)*(high_range- low_range)/6 +  low_range), round((5)*(high_range- low_range)/6 +  low_range)]).count()
-        sixth_bin= Bid.objects.filter(week=week, target_id=target_id, value__range = [ round((5)*(high_range- low_range)/6 +  low_range), high_range]).count()
-
-        data = {
-            "first_bin": first_bin,
-            "second_bin": second_bin,
-            "third_bin": third_bin,
-            "fourth_bin": fourth_bin,
-            "fifth_bin": fifth_bin,
-            "sixth_bin": sixth_bin,
-
-            "first_name": str(low_range) + '-' + str(round((1)*(high_range- low_range)/6 +low_range)),
-            "second_name": str(round((1)*(high_range- low_range)/6 +low_range)) + '-' + str(round((2)*(high_range- low_range)/6 +low_range)),
-            "third_name": str(round((2)*(high_range- low_range)/6 +low_range)) + '-' + str(round((3)*(high_range- low_range)/6 +low_range)),
-            "fourth_name": str(round((3)*(high_range- low_range)/6 +low_range)) + '-' + str(round((4)*(high_range- low_range)/6 +low_range)),
-            "fifth_name": str(round((4)*(high_range- low_range)/6 +low_range)) + '-' + str(round((5)*(high_range- low_range)/6 +low_range)),
-            "sixth_name": str(round((5)*(high_range- low_range)/6 +low_range)) + '-' + str(high_range),
-
-        }
-        return JsonResponse(data)
+#         }
+#         return JsonResponse(data)
 
 class RankingAPI(APIView):
     week_target = 'week'
@@ -288,11 +361,11 @@ class VoteView(APIView):
         ###############
         ##  SESSION KEY HERE
         ##############
-        if not self.request.session.exists(self.request.session.session_key):
-            self.request.session.create()
-        print(self.request.session.session_key)
+        if not request.session.exists(request.session.session_key):
+            request.session.create()
+        print(request.session.session_key)
         data=request.data
-        user = self.request.session.session_key 
+        user = request.session.session_key 
         player = Player.objects.get(id=data['playerid'])
         
         #print(serializer.data)
@@ -398,11 +471,11 @@ class WeeklyVotingAPI(APIView):
 #         ###############
 #         ##  SESSION KEY HERE
 #         ##############
-#         if not self.request.session.exists(self.request.session.session_key):
-#             self.request.session.create()
-#         print(self.request.session.session_key)
+#         if not request.session.exists(request.session.session_key):
+#             request.session.create()
+#         print(request.session.session_key)
 #         data=request.data
-#         user = self.request.session.session_key 
+#         user = request.session.session_key 
 #         player = Player.objects.get(id=data['playerid'])
         
 #         #print(serializer.data)

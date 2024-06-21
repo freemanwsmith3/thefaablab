@@ -1,6 +1,6 @@
 from statistics import mean
 from rest_framework import serializers
-from .models import Player, Bid, Target, Ranking
+from .models import *
 
 class PlayerRankingSerializer(serializers.ModelSerializer):
     abbreviation = serializers.SerializerMethodField()
@@ -46,19 +46,43 @@ class PlayerRankingSerializer(serializers.ModelSerializer):
             opp = obj.opp
 
         return opp
-    
+
+
+class TeamSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Team
+        fields = ['team_name']
+
+class PositionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Position
+        fields = ['position_type']
+
+
 class PlayerSerializer(serializers.ModelSerializer):
+    team = serializers.SerializerMethodField()
+    position = serializers.SerializerMethodField()
+
     class Meta:
         model = Player
-        fields = ('id', 'name', 'team', 'link', 'image')
+        fields = ['id', 'name', 'team', 'position', 'link', 'image']
+
+    def get_team(self, obj):
+        return obj.team.team_name
+
+    def get_position(self, obj):
+        return obj.position.position_type
+
 
 
 class BidSerializer(serializers.ModelSerializer):
     class Meta:
         model = Bid
-        fields = ('value', 'target', 'user', 'week')
+        fields = ('value', 'player', 'user', 'week')
 
 class TargetSerializer(serializers.ModelSerializer):
+
+    
     class Meta:
         model = Target
         fields = ('player', 'week')

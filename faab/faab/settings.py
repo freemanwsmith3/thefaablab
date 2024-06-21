@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'api.apps.ApiConfig',
     'rest_framework', 
+    'corsheaders',
     'frontend.apps.FrontendConfig'
 ]
 
@@ -52,6 +53,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    
     
 ]
 
@@ -133,6 +137,17 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+]
+# Example session settings
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # Using database-backed sessions
+SESSION_COOKIE_NAME = 'sessionid'  # The name of the cookie to use for sessions
+SESSION_COOKIE_AGE = 1209600  # 2 weeks, in seconds
+SESSION_COOKIE_SECURE = True  # Use HTTPS for cookies (set to False for local development)
+SESSION_SAVE_EVERY_REQUEST = True  # Save session data on every request
+
 
 #maybe change for heroku
 
