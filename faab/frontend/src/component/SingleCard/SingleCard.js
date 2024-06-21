@@ -31,7 +31,7 @@ const SingleCard = ({ week }) => {
         value: bidValue,
       };
       // Send POST request with axios
-      const response = await axios.post('${apiUrl}bid', data);
+      const response = await axios.post(`${apiUrl}bid`, data);
     } catch (error) {
       console.error('Error sending bid:', error.response ? error.response.data : error.message);
     }
@@ -64,7 +64,7 @@ const SingleCard = ({ week }) => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const response = await axios.get('${apiUrl}stats', {
+        const response = await axios.get(`${apiUrl}stats`, {
           params: { week }
         });
         setGraphData(response.data.binned_data);
@@ -77,7 +77,7 @@ const SingleCard = ({ week }) => {
     };
     const fetchTargets = async () => {
       try {
-        const response = await axios.get('${apiUrl}targets', {
+        const response = await axios.get(`${apiUrl}targets`, {
           params: { week }
         });
         setData(response.data.players);
