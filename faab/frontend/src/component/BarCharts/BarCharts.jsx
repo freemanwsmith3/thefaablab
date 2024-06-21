@@ -6,21 +6,6 @@ import { CircularProgress } from '@mui/material';
 const BidChart = ({ playerName, playerTeam, graphData, statData, loading }) => {
   const labelColors = ['#FF6700', '#004E98']; // Alternating colors
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       let week = 24T
-  //       let target = 1390
-  //       const response = await axios.get('http://127.0.0.1:8000/api/get-data', {
-  //         params: { week, target }
-  //       });
-  //       setData(response.data.bidss);
-  //     } catch (error) {
-  //       console.error('Error fetching data:', error);
-  //     }
-  //   };
-  //   fetchData();
-  // }, []);
 
   const averageBid = statData.averageBid
   const medianBid = statData.medianBid
