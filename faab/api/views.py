@@ -52,23 +52,23 @@ class BidView(APIView):
     serializer_class = BidSerializer
 
     def post(self, request, format=None):
-        print(request.session.session_key)
-        print(';;;;;;;;;;;')
+        # print(request.session.session_key)
+        # print(';;;;;;;;;;;')
         ###############
         ##  SESSION KEY HERE
         ##############
-        if not request.session.exists(request.session.session_key):
-            print('creating session')
-            request.session.create()
-        print(request.session)
+        # if not request.session.exists(request.session.session_key):
+        #     print('creating session')
+        #     request.session.create()
+
         data=request.data
-        data['user'] = request.session.session_key 
-        serializer = self.serializer_class(data=data)
+        data['user'] = 'none'
+        serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
             value = serializer.data.get('value')
             player = serializer.data.get('player')
             week = serializer.data.get('week')
-            user = request.session.session_key
+            user = 'none'
             if 0 <= value <= 100 :
 
                 ###############
@@ -78,19 +78,19 @@ class BidView(APIView):
                 bid.save()
 
 
-                try:
-                    print(request.session.session_key)
-                    this_week_vis_dict = request.session.get('visible_targets')
-                    print("OLD DICTK", this_week_vis_dict)
-                    this_week_vis_list = this_week_vis_dict[str(week)]
-                    this_week_vis_list.append(player)
-                    this_week_vis_dict[str(week)] = this_week_vis_list
-                    request.session['visible_targets'] = this_week_vis_dict
-                    #print("NEW_DICT", request.session['visible_targets'][str(week)])
-                except KeyError as e:
-                    print("No Session Key", e)
-                except Exception as e:
-                    print("No Session Key", e)
+                # try:
+                #     # print(request.session.session_key)
+                #     this_week_vis_dict = request.session.get('visible_targets')
+                #     # print("OLD DICTK", this_week_vis_dict)
+                #     this_week_vis_list = this_week_vis_dict[str(week)]
+                #     this_week_vis_list.append(player)
+                #     this_week_vis_dict[str(week)] = this_week_vis_list
+                #     request.session['visible_targets'] = this_week_vis_dict
+                #     #print("NEW_DICT", request.session['visible_targets'][str(week)])
+                # except KeyError as e:
+                #     print("No Session Key", e)
+                # except Exception as e:
+                #     print("No Session Key", e)
                 # targets_dict = {}
                 # weekly_bids = []
 
@@ -109,45 +109,132 @@ class BidView(APIView):
         else:
             print('invalid serializer')
             return Response({'Bad Request':'Invalid Bid'}, status=status.HTTP_400_BAD_REQUEST)
-
+        
 class TargetsAPI(APIView):
+    def get(self, request, format=None):
+        week = request.query_params.get('week')
+        targets = Target.objects.filter(week=week)
+        players = Player.objects.filter(targets__in=targets).distinct()
+        serializer = PlayerSerializer(players, many=True)
+        return Response({
+            'players': serializer.data
+        }, status=status.HTTP_200_OK)
 
+### this is the old version with sessions and before i split it into two: 
+# class TargetsAPI(APIView):
+
+
+#     def get(self, request, format=None):
+
+#         week = request.query_params.get('week')
+#         print(week)
+
+#         # if not request.session.exists(request.session.session_key):
+#         #     request.session.create()
+#         #     print('Creating session')
+#         # else:
+#         #     print('Session exists:', request.session.session_key)
+
+
+#         targets = Target.objects.filter(week=week)
+
+
+#         # Step 2: Initialize the dictionary to store bids by target ID
+#         binned_data_dict = defaultdict(list)
+#         stats_dict = {}
+#         # Step 3: For each target, retrieve the associated bids by matching the week and player
+#         for target in targets:
+#             player_id = target.player.id
+#             target_bids = Bid.objects.filter(week=week, player=target.player)
+#             bid_values = list(target_bids.values_list('value', flat=True))
+
+#             # Step 4: Bin the bid values into 5 bins and format the data
+#             if bid_values:
+#                 average_bid = round(mean(bid_values), 1)
+#                 median_bid = round(median(bid_values), 1)
+#                 try:
+#                     most_common_bid = mode(bid_values)
+#                 except:
+#                     most_common_bid = None  # Handle the case where there is no single mode
+#                 number_of_bids = len(bid_values)
+#                 bins = np.linspace(min(bid_values), max(bid_values), 5)  # Create 5 equal bins
+#                 binned_data, _ = np.histogram(bid_values, bins=bins)
+#                 bins = np.round(bins).astype(int)  # Round bins to integers
+#                 for i in range(len(binned_data)):
+#                     bin_key = f'{bins[i]} - {bins[i+1]}'
+#                     binned_data_dict[str(player_id)].append({
+#                         'label': bin_key,
+#                         'bids': int(binned_data[i])
+#                     })
+#             else:
+#                 # Default values when there are no bids
+#                 average_bid = 'NA'
+#                 median_bid = 'NA'
+#                 most_common_bid = 'NA'
+#                 number_of_bids = """You're the 1st bid"""
+#                 binned_data = {}
+#             stats_dict[str(player_id)] = {
+#                 'averageBid': average_bid,
+#                 'medianBid': median_bid,
+#                 'mostCommonBid': most_common_bid,
+#                 'numberOfBids': number_of_bids
+#             }
+#         # targets = sorted(targets, key=lambda t: t.num_valid_bids, reverse=True)
+#         # Handle session visible_targets
+#         # if not request.session.get('visible_targets'):
+#         #     print('visible_targets key not found in session')
+#         #     request.session['visible_targets'] = {}
+
+#         # if str(week) not in request.session['visible_targets']:
+#         #     print(f'Week {week} not in visible_targets')
+#         #     request.session['visible_targets'][str(week)] = []
+
+#         # print('visible_targets:', request.session['visible_targets'])
+
+#         # # Save session explicitly
+#         # request.session.modified = True
+#         # request.session.save()
+#         # print('Session data saved:', request.session.items())
+#         # print('Session:', request.session)
+
+#         targets = Target.objects.filter(week=week)
+
+#         # Serialize the Player data with related Targets and Bids
+#         players = Player.objects.filter(targets__in=targets).distinct()
+#         serializer = PlayerSerializer(players, many=True)
+#         # print(request.session.items())
+#         # print(request.session.session_key)
+#         return Response({
+#             'players': serializer.data,
+#             'binned_data': dict(binned_data_dict),
+#             'stats': stats_dict
+#         }, status=status.HTTP_200_OK)
+
+class StatsAPI(APIView):
 
     def get(self, request, format=None):
         week = request.query_params.get('week')
-        print(week)
-
-        if not request.session.exists(request.session.session_key):
-            request.session.create()
-            print('Creating session')
-        else:
-            print('Session exists:', request.session.session_key)
-
-
         targets = Target.objects.filter(week=week)
 
-
-        # Step 2: Initialize the dictionary to store bids by target ID
         binned_data_dict = defaultdict(list)
         stats_dict = {}
-        # Step 3: For each target, retrieve the associated bids by matching the week and player
+
         for target in targets:
             player_id = target.player.id
             target_bids = Bid.objects.filter(week=week, player=target.player)
             bid_values = list(target_bids.values_list('value', flat=True))
 
-            # Step 4: Bin the bid values into 5 bins and format the data
             if bid_values:
                 average_bid = round(mean(bid_values), 1)
                 median_bid = round(median(bid_values), 1)
                 try:
                     most_common_bid = mode(bid_values)
                 except:
-                    most_common_bid = None  # Handle the case where there is no single mode
+                    most_common_bid = None
                 number_of_bids = len(bid_values)
-                bins = np.linspace(min(bid_values), max(bid_values), 5)  # Create 5 equal bins
+                bins = np.linspace(min(bid_values), max(bid_values), 5)
                 binned_data, _ = np.histogram(bid_values, bins=bins)
-                bins = np.round(bins).astype(int)  # Round bins to integers
+                bins = np.round(bins).astype(int)
                 for i in range(len(binned_data)):
                     bin_key = f'{bins[i]} - {bins[i+1]}'
                     binned_data_dict[str(player_id)].append({
@@ -155,7 +242,6 @@ class TargetsAPI(APIView):
                         'bids': int(binned_data[i])
                     })
             else:
-                # Default values when there are no bids
                 average_bid = 'NA'
                 median_bid = 'NA'
                 most_common_bid = 'NA'
@@ -167,37 +253,12 @@ class TargetsAPI(APIView):
                 'mostCommonBid': most_common_bid,
                 'numberOfBids': number_of_bids
             }
-        # targets = sorted(targets, key=lambda t: t.num_valid_bids, reverse=True)
-        # Handle session visible_targets
-        if not request.session.get('visible_targets'):
-            print('visible_targets key not found in session')
-            request.session['visible_targets'] = {}
 
-        if str(week) not in request.session['visible_targets']:
-            print(f'Week {week} not in visible_targets')
-            request.session['visible_targets'][str(week)] = []
-
-        print('visible_targets:', request.session['visible_targets'])
-
-        # Save session explicitly
-        request.session.modified = True
-        request.session.save()
-        print('Session data saved:', request.session.items())
-        print('Session:', request.session)
-
-        targets = Target.objects.filter(week=week)
-
-        # Serialize the Player data with related Targets and Bids
-        players = Player.objects.filter(targets__in=targets).distinct()
-        serializer = PlayerSerializer(players, many=True)
-        print(request.session.items())
-        print(request.session.session_key)
         return Response({
-            'players': serializer.data,
             'binned_data': dict(binned_data_dict),
             'stats': stats_dict
         }, status=status.HTTP_200_OK)
-    
+
 # class DataAPI(APIView):
 #     #week_target = 'week'
 #     def get(self,request,format=None):
