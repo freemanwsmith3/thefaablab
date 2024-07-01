@@ -140,7 +140,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ALLOWED_ORIGINS = [
     "https://gray-plant-0dc8d0c0f.5.azurestaticapps.net",
     "https://www.faablab.app",
-    "http://localhost:8000",
+    "http://localhost:3000",
 
 ]
 
