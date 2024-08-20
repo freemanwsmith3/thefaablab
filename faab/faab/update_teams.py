@@ -8,35 +8,18 @@ import psycopg2
 import psycopg2.extras
 from slugify import slugify
 # Downloading contents of the web page
-url = "https://www.fantasypros.com/nfl/rankings/waiver-wire-overall.php"
-data = requests.get(url).text
-soup = BeautifulSoup(data, 'html.parser')
-
-
-####################
-# change week below
-week = 16
-#############
-
-
-# waiver_pics =  data[data.find('ecrData'):data.find('sosData') ]
-
-# waiver_pics = waiver_pics[waiver_pics.find('{"player_id"'):]
-# count = waiver_pics.count('player_owned_yahoo')
 try:
 
 
-    conn = psycopg2.connect(
+    con = psycopg2.connect(
         host='ec2-34-199-68-114.compute-1.amazonaws.com',
         user='oibdolfaruxway',
         password='5983be3a6ab94c50df024487d2c3bcbab6a2eca9a8b4c594ddaf0b934a5553cc',
         database='d4qgddmcqs7su1'
     )
-    curr = conn.cursor()
+    cur = con.cursor()
 
-
-except Exception as e:
-    print("Couldn't connect ", e)
+    
 
 
     df = pd.read_csv('./faab/faab/stats/2024rankings.csv')
@@ -170,7 +153,7 @@ except Exception as e:
     # # insert_query = """INSERT INTO api_ranking ("rank", "Player_id", "user", "week", "created_at") VALUES (%s, %s, %s, %s, %s)"""
     # # cur.executemany(insert_query, ranking_to_insert)
     # con.commit()
-    conn.close()
+    con.close()
     
 except Exception as e:
     print("Couldn't conect ", e)

@@ -67,3 +67,7 @@ class Ranking(models.Model):
     week = models.IntegerField(null=False, validators=[MinValueValidator(0), MaxValueValidator(2000)])
     user = models.CharField(max_length=50)
     opponent = models.ForeignKey(Team,  on_delete=models.CASCADE, related_name="opponents", null=True)
+
+class Auction(models.Model):
+    rank = models.IntegerField(null=False, default=0,  validators=[MinValueValidator(0), MaxValueValidator(200)])
+    Player = models.ForeignKey(Player, on_delete=models.CASCADE, related_name="auction_rankings")

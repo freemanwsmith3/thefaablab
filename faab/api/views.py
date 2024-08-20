@@ -113,13 +113,19 @@ class BidView(APIView):
 class TargetsAPI(APIView):
     def get(self, request, format=None):
         week = request.query_params.get('week')
-        targets = Target.objects.filter(week=week)
-        players = Player.objects.filter(targets__in=targets).distinct()
+
+        if week != '1000':
+            targets = Target.objects.filter(week=week)
+            players = Player.objects.filter(targets__in=targets).distinct()
+        else:
+            targets = Target.objects.filter(week=week).order_by('id')
+            players = Player.objects.filter(targets__in=targets).distinct().order_by('targets__id')
+        
         serializer = PlayerSerializer(players, many=True)
+        
         return Response({
             'players': serializer.data
         }, status=status.HTTP_200_OK)
-
 ### this is the old version with sessions and before i split it into two: 
 # class TargetsAPI(APIView):
 
