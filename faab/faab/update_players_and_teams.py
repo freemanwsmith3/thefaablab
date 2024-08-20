@@ -8,49 +8,38 @@ import psycopg2
 import psycopg2.extras
 from slugify import slugify
 # Downloading contents of the web page
-url = "https://www.fantasypros.com/nfl/rankings/waiver-wire-overall.php"
-data = requests.get(url).text
-soup = BeautifulSoup(data, 'html.parser')
-
-
-####################
-# change week below
-week = 16
-#############
-
-
-# waiver_pics =  data[data.find('ecrData'):data.find('sosData') ]
-
-# waiver_pics = waiver_pics[waiver_pics.find('{"player_id"'):]
-# count = waiver_pics.count('player_owned_yahoo')
 try:
 
 
-    conn = psycopg2.connect(
+    con = psycopg2.connect(
         host='ec2-34-199-68-114.compute-1.amazonaws.com',
         user='oibdolfaruxway',
         password='5983be3a6ab94c50df024487d2c3bcbab6a2eca9a8b4c594ddaf0b934a5553cc',
         database='d4qgddmcqs7su1'
     )
-    curr = conn.cursor()
+    cur = con.cursor()
+    cur.execute("""SELECT * FROM api_player""")
+    players = cur.fetchall()
+    
 
-
-except Exception as e:
-    print("Couldn't connect ", e)
-
+        # Convert the rows into a set
+    players_set = set(row[1] for row in players) 
 
     df = pd.read_csv('./faab/faab/stats/2024rankings.csv')
 
     # Create a new column 'in_set' which is True if the player's name is in 'my_set' and False otherwise
     for index,row in  df.iterrows():
+        
         name = row['PLAYER NAME']
-        print(name)
         position = row['POS'][0:2]
         player_id = None
         team_id = None
         pos_id = None
         team = row['TEAM']
+        print(position)
         try:
+
+            
             if team == "ARI":
                 team_id = 1
             if team == "CHI":
@@ -130,47 +119,37 @@ except Exception as e:
                 pos_id= 5
             if position[0] == "K":
                 pos_id = 6       
-
-            print('new team id', team_id)
-            print('---------')
         # cur.execute("""insert into api (week, player_id) values (%s, %s);""", [week, player_id] )
         except Exception as e:
             print(e)
         
-        # link  = 'https://www.nfl.com/players/' + slugify(name) + '/'
-        # print(row['PLAYER NAME'])
-        # print(team)
-        # print('-----------------------')
-        # if row['PLAYER NAME'] not in players_set:
-        #     print("===========================")
-        
-    
-        #     print("name:", name )
-        #     print("TEAM: ", team_id)
-        #     print("position_id: ", pos_id)
-        #     print("LINK: ", link)
-        #     try:
-        #         cur.execute("""insert into api_player (name, team_id, position_id, link, image) values (%s, %s, %s, %s, %s);""", [name, team_id, pos_id, link, name] )
-        #         con.commit()
-        #     except Exception as e:
-        #         print(e)
-        #     else:
-        #         print("DEFENSE", name)
-            
-    # # cur.execute("""SELECT * FROM api_player""")
-    # # players = cur.fetchall()
-    # # player_id_dict = {}
-    # # for player in players:
-    # #     player_id_dict[player[1]] = player[0]
+        link  = 'https://www.nfl.com/players/' + slugify(name) + '/'
 
-    # # ranking_to_insert = []
-    # # for index,row in  df.iterrows():
-    # #     insert_tuple = (row["RK"], player_id_dict[row["PLAYER NAME"]], 'fantasy_pros', 0, "now")
-    # #     ranking_to_insert.append(insert_tuple)
-    # # insert_query = """INSERT INTO api_ranking ("rank", "Player_id", "user", "week", "created_at") VALUES (%s, %s, %s, %s, %s)"""
-    # # cur.executemany(insert_query, ranking_to_insert)
-    # con.commit()
-    conn.close()
+
+        if row['PLAYER NAME'] not in players_set:
+
+            try:
+                cur.execute("""insert into api_player (name, team_id, position_id, link, image) values (%s, %s, %s, %s, %s);""", [name, team_id, pos_id, link, name] )
+                con.commit()
+            except Exception as e:
+                print(e)
+            else:
+                print("DEFENSE", name)
+
+        else:
+            player_name = row['PLAYER NAME']
+
+            # Use parameterized query to ensure safe query execution
+            query = """SELECT * FROM api_player WHERE name = %s"""
+            cur.execute(query, (player_name,))
+
+            result = cur.fetchone()
+            old_team_id = result[2]
+            if team_id != old_team_id:
+                print('Updating: ', result[1])
+                cur.execute("""UPDATE api_Player SET team_id = %s WHERE id = %s;""", [team_id, result[0]])
+                con.commit()
+    con.close()
     
 except Exception as e:
     print("Couldn't conect ", e)
