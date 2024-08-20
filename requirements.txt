@@ -8,3 +8,4 @@ scipy==1.9.1
 numpy==1.21.2
 psycopg2==2.9.3
 python-decouple==3.8
+dj-database-url==2.2.0
