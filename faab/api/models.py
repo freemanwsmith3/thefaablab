@@ -15,7 +15,7 @@ class Player(models.Model):
     team = models.ForeignKey(Team,  on_delete=models.CASCADE, related_name="teams", null=True)
     position = models.ForeignKey(Position,  on_delete=models.CASCADE, related_name="positions", null=True)
     link = models.CharField(max_length=256, unique = True, null=True)
-    image = models.CharField(max_length=256, unique = True, null=True)
+    image = models.CharField(max_length=256, null=True)
     
     @property
     def average_rank(self):
