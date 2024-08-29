@@ -69,7 +69,7 @@ class BidView(APIView):
             player = serializer.data.get('player')
             week = serializer.data.get('week')
             user = 'none'
-            if 0 <= value <= 100 :
+            if 0 <= value <= 200 :
 
                 ###############
                 ## make a better way to avoid zero bids

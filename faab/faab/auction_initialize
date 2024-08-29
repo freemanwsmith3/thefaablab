@@ -1,0 +1,83 @@
+# Importing the required libraries
+from xml.etree.ElementTree import QName
+import requests
+import json
+import pandas as pd
+from bs4 import BeautifulSoup
+import psycopg2
+import psycopg2.extras
+from slugify import slugify
+from datetime import datetime
+
+import random
+
+def naturalize_number(n):
+    if n <= 0:
+        raise ValueError("Number must be greater than 0")
+    
+    # Determine the range of variation based on the value of n
+    if n <= 5:
+        variation = random.uniform(-4.0, 4.0)  # Up to 400% variation
+    elif n <= 20:
+        variation = random.uniform(-1.5, 1.5)  # Up to 150% variation
+    elif n <= 40:
+        variation = random.uniform(-0.75, 0.75)  # Up to 75% variation
+    else:
+        variation = random.uniform(-0.3, 0.3)  # Up to 30% variation
+    
+    # Apply the variation
+    adjusted_number = n + int(n * variation)
+    
+    # Ensure the number stays within the bounds of 1 to 80
+    adjusted_number = max(1, min(adjusted_number, 80))
+    
+    return adjusted_number
+
+
+    # waiver_pics =  data[data.find('ecrData'):data.find('sosData') ]
+
+    # waiver_pics = waiver_pics[waiver_pics.find('{"player_id"'):]
+    # count = waiver_pics.count('player_owned_yahoo')
+for i in range (15):
+    try:
+
+
+        conn = psycopg2.connect(
+            host='ec2-52-71-90-133.compute-1.amazonaws.com',
+            user='yscnkbjrdccjdm',
+            password='abc2e73db2c853ef565d543fe31c401b2f0be626920e7707b705302f6bf519be',
+            database='deranomlqt3v7k'
+        )
+        curr = conn.cursor()
+
+
+        df = pd.read_csv('./faab/faab/stats/auction_init.csv')
+
+        # Create a new column 'in_set' which is True if the player's name is in 'my_set' and False otherwise
+        auction_values = {}
+        for index,row in  df.iterrows():
+            auction_values[index+1]= naturalize_number(int(row[0][1:]))
+
+        curr.execute("""select player_id from api_player ap  full join api_target at2 on ap.id = at2.player_id where at2.week =1000 order by at2.id asc """)
+        players = curr.fetchall()
+        i = 0
+        for player in players:
+            i +=1
+            insert_query = """
+                INSERT INTO api_bid (value, created_at, "user", week, player_id)
+                VALUES (%s,  %s, %s, %s, %s)
+            """
+            created_at = datetime.now()
+
+            data_to_insert = (auction_values[i], created_at,'none', 1000, player[0])
+            curr.execute(insert_query, data_to_insert)
+
+            # Committing the transaction
+            conn.commit()
+
+
+
+        conn.close()
+        
+    except Exception as e:
+        print("Couldn't conect ", e)
