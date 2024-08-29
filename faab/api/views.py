@@ -78,33 +78,9 @@ class BidView(APIView):
                     bid = Bid(user=user, value = value, week = week, player = Player.objects.get(id = player))
                     bid.save()
 
-
-                # try:
-                #     # print(request.session.session_key)
-                #     this_week_vis_dict = request.session.get('visible_targets')
-                #     # print("OLD DICTK", this_week_vis_dict)
-                #     this_week_vis_list = this_week_vis_dict[str(week)]
-                #     this_week_vis_list.append(player)
-                #     this_week_vis_dict[str(week)] = this_week_vis_list
-                #     request.session['visible_targets'] = this_week_vis_dict
-                #     #print("NEW_DICT", request.session['visible_targets'][str(week)])
-                # except KeyError as e:
-                #     print("No Session Key", e)
-                # except Exception as e:
-                #     print("No Session Key", e)
-                # targets_dict = {}
-                # weekly_bids = []
-
-                # if str(week) not in request.session.get('visible_targets'):
-                #     request.session.get('visible_targets')[str(week)] = weekly_bids
-                #     print(weekly_bids)
-                        
-                # if target not in weekly_bids:
-                #     weekly_bids.append(target)
-                # targets_dict[str(week)] = weekly_bids
-                # request.session['visible_targets']= targets_dict
-
-                return Response(BidSerializer(bid).data, status=status.HTTP_201_CREATED)
+                    return Response(BidSerializer(bid).data, status=status.HTTP_201_CREATED)
+                else: 
+                    return Response({'Zero Bid: Display Results'}, status=status.HTTP_201_CREATED)
             else:
                 return Response({'Bad Request':'Invalid Value or Week'}, status=status.HTTP_400_BAD_REQUEST)
         else:
