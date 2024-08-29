@@ -8,13 +8,18 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 import random
 from itertools import chain
-from scipy import stats
 from django.contrib.sessions.backends.db import SessionStore  # 
 from rest_framework.response import Response
 from rest_framework import status
 from collections import defaultdict
 import numpy as np
 from statistics import mean, median, mode
+from django.http import JsonResponse
+from collections import defaultdict
+from statistics import mean, median, mode
+import numpy as np
+from scipy.stats import iqr
+
 
 def sort_queryset_by_ids(queryset, ids):
     # Prepare the ordering using the Case/When expressions
@@ -193,6 +198,7 @@ class TargetsAPI(APIView):
 #             'stats': stats_dict
 #         }, status=status.HTTP_200_OK)
 
+
 class StatsAPI(APIView):
 
     def get(self, request, format=None):
@@ -208,28 +214,46 @@ class StatsAPI(APIView):
             bid_values = list(target_bids.values_list('value', flat=True))
 
             if bid_values:
-                average_bid = round(mean(bid_values), 1)
-                median_bid = round(median(bid_values), 1)
-                try:
-                    most_common_bid = mode(bid_values)
-                except:
-                    most_common_bid = None
-                number_of_bids = len(bid_values)
-                bins = np.linspace(min(bid_values), max(bid_values), 5)
-                binned_data, _ = np.histogram(bid_values, bins=bins)
-                bins = np.round(bins).astype(int)
-                for i in range(len(binned_data)):
-                    bin_key = f'{bins[i]} - {bins[i+1]}'
-                    binned_data_dict[str(player_id)].append({
-                        'label': bin_key,
-                        'bids': int(binned_data[i])
-                    })
+                # Calculate IQR
+                bid_iqr = iqr(bid_values)
+                q1 = np.percentile(bid_values, 25)
+                q3 = np.percentile(bid_values, 75)
+                lower_bound = q1 - 1.5 * bid_iqr
+                upper_bound = q3 + 1.5 * bid_iqr
+
+                # Remove outliers
+                bid_values = [bid for bid in bid_values if lower_bound <= bid <= upper_bound]
+
+                if bid_values:
+                    average_bid = round(mean(bid_values), 1)
+                    median_bid = round(median(bid_values), 1)
+                    try:
+                        most_common_bid = mode(bid_values)
+                    except:
+                        most_common_bid = None
+                    number_of_bids = len(bid_values)
+                    bins = np.linspace(min(bid_values), max(bid_values), 5)
+                    binned_data, _ = np.histogram(bid_values, bins=bins)
+                    bins = np.round(bins).astype(int)
+                    for i in range(len(binned_data)):
+                        bin_key = f'{bins[i]} - {bins[i+1]}'
+                        binned_data_dict[str(player_id)].append({
+                            'label': bin_key,
+                            'bids': int(binned_data[i])
+                        })
+                else:
+                    average_bid = 'NA'
+                    median_bid = 'NA'
+                    most_common_bid = 'NA'
+                    number_of_bids = """You're the 1st bid"""
+                    binned_data = {}
             else:
                 average_bid = 'NA'
                 median_bid = 'NA'
                 most_common_bid = 'NA'
                 number_of_bids = """You're the 1st bid"""
                 binned_data = {}
+                
             stats_dict[str(player_id)] = {
                 'averageBid': average_bid,
                 'medianBid': median_bid,
@@ -241,6 +265,7 @@ class StatsAPI(APIView):
             'binned_data': dict(binned_data_dict),
             'stats': stats_dict
         }, status=status.HTTP_200_OK)
+
 
 # class DataAPI(APIView):
 #     #week_target = 'week'
