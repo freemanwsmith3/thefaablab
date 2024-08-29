@@ -74,8 +74,9 @@ class BidView(APIView):
                 ###############
                 ## make a better way to avoid zero bids
                 ############
-                bid = Bid(user=user, value = value, week = week, player = Player.objects.get(id = player))
-                bid.save()
+                if value > 0:
+                    bid = Bid(user=user, value = value, week = week, player = Player.objects.get(id = player))
+                    bid.save()
 
 
                 # try:
