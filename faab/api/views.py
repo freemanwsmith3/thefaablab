@@ -92,6 +92,7 @@ class BidView(APIView):
             print('invalid serializer')
             return Response({'Bad Request':'Invalid Bid'}, status=status.HTTP_400_BAD_REQUEST)
         
+
 class TargetsAPI(APIView):
     def get(self, request, format=None):
         week = request.query_params.get('week')
@@ -103,7 +104,7 @@ class TargetsAPI(APIView):
             targets = Target.objects.filter(week=week).order_by('id')
             players = Player.objects.filter(targets__in=targets).distinct().order_by('targets__id')
         
-        serializer = PlayerSerializer(players, many=True)
+        serializer = PlayerSerializer(players, many=True, context={'week': week})
         
         return Response({
             'players': serializer.data
