@@ -58,14 +58,20 @@ class PositionSerializer(serializers.ModelSerializer):
         model = Position
         fields = ['position_type']
 
+class TargetSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Target
+        fields = ['id', 'week']
+
 
 class PlayerSerializer(serializers.ModelSerializer):
     team = serializers.SerializerMethodField()
     position = serializers.SerializerMethodField()
+    target_id = serializers.SerializerMethodField()
 
     class Meta:
         model = Player
-        fields = ['id', 'name', 'team', 'position', 'link', 'image']
+        fields = ['id', 'name', 'team', 'position', 'link', 'image', 'target_id']
 
     def get_team(self, obj):
         return obj.team.team_name
@@ -73,6 +79,10 @@ class PlayerSerializer(serializers.ModelSerializer):
     def get_position(self, obj):
         return obj.position.position_type
 
+    def get_target_id(self, obj):
+        week = self.context.get('week')
+        target = obj.targets.filter(week=week).first()
+        return target.id if target else None
 
 
 class BidSerializer(serializers.ModelSerializer):
