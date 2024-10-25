@@ -11,11 +11,11 @@ from slugify import slugify
 url = "https://www.fantasypros.com/nfl/rankings/waiver-wire-overall.php"
 data = requests.get(url).text
 soup = BeautifulSoup(data, 'html.parser')
-
+print(soup)
 
 ####################
 # change week below
-week = 27
+week = 28
 #############
 print('Classes of each table:')
 
@@ -25,12 +25,11 @@ waiver_pics = waiver_pics[waiver_pics.find('{"player_id"'):]
 count = waiver_pics.count('player_owned_yahoo')
 try:
 
-
     conn = psycopg2.connect(
-        host='ec2-34-199-68-114.compute-1.amazonaws.com',
-        user='oibdolfaruxway',
-        password='5983be3a6ab94c50df024487d2c3bcbab6a2eca9a8b4c594ddaf0b934a5553cc',
-        database='d4qgddmcqs7su1'
+        host='ec2-52-71-90-133.compute-1.amazonaws.com',
+        user='yscnkbjrdccjdm',
+        password='abc2e73db2c853ef565d543fe31c401b2f0be626920e7707b705302f6bf519be',
+        database='deranomlqt3v7k'
     )
     curr = conn.cursor()
 
@@ -38,7 +37,7 @@ try:
 except Exception as e:
     print("Couldn't connect ", e)
 
-
+print(count)
 for i in range(count-1):
     
     res = json.loads(waiver_pics[0:waiver_pics.find(',{"player_id')])
@@ -142,7 +141,8 @@ for i in range(count-1):
             
             link  = 'https://www.nfl.com/players/' + slugify(name) + '/'
             try:
-                curr.execute("""insert into api_player (name, team_id, position_id, link, image) values (%s, %s, %s, %s, %s);""", [name, team_id, pos_id, link, name] )
+                print('new player')
+                #curr.execute("""insert into api_player (name, team_id, position_id, link, image) values (%s, %s, %s, %s, %s);""", [name, team_id, pos_id, link, name] )
             except Exception as e:
                 print(e)
         else:
@@ -152,7 +152,7 @@ for i in range(count-1):
 
 
     #curr.execute("""insert into api_target (week, player_id) values (%s, %s);""", [week, player_id,] )
-    conn.commit()
+    #conn.commit()
 
     waiver_pics = waiver_pics[1+waiver_pics.find(',{"player_id'):]
 
