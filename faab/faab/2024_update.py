@@ -1,17 +1,11 @@
 import psycopg2
 from psycopg2 import sql
+from db import connect
 
 # Database connection details
-db_config = {
-    'dbname': 'd4qgddmcqs7su1',
-    'user': 'oibdolfaruxway',
-    'password': '5983be3a6ab94c50df024487d2c3bcbab6a2eca9a8b4c594ddaf0b934a5553cc',
-    'host': 'ec2-34-199-68-114.compute-1.amazonaws.com',
-    'port': '5432'
-}
 
 # Establishing the connection
-conn = psycopg2.connect(**db_config)
+conn = connect()
 
 # Creating a cursor object
 cur = conn.cursor()

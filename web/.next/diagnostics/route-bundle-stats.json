@@ -1,0 +1,52 @@
+[
+  {
+    "route": "/waiver-wire/[season]/[week]",
+    "firstLoadUncompressedJsBytes": 476905,
+    "firstLoadChunkPaths": [
+      ".next/static/chunks/1oaw9uq-pttep.js",
+      ".next/static/chunks/23bavq0fxqc5-.js",
+      ".next/static/chunks/4040oko319gbn.js",
+      ".next/static/chunks/00040ubs2p1nl.js",
+      ".next/static/chunks/0m4c4top9rwwe.js",
+      ".next/static/chunks/3pml_vigi_-g_.js",
+      ".next/static/chunks/turbopack-14mzltoned6r1.js"
+    ]
+  },
+  {
+    "route": "/waiver-wire/[season]/[week]/[player]",
+    "firstLoadUncompressedJsBytes": 476905,
+    "firstLoadChunkPaths": [
+      ".next/static/chunks/1oaw9uq-pttep.js",
+      ".next/static/chunks/23bavq0fxqc5-.js",
+      ".next/static/chunks/4040oko319gbn.js",
+      ".next/static/chunks/00040ubs2p1nl.js",
+      ".next/static/chunks/0m4c4top9rwwe.js",
+      ".next/static/chunks/3pml_vigi_-g_.js",
+      ".next/static/chunks/turbopack-14mzltoned6r1.js"
+    ]
+  },
+  {
+    "route": "/",
+    "firstLoadUncompressedJsBytes": 453290,
+    "firstLoadChunkPaths": [
+      ".next/static/chunks/1oaw9uq-pttep.js",
+      ".next/static/chunks/4040oko319gbn.js",
+      ".next/static/chunks/00040ubs2p1nl.js",
+      ".next/static/chunks/0m4c4top9rwwe.js",
+      ".next/static/chunks/3pml_vigi_-g_.js",
+      ".next/static/chunks/turbopack-14mzltoned6r1.js"
+    ]
+  },
+  {
+    "route": "/_not-found",
+    "firstLoadUncompressedJsBytes": 453290,
+    "firstLoadChunkPaths": [
+      ".next/static/chunks/1oaw9uq-pttep.js",
+      ".next/static/chunks/4040oko319gbn.js",
+      ".next/static/chunks/00040ubs2p1nl.js",
+      ".next/static/chunks/0m4c4top9rwwe.js",
+      ".next/static/chunks/3pml_vigi_-g_.js",
+      ".next/static/chunks/turbopack-14mzltoned6r1.js"
+    ]
+  }
+]

@@ -1,0 +1,9 @@
+{
+  "/_global-error/page": "/_global-error",
+  "/_not-found/page": "/_not-found",
+  "/page": "/",
+  "/robots.txt/route": "/robots.txt",
+  "/sitemap.xml/route": "/sitemap.xml",
+  "/waiver-wire/[season]/[week]/[player]/page": "/waiver-wire/[season]/[week]/[player]",
+  "/waiver-wire/[season]/[week]/page": "/waiver-wire/[season]/[week]"
+}

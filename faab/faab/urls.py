@@ -16,7 +16,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+from api.views import llms_txt
+
 urlpatterns = [
+    # Agents look for this at the root, not under /api/.
+    path('llms.txt', llms_txt),
     path('admin/', admin.site.urls),
     path('api/',include('api.urls')),
     # path('', include('frontend.urls'))

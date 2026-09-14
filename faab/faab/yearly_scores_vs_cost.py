@@ -1,16 +1,12 @@
 import psycopg2
 import pandas as pd
 import matplotlib.pyplot as plt
+from db import connect
 # Connect to your PostgreSQL database
 try:
 
 
-    conn = psycopg2.connect(
-        host='ec2-34-199-68-114.compute-1.amazonaws.com',
-        user='oibdolfaruxway',
-        password='5983be3a6ab94c50df024487d2c3bcbab6a2eca9a8b4c594ddaf0b934a5553cc',
-        database='d4qgddmcqs7su1'
-    )
+    conn = connect()
     curr = conn.cursor()
 
 

@@ -1,6 +1,7 @@
 import psycopg2
 import requests
 from bs4 import BeautifulSoup
+from db import connect
 
 # Function to strip suffixes from player names
 def strip_suffix(name):
@@ -34,12 +35,7 @@ def get_player_image_url(player_name):
 
 # Function to fetch the first five players from the database
 def fetch_first_five_players_from_db():
-    conn = psycopg2.connect(
-        host='ec2-52-71-90-133.compute-1.amazonaws.com',
-        user='yscnkbjrdccjdm',
-        password='abc2e73db2c853ef565d543fe31c401b2f0be626920e7707b705302f6bf519be',
-        database='deranomlqt3v7k'
-    )
+    conn = connect()
     curr = conn.cursor()
     curr.execute("SELECT id, name FROM api_player")
     players = curr.fetchall()
@@ -54,12 +50,7 @@ def update_player_image_url(player_id, image_url):
         print(f"Skipping update for player ID {player_id} due to SVG image format.")
         return  # Skip the update if the image is an SVG
 
-    conn = psycopg2.connect(
-        host='ec2-52-71-90-133.compute-1.amazonaws.com',
-        user='yscnkbjrdccjdm',
-        password='abc2e73db2c853ef565d543fe31c401b2f0be626920e7707b705302f6bf519be',
-        database='deranomlqt3v7k'
-    )
+    conn = connect()
     curr = conn.cursor()
     curr.execute(
         "UPDATE api_player SET image = %s WHERE id = %s",

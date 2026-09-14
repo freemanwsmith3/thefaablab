@@ -1,498 +1,604 @@
-from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse
-from django.db.models import Count, Case, When, Avg, Q, IntegerField, Min, OuterRef, Subquery
-from rest_framework import generics, status
-from .serializers import *
-from .models import *
-from rest_framework.views import APIView
-from rest_framework.response import Response
-import random
-from itertools import chain
-from django.contrib.sessions.backends.db import SessionStore  # 
-from rest_framework.response import Response
+"""
+Read and write endpoints.
+
+The read path never touches a raw bid table. Everything comes from
+BidAggregate, whose scalar columns are computed at write time, so serving a
+week is a single indexed query returning one row per player.
+"""
+import hashlib
+import logging
+import uuid
+
+from django.conf import settings
+from django.core import signing
+from django.core.cache import cache
+from django.http import HttpResponse
+from django.db import IntegrityError, transaction
+from django.utils.cache import patch_cache_control
+from django.views.decorators.cache import cache_page
+from django.views.decorators.vary import vary_on_headers
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import OpenApiExample, OpenApiParameter, extend_schema
 from rest_framework import status
-from collections import defaultdict
-import numpy as np
-from statistics import mean, median, mode
-from django.http import JsonResponse
-from collections import defaultdict
-from statistics import mean, median, mode
-import numpy as np
-from scipy.stats import iqr
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+from .models import BidAggregate, Bid, Player, ScoringFormat, Target
+from .serializers import (
+    BidInputSerializer,
+    BidResultSerializer,
+    HealthSerializer,
+    PlayerSerializer,
+    StatsResponseSerializer,
+    TargetsResponseSerializer,
+    WeekResponseSerializer,
+)
+from .services import aggregates, histogram as hg, weeks
+from .throttles import BidBurstThrottle, BidSustainedThrottle
+
+log = logging.getLogger(__name__)
+
+SUBMITTER_COOKIE = 'faab_sid'
+COOKIE_MAX_AGE = 60 * 60 * 24 * 365
+
+# Reused across the documented endpoints.
+SEASON_PARAM = OpenApiParameter(
+    'season', OpenApiTypes.INT, OpenApiParameter.QUERY,
+    description='NFL season, e.g. 2026. Omit to use the legacy week counter.',
+)
+WEEK_PARAM = OpenApiParameter(
+    'week', OpenApiTypes.INT, OpenApiParameter.QUERY, required=True,
+    description=(
+        'NFL week 1-18 when `season` is given, otherwise the legacy running '
+        'week counter (29 == 2024 week 1).'
+    ),
+)
+SIZE_PARAM = OpenApiParameter(
+    'size', OpenApiTypes.INT, OpenApiParameter.QUERY,
+    description='League size filter. 0 (default) means all sizes.',
+    enum=[0, 8, 10, 12, 14],
+)
+SCORING_PARAM = OpenApiParameter(
+    'scoring', OpenApiTypes.STR, OpenApiParameter.QUERY,
+    description='Scoring format filter.',
+    enum=['all', 'ppr', 'half', 'std'],
+)
+DEFAULT_WEEK_LIMIT = 50
+MAX_WEEK_LIMIT = 500
+
+LIMIT_PARAM = OpenApiParameter(
+    'limit', OpenApiTypes.INT, OpenApiParameter.QUERY,
+    description=(
+        'Maximum players returned, ordered by crowd volume then market volume. '
+        f'Defaults to {DEFAULT_WEEK_LIMIT}; market data covers far more players '
+        'than a week has cards, so an unbounded response is mostly long tail.'
+    ),
+)
 
 
-def sort_queryset_by_ids(queryset, ids):
-    # Prepare the ordering using the Case/When expressions
-    preserved_order = Case(*[When(pk=pk, then=pos) for pos, pk in enumerate(ids)], output_field=IntegerField())
 
-    # Annotate the queryset with the ordering and then sort by it
-    return queryset.annotate(sort_order=preserved_order).order_by('sort_order')
-
-class PlayerView(generics.ListAPIView):
-    queryset = Player.objects.all()
-    serializer_class = PlayerSerializer
-
-class GetWeek(APIView):
-    serializer_class = TargetSerializer
-    lookup_url_kwarg = 'week'
-
-
-    def get(self, request, format=None):
-        if not request.session.exists(request.session.session_key):
-            request.session.create()
-        week = request.GET.get(self.lookup_url_kwarg)
-        if week != None:
-            print('targets')
-            targets = Target.objects.filter(week=week)
-            if 0 <= int(week) :
-                data = TargetSerializer(targets, many=True).data
-                #data['is_user'] = request.session.session_key == bid.host
+# ---------------------------------------------------------------------------
+# Anonymous identity
+# ---------------------------------------------------------------------------
+def _read_submitter(request):
+    """Return the signed submitter id from the cookie, or None if absent/forged."""
+    raw = request.COOKIES.get(SUBMITTER_COOKIE)
+    if not raw:
+        return None
+    try:
+        return signing.loads(raw, salt=settings.SUBMITTER_SIGNING_SALT, max_age=COOKIE_MAX_AGE)
+    except signing.BadSignature:
+        return None
 
 
-                return Response(data, status=status.HTTP_200_OK)
-            return Response({'Bad Request':'Invalid Week'}, status=status.HTTP_404_NOT_FOUND)
-        return Response({'Bad Request':'Week Not Provided'}, status=status.HTTP_404_NOT_FOUND)
-        
-class BidView(APIView):
-    serializer_class = BidSerializer
-
-    def post(self, request, format=None):
-        # print(request.session.session_key)
-        # print(';;;;;;;;;;;')
-        ###############
-        ##  SESSION KEY HERE
-        ##############
-        # if not request.session.exists(request.session.session_key):
-        #     print('creating session')
-        #     request.session.create()
-
-        data=request.data
-        data['user'] = 'none'
-        serializer = self.serializer_class(data=request.data)
-        if serializer.is_valid():
-            value = serializer.data.get('value')
-            player = serializer.data.get('player')
-            week = serializer.data.get('week')
-            user = 'none'
-            if 0 <= value <= 200 :
-
-                ###############
-                ## make a better way to avoid zero bids
-                ############
-                if value > 0:
-                    bid = Bid(user=user, value = value, week = week, player = Player.objects.get(id = player))
-                    bid.save()
-
-                    return Response(BidSerializer(bid).data, status=status.HTTP_201_CREATED)
-                else: 
-                    return Response({'Zero Bid: Display Results'}, status=status.HTTP_201_CREATED)
-            else:
-                return Response({'Bad Request':'Invalid Value or Week'}, status=status.HTTP_400_BAD_REQUEST)
-        else:
-            print('invalid serializer')
-            return Response({'Bad Request':'Invalid Bid'}, status=status.HTTP_400_BAD_REQUEST)
-        
-
-class TargetsAPI(APIView):
-    def get(self, request, format=None):
-        week = request.query_params.get('week')
-
-        if week != '1000':
-            targets = Target.objects.filter(week=week)
-            players = Player.objects.filter(targets__in=targets).distinct()
-        else:
-            targets = Target.objects.filter(week=week).order_by('id')
-            players = Player.objects.filter(targets__in=targets).distinct().order_by('targets__id')
-        
-        serializer = PlayerSerializer(players, many=True, context={'week': week})
-        
-        return Response({
-            'players': serializer.data
-        }, status=status.HTTP_200_OK)
-### this is the old version with sessions and before i split it into two: 
-# class TargetsAPI(APIView):
+def _new_submitter():
+    return uuid.uuid4().hex
 
 
-#     def get(self, request, format=None):
+def _submitter_hash(submitter: str) -> str:
+    """
+    Store a hash rather than the raw cookie value.
 
-#         week = request.query_params.get('week')
-#         print(week)
-
-#         # if not request.session.exists(request.session.session_key):
-#         #     request.session.create()
-#         #     print('Creating session')
-#         # else:
-#         #     print('Session exists:', request.session.session_key)
-
-
-#         targets = Target.objects.filter(week=week)
+    A database leak then exposes no token that could be replayed as somebody
+    else's identity, and the value is still stable for deduplication.
+    """
+    digest = hashlib.sha256(
+        f'{settings.SUBMITTER_SIGNING_SALT}:{submitter}'.encode()
+    ).hexdigest()
+    return digest[:64]
 
 
-#         # Step 2: Initialize the dictionary to store bids by target ID
-#         binned_data_dict = defaultdict(list)
-#         stats_dict = {}
-#         # Step 3: For each target, retrieve the associated bids by matching the week and player
-#         for target in targets:
-#             player_id = target.player.id
-#             target_bids = Bid.objects.filter(week=week, player=target.player)
-#             bid_values = list(target_bids.values_list('value', flat=True))
-
-#             # Step 4: Bin the bid values into 5 bins and format the data
-#             if bid_values:
-#                 average_bid = round(mean(bid_values), 1)
-#                 median_bid = round(median(bid_values), 1)
-#                 try:
-#                     most_common_bid = mode(bid_values)
-#                 except:
-#                     most_common_bid = None  # Handle the case where there is no single mode
-#                 number_of_bids = len(bid_values)
-#                 bins = np.linspace(min(bid_values), max(bid_values), 5)  # Create 5 equal bins
-#                 binned_data, _ = np.histogram(bid_values, bins=bins)
-#                 bins = np.round(bins).astype(int)  # Round bins to integers
-#                 for i in range(len(binned_data)):
-#                     bin_key = f'{bins[i]} - {bins[i+1]}'
-#                     binned_data_dict[str(player_id)].append({
-#                         'label': bin_key,
-#                         'bids': int(binned_data[i])
-#                     })
-#             else:
-#                 # Default values when there are no bids
-#                 average_bid = 'NA'
-#                 median_bid = 'NA'
-#                 most_common_bid = 'NA'
-#                 number_of_bids = """You're the 1st bid"""
-#                 binned_data = {}
-#             stats_dict[str(player_id)] = {
-#                 'averageBid': average_bid,
-#                 'medianBid': median_bid,
-#                 'mostCommonBid': most_common_bid,
-#                 'numberOfBids': number_of_bids
-#             }
-#         # targets = sorted(targets, key=lambda t: t.num_valid_bids, reverse=True)
-#         # Handle session visible_targets
-#         # if not request.session.get('visible_targets'):
-#         #     print('visible_targets key not found in session')
-#         #     request.session['visible_targets'] = {}
-
-#         # if str(week) not in request.session['visible_targets']:
-#         #     print(f'Week {week} not in visible_targets')
-#         #     request.session['visible_targets'][str(week)] = []
-
-#         # print('visible_targets:', request.session['visible_targets'])
-
-#         # # Save session explicitly
-#         # request.session.modified = True
-#         # request.session.save()
-#         # print('Session data saved:', request.session.items())
-#         # print('Session:', request.session)
-
-#         targets = Target.objects.filter(week=week)
-
-#         # Serialize the Player data with related Targets and Bids
-#         players = Player.objects.filter(targets__in=targets).distinct()
-#         serializer = PlayerSerializer(players, many=True)
-#         # print(request.session.items())
-#         # print(request.session.session_key)
-#         return Response({
-#             'players': serializer.data,
-#             'binned_data': dict(binned_data_dict),
-#             'stats': stats_dict
-#         }, status=status.HTTP_200_OK)
+def _set_submitter_cookie(response, submitter):
+    response.set_cookie(
+        SUBMITTER_COOKIE,
+        signing.dumps(submitter, salt=settings.SUBMITTER_SIGNING_SALT),
+        max_age=COOKIE_MAX_AGE,
+        secure=not settings.DEBUG,
+        httponly=True,
+        samesite='Lax',
+    )
+    return response
 
 
-class StatsAPI(APIView):
+# ---------------------------------------------------------------------------
+# Shared helpers
+# ---------------------------------------------------------------------------
+def _resolve_week(request):
+    """
+    Accept either ?season=&week= (new) or ?week=<legacy counter> (old frontend).
 
-    def get(self, request, format=None):
-        week = request.query_params.get('week')
-        targets = Target.objects.filter(week=week)
+    Returns (season, week, legacy_week, error_response).
+    """
+    season = request.query_params.get('season')
+    week = request.query_params.get('week')
+    if week is None:
+        return None, None, None, Response(
+            {'detail': 'week is required'}, status=status.HTTP_400_BAD_REQUEST
+        )
+    try:
+        week = int(week)
+    except (TypeError, ValueError):
+        return None, None, None, Response(
+            {'detail': 'week must be an integer'}, status=status.HTTP_400_BAD_REQUEST
+        )
 
-        binned_data_dict = defaultdict(list)
-        stats_dict = {}
-
-        for target in targets:
-            player_id = target.player.id
-            target_bids = Bid.objects.filter(week=week, player=target.player)
-            bid_values = list(target_bids.values_list('value', flat=True))
-
-            if bid_values:
-                # Calculate IQR
-                bid_iqr = iqr(bid_values)
-                q1 = np.percentile(bid_values, 25)
-                q3 = np.percentile(bid_values, 75)
-                lower_bound = q1 - 1.5 * bid_iqr
-                upper_bound = q3 + 1.5 * bid_iqr
-
-                # Remove outliers
-                bid_values = [bid for bid in bid_values if lower_bound <= bid <= upper_bound]
-
-                if bid_values:
-                    average_bid = round(mean(bid_values), 1)
-                    median_bid = round(median(bid_values), 1)
-                    try:
-                        most_common_bid = mode(bid_values)
-                    except:
-                        most_common_bid = None
-                    number_of_bids = len(bid_values)
-                    bins = np.linspace(min(bid_values), max(bid_values), 5)
-                    binned_data, _ = np.histogram(bid_values, bins=bins)
-                    bins = np.round(bins).astype(int)
-                    for i in range(len(binned_data)):
-                        bin_key = f'{bins[i]} - {bins[i+1]}'
-                        binned_data_dict[str(player_id)].append({
-                            'label': bin_key,
-                            'bids': int(binned_data[i])
-                        })
-                else:
-                    average_bid = 'NA'
-                    median_bid = 'NA'
-                    most_common_bid = 'NA'
-                    number_of_bids = """You're the 1st bid"""
-                    binned_data = {}
-            else:
-                average_bid = 'NA'
-                median_bid = 'NA'
-                most_common_bid = 'NA'
-                number_of_bids = """You're the 1st bid"""
-                binned_data = {}
-                
-            stats_dict[str(player_id)] = {
-                'averageBid': average_bid,
-                'medianBid': median_bid,
-                'mostCommonBid': most_common_bid,
-                'numberOfBids': number_of_bids
-            }
-
-        return Response({
-            'binned_data': dict(binned_data_dict),
-            'stats': stats_dict
-        }, status=status.HTTP_200_OK)
-
-
-# class DataAPI(APIView):
-#     #week_target = 'week'
-#     def get(self,request,format=None):
-#         week = request.query_params.get('week')
-#         # target_id = request.query_params.get('target')
-    
-
-
-#         # week = week_name[0]
-#         # target_id = week_name[1]
-#         flat_vals = list(Bid.objects.filter(week=week, target_id=target_id, value__range = [1, 100]).order_by('value').values_list('value', flat=True))
-
-
-#         if flat_vals:
-#             low_range = flat_vals[int(len(flat_vals)*.1)]
-#             high_range = flat_vals[int(len(flat_vals)*.9)]
-
-
-#         ###############################
-#         ######## Be careful of weird random bins 
-#         ##############################
-#         bins_array = []
-#         bins_array.append(Bid.objects.filter(week=week, target_id=target_id, value__range = [low_range,  round((1)*(high_range- low_range)/6 +  low_range)]).count())
-#         bins_array.append(Bid.objects.filter(week=week, target_id=target_id, value__range = [ round((1)*(high_range- low_range)/6 +  low_range), round((2)*(high_range- low_range)/6 +  low_range)]).count())
-#         bins_array.append(Bid.objects.filter(week=week, target_id=target_id, value__range = [ round((2)*(high_range- low_range)/6 +  low_range), round((3)*(high_range- low_range)/6 +  low_range)]).count())
-#         bins_array.append(Bid.objects.filter(week=week, target_id=target_id, value__range =[ round((3)*(high_range- low_range)/6 +  low_range), round((4)*(high_range- low_range)/6 +  low_range)]).count())
-#         bins_array.append(Bid.objects.filter(week=week, target_id=target_id, value__range =[ round((4)*(high_range- low_range)/6 +  low_range), round((5)*(high_range- low_range)/6 +  low_range)]).count())
-#         bins_array.append(Bid.objects.filter(week=week, target_id=target_id, value__range = [ round((5)*(high_range- low_range)/6 +  low_range), high_range]).count())
-        
-#         bin_dict_array = []
-#         for bin_data in bins_array:
-#             bin_dict = {}
-#             bin_dict['bin'] = bin_data
-#             bin_dict_array.append(bin_dict)
-        
-
-#         print(bin_dict_array)
-#         data = {
-#             'bins': bin_dict_array,
-#             "first_name": str(low_range) + '-' + str(round((1)*(high_range- low_range)/6 +low_range)),
-#             "second_name": str(round((1)*(high_range- low_range)/6 +low_range)) + '-' + str(round((2)*(high_range- low_range)/6 +low_range)),
-#             "third_name": str(round((2)*(high_range- low_range)/6 +low_range)) + '-' + str(round((3)*(high_range- low_range)/6 +low_range)),
-#             "fourth_name": str(round((3)*(high_range- low_range)/6 +low_range)) + '-' + str(round((4)*(high_range- low_range)/6 +low_range)),
-#             "fifth_name": str(round((4)*(high_range- low_range)/6 +low_range)) + '-' + str(round((5)*(high_range- low_range)/6 +low_range)),
-#             "sixth_name": str(round((5)*(high_range- low_range)/6 +low_range)) + '-' + str(high_range),
-
-#         }
-#         return JsonResponse(data)
-
-class RankingAPI(APIView):
-    week_target = 'week'
-    def get(self,request, format=None):
-        week_name = request.GET.get(self.week_target).split('?target=')
-
-        week = week_name[0]
-
-        players_with_avg_rank_and_ecr = (Player.objects
-            .annotate(
-                avg_rank=Avg('rankings__rank', filter=Q(rankings__week=week)),
-                ecr=Min('rankings__rank', filter=Q(rankings__week=week, rankings__user='fantasy_pros'))
+    if season is not None:
+        try:
+            return int(season), week, weeks.to_legacy_week(int(season), week), None
+        except (TypeError, ValueError):
+            return None, None, None, Response(
+                {'detail': 'season must be an integer'}, status=status.HTTP_400_BAD_REQUEST
             )
-            .order_by('avg_rank')
-        )[0:250]
-        serializer = PlayerRankingSerializer(players_with_avg_rank_and_ecr, many=True)
-        return Response(serializer.data)
 
-class VotingAPI(APIView):
-    week_target = 'week'
-    def get(self,request, format=None):
-        week_name = request.GET.get(self.week_target).split('?target=')
+    resolved_season, resolved_week = weeks.to_season_week(week)
+    return resolved_season, resolved_week, week, None
 
-        week = week_name[0]
-        top_tier = random.randint(1, 49)
-        mid_tier = random.randint(50, 99)
-        low_tier = random.randint(100,150)
-        top_tier_players = (Player.objects
-                                .annotate(avg_rank=Avg('rankings__rank', filter=Q(rankings__week=week)))
-                                .order_by('avg_rank'))[top_tier:top_tier+3]
-        mid_tier_players = (Player.objects
-                                .annotate(avg_rank=Avg('rankings__rank', filter=Q(rankings__week=week)))
-                                .order_by('avg_rank'))[mid_tier:mid_tier+3]
-        low_tier_players = (Player.objects
-                                .annotate(avg_rank=Avg('rankings__rank', filter=Q(rankings__week=week)))
-                                .order_by('avg_rank'))[low_tier:low_tier+3]    
-                            
-        voting_players = chain( top_tier_players, mid_tier_players, low_tier_players)
-        
-        serializer = PlayerRankingSerializer(voting_players, many=True)
-        # for player in categories_with_avg_rank:
-        #     print(player)
-        #@sorted_players = sort_queryset_by_ids(players, player_ids)
-        #print(type(sorted_players))
 
-        return Response(serializer.data)
+def _aggregate_map(scope, season, week, league_size=0, scoring=ScoringFormat.ALL):
+    """One indexed query -> {player_id: BidAggregate}."""
+    if season is None or week is None:
+        return {}
+    rows = BidAggregate.objects.filter(
+        scope=scope, season=season, week=week,
+        league_size=league_size, scoring=scoring,
+    ).only(
+        'player_id', 'counts', 'won_counts', 'n', 'n_leagues',
+        'mean', 'median', 'mode', 'p25', 'p75', 'min_bid', 'max_bid',
+    )
+    return {row.player_id: row for row in rows}
 
-class VoteView(APIView):
-    serializer_class = RankingSerializer
-    def post(self, request, format=None):
 
-        ###############
-        ##  SESSION KEY HERE
-        ##############
-        if not request.session.exists(request.session.session_key):
-            request.session.create()
-        print(request.session.session_key)
-        data=request.data
-        user = request.session.session_key 
-        player = Player.objects.get(id=data['playerid'])
-        
-        #print(serializer.data)
-        try:  
-    
-            ranking = Ranking(user=user,rank=data['rank'], Player=player, week = data['week'])
-            ranking.save()
-            return Response(RankingSerializer(ranking).data, status=status.HTTP_201_CREATED)
-        except Exception as e:
-            print(e)     
-            return Response({'Bad Request':'Invalid Rank'}, status=status.HTTP_400_BAD_REQUEST)
+def _legacy_stats_payload(agg):
+    """Reproduce the shape the deployed frontend already expects."""
+    if agg is None or not agg.n:
+        return (
+            {
+                'averageBid': 'NA',
+                'medianBid': 'NA',
+                'mostCommonBid': 'NA',
+                'numberOfBids': "You're the 1st bid",
+            },
+            [],
+        )
+    trimmed = hg.trimmed(agg.counts)
+    return (
+        {
+            'averageBid': round(hg.mean(trimmed), 1) if hg.total(trimmed) else agg.mean,
+            'medianBid': hg.quantile(trimmed, 0.5),
+            'mostCommonBid': hg.mode(trimmed),
+            'numberOfBids': hg.total(trimmed),
+        },
+        hg.bins(trimmed),
+    )
 
-class WeeklyRankingAPI(APIView):
-    week_target = 'week'
 
-    def get(self,request, format=None):
-        week_name = request.GET.get(self.week_target).split('?week=')
+# ---------------------------------------------------------------------------
+# Endpoints
+# ---------------------------------------------------------------------------
+@extend_schema(
+    tags=['legacy'],
+    summary="The week's player cards",
+    description=(
+        'Kept unchanged for the currently deployed frontend. New clients '
+        'should use `/api/week`, which returns this plus both distributions '
+        'in one round trip.'
+    ),
+    parameters=[WEEK_PARAM],
+    responses={200: TargetsResponseSerializer},
+)
+class TargetsAPI(APIView):
+    """Legacy: the week's player cards."""
 
-        week = week_name[0]
-        print(week)
-        qbs = (Player.objects
-                .filter(position_id=3)
-                .annotate(
-                    avg_rank=Avg('rankings__rank', filter=Q(rankings__week=week, position_id = 3)),
-                    ecr=Min('rankings__rank', filter=Q(rankings__week=week, rankings__user='fantasy_pros'))
+    def get(self, request):
+        try:
+            legacy_week = int(request.query_params.get('week'))
+        except (TypeError, ValueError):
+            return Response({'detail': 'week is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+        targets = Target.objects.filter(week=legacy_week).values_list('id', 'player_id')
+        target_ids = {player_id: target_id for target_id, player_id in targets}
+        players = (
+            Player.objects.filter(id__in=target_ids.keys())
+            .select_related('team', 'position')
+            .order_by('id')
+        )
+        data = PlayerSerializer(
+            players, many=True, context={'target_ids': target_ids}
+        ).data
+        response = Response({'players': data})
+        patch_cache_control(response, public=True, max_age=settings.WEEK_CACHE_SECONDS)
+        return response
+
+
+@extend_schema(
+    tags=['legacy'],
+    summary='Crowd bid distributions for a week',
+    description=(
+        'Original response shape, including the `"NA"` / '
+        '`"You\'re the 1st bid"` string placeholders.\n\n'
+        'Outliers are trimmed with a Tukey 1.5x IQR fence before the summary '
+        'is computed, matching the previous behaviour.'
+    ),
+    parameters=[SEASON_PARAM, WEEK_PARAM],
+    responses={200: StatsResponseSerializer},
+)
+class StatsAPI(APIView):
+    """
+    Legacy: bid distributions for the week.
+
+    Previously this loaded every raw bid for every target and ran scipy over
+    them on each request. It is now one indexed query over precomputed rows.
+    """
+
+    def get(self, request):
+        season, week, legacy_week, error = _resolve_week(request)
+        if error:
+            return error
+
+        by_player = _aggregate_map(BidAggregate.Scope.CROWD, season, week)
+        stats, binned = {}, {}
+        for player_id, agg in by_player.items():
+            summary, bins = _legacy_stats_payload(agg)
+            stats[str(player_id)] = summary
+            if bins:
+                binned[str(player_id)] = bins
+
+        # Any target with no bids yet still needs a placeholder entry.
+        for player_id in Target.objects.filter(week=legacy_week).values_list(
+            'player_id', flat=True
+        ):
+            stats.setdefault(str(player_id), _legacy_stats_payload(None)[0])
+
+        response = Response({'binned_data': binned, 'stats': stats})
+        patch_cache_control(response, public=True, max_age=settings.WEEK_CACHE_SECONDS)
+        return response
+
+
+@extend_schema(
+    tags=['week'],
+    summary='Everything about one week',
+    description=(
+        'Players, the crowd distribution and the real market distribution in a '
+        'single response.\n\n'
+        '`size` and `scoring` select a **precomputed** market slice, so '
+        'filtering to "12-team PPR" costs no more than the unfiltered view. A '
+        'slice with no data returns an empty `players` list.\n\n'
+        '`market.win_curve` gives P(win) for every bid 0-100, and '
+        '`market.bid_to_win_80` is the smallest bid that would have won 80% of '
+        'observed leagues -- both derived from losing bids, which most FAAB '
+        'tools do not have.\n\n'
+        'Players are ordered by crowd bid volume, descending.'
+    ),
+    parameters=[SEASON_PARAM, WEEK_PARAM, SIZE_PARAM, SCORING_PARAM, LIMIT_PARAM],
+    responses={200: WeekResponseSerializer},
+)
+class WeekAPI(APIView):
+    """
+    Unified week payload: players, crowd distribution and market distribution
+    in one round trip instead of the two the old frontend made.
+
+    Optional ?size= and ?scoring= select a precomputed market slice, so
+    filtering costs no more than the unfiltered view.
+    """
+
+    def get(self, request):
+        season, week, legacy_week, error = _resolve_week(request)
+        if error:
+            return error
+
+        try:
+            league_size = int(request.query_params.get('size') or 0)
+        except (TypeError, ValueError):
+            league_size = 0
+        scoring = request.query_params.get('scoring') or ScoringFormat.ALL
+        if scoring not in ScoringFormat.values:
+            scoring = ScoringFormat.ALL
+
+        targets = Target.objects.filter(week=legacy_week).values_list('id', 'player_id')
+        target_ids = {player_id: target_id for target_id, player_id in targets}
+
+        crowd = _aggregate_map(BidAggregate.Scope.CROWD, season, week)
+        market = _aggregate_map(
+            BidAggregate.Scope.MARKET, season, week, league_size, scoring
+        )
+
+        try:
+            limit = int(request.query_params.get('limit') or DEFAULT_WEEK_LIMIT)
+        except (TypeError, ValueError):
+            limit = DEFAULT_WEEK_LIMIT
+        limit = max(1, min(limit, MAX_WEEK_LIMIT))
+
+        # The week's actual cards always come first and are never truncated;
+        # remaining slots go to the players with the most market activity.
+        ranked = sorted(
+            set(crowd) | set(market),
+            key=lambda pid: (
+                pid in target_ids,
+                (crowd[pid].n if pid in crowd else 0),
+                (market[pid].n if pid in market else 0),
+            ),
+            reverse=True,
+        )
+        player_ids = set(target_ids) | set(ranked[:limit])
+
+        players = (
+            Player.objects.filter(id__in=player_ids)
+            .select_related('team', 'position')
+            .only('id', 'name', 'link', 'image', 'sleeper_id', 'team', 'position')
+        )
+
+        out = []
+        for player in players:
+            c, m = crowd.get(player.id), market.get(player.id)
+            out.append(
+                {
+                    'id': player.id,
+                    'name': player.name,
+                    'team': player.team.abbreviation if player.team_id else None,
+                    'position': player.position.position_type if player.position_id else None,
+                    'image': player.image,
+                    'sleeper_id': player.sleeper_id,
+                    'target_id': target_ids.get(player.id),
+                    'crowd': None if not c else {
+                        'n': c.n, 'mean': c.mean, 'median': c.median, 'mode': c.mode,
+                        'p25': c.p25, 'p75': c.p75, 'bins': hg.bins(hg.trimmed(c.counts)),
+                    },
+                    'market': None if not m else {
+                        'n': m.n, 'n_leagues': m.n_leagues, 'mean': m.mean,
+                        'median': m.median, 'mode': m.mode, 'p25': m.p25, 'p75': m.p75,
+                        'bins': hg.bins(m.counts),
+                        'win_curve': hg.win_curve(m.won_counts, m.n_leagues),
+                        'bid_to_win_80': hg.min_bid_for_confidence(
+                            m.won_counts, m.n_leagues, 0.8
+                        ),
+                    },
+                }
+            )
+
+        out.sort(
+            key=lambda p: (
+                p['target_id'] is not None,
+                (p['crowd'] or {}).get('n') or 0,
+                (p['market'] or {}).get('n') or 0,
+            ),
+            reverse=True,
+        )
+        response = Response(
+            {
+                'season': season,
+                'week': week,
+                'filters': {'size': league_size, 'scoring': scoring, 'limit': limit},
+                'players': out,
+            }
+        )
+        patch_cache_control(response, public=True, max_age=settings.WEEK_CACHE_SECONDS)
+        return response
+
+
+@extend_schema(
+    tags=['bids'],
+    summary='Submit a crowd bid',
+    description=(
+        'Records what you would bid, then unlocks the results.\n\n'
+        'Anonymous but not unlimited:\n\n'
+        '- A signed `faab_sid` cookie identifies the browser and is issued on '
+        'first submission. **Clients must send cookies** '
+        '(`credentials: "include"`) or every bid looks like a new visitor.\n'
+        '- One bid per browser per player per week; a repeat returns '
+        '`200 {"recorded": false, "reason": "duplicate"}` rather than an error.\n'
+        '- A `value` of 0 is the "just show me the results" path: it returns '
+        '`reason: "zero_bid"` and is not counted.\n'
+        '- Rate limited per address (burst and sustained).'
+    ),
+    request=BidInputSerializer,
+    responses={
+        201: BidResultSerializer,
+        200: BidResultSerializer,
+        400: OpenApiTypes.OBJECT,
+        429: OpenApiTypes.OBJECT,
+    },
+    examples=[
+        OpenApiExample(
+            'A real bid', value={'player': 88, 'week': 29, 'value': 24},
+            request_only=True,
+        ),
+        OpenApiExample(
+            'Reveal results without bidding',
+            value={'player': 88, 'week': 29, 'value': 0}, request_only=True,
+        ),
+    ],
+)
+class BidView(APIView):
+    """Accept one crowd bid and fold it straight into the aggregate."""
+
+    throttle_classes = [BidBurstThrottle, BidSustainedThrottle]
+
+    def post(self, request):
+        serializer = BidInputSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        data = serializer.validated_data
+        value, legacy_week, player_id = data['value'], data['week'], data['player']
+
+        if not Player.objects.filter(id=player_id).exists():
+            return Response({'detail': 'unknown player'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # A zero bid is the "just show me the answer" path: it reveals results
+        # without polluting the distribution.
+        if value == 0:
+            return Response({'recorded': False, 'reason': 'zero_bid'},
+                            status=status.HTTP_200_OK)
+
+        submitter = _read_submitter(request)
+        issued = False
+        if not submitter:
+            submitter, issued = _new_submitter(), True
+        submitter_hash = _submitter_hash(submitter)
+
+        try:
+            with transaction.atomic():
+                Bid.objects.create(
+                    value=value, player_id=player_id, week=legacy_week,
+                    user='anon', submitter=submitter_hash,
                 )
-                .order_by('avg_rank')
-        )[0:25]
-        wrs = (Player.objects
-                .filter(position_id=2)
-                .annotate(
-                    avg_rank=Avg('rankings__rank', filter=Q(rankings__week=week, position_id = 2)),
-                    ecr=Min('rankings__rank', filter=Q(rankings__week=week, rankings__user='fantasy_pros'))
-                )
-                .order_by('avg_rank')
-        )[0:50]
-        rbs = (Player.objects
-                .filter(position_id=1)
-                .annotate(
-                    avg_rank=Avg('rankings__rank', filter=Q(rankings__week=week, position_id = 1)),
-                    ecr=Min('rankings__rank', filter=Q(rankings__week=week, rankings__user='fantasy_pros'))
-                )
-                .order_by('avg_rank')
-        )[0:50]
-        tes = (Player.objects
-                .filter(position_id=4)
-                .annotate(
-                    avg_rank=Avg('rankings__rank', filter=Q(rankings__week=week, position_id = 4)),
-                    ecr=Min('rankings__rank', filter=Q(rankings__week=week, rankings__user='fantasy_pros'))
-                )
-                .order_by('avg_rank')
-        )[0:25]
-        players_with_avg_rank_and_ecr = chain( qbs, wrs, rbs, tes)
-        serializer = PlayerRankingSerializer(players_with_avg_rank_and_ecr, many=True)
-        return Response(serializer.data)
+        except IntegrityError:
+            # Already bid on this player this week; return results, change nothing.
+            response = Response({'recorded': False, 'reason': 'duplicate'},
+                                status=status.HTTP_200_OK)
+            return _set_submitter_cookie(response, submitter) if issued else response
 
-class WeeklyVotingAPI(APIView):
-    week_target = 'week'
-    def get(self,request, format=None):
-        week_name = request.GET.get(self.week_target).split('?week=')
+        season, week = weeks.to_season_week(legacy_week)
+        if season is not None:
+            aggregates.bump(
+                scope=BidAggregate.Scope.CROWD, player_id=player_id,
+                season=season, week=week, value=value,
+            )
+        else:
+            log.warning('no season offset for legacy week %s; aggregate not updated',
+                        legacy_week)
 
-        week = week_name[0]
-
-        opponent_subquery = Ranking.objects.filter(
-            Player_id=OuterRef('id'),
-            week=week,
-            user='fantasy_pros'
-        ).values('opponent__abbreviation')[:1]
+        response = Response({'recorded': True}, status=status.HTTP_201_CREATED)
+        return _set_submitter_cookie(response, submitter) if issued else response
 
 
+@extend_schema(exclude=True)
+@api_view(['GET'])
+def llms_txt(request):
+    """
+    /llms.txt -- the convention AI agents look for to understand a site.
 
-        qb_ran = random.randint(1, 23)
-        rb_tier = random.randint(1, 48)
-        wr_tier = random.randint(1, 48)
-        te_tier = random.randint(1, 23)
-        qbs = (Player.objects.filter(position_id=3)
-                                .annotate(avg_rank=Avg('rankings__rank',  filter=Q(rankings__week=week)), opp=Subquery(opponent_subquery))
-                                .order_by('avg_rank'))[qb_ran:qb_ran+3]
-        wrs = (Player.objects.filter(position_id=2)
-                                .annotate(avg_rank=Avg('rankings__rank', filter=Q(rankings__week=week)), opp=Subquery(opponent_subquery))
-                                .order_by('avg_rank'))[wr_tier:wr_tier+3]
-        rbs = (Player.objects.filter(position_id=1)
-                                .annotate(avg_rank=Avg('rankings__rank',  filter=Q(rankings__week=week)), opp=Subquery(opponent_subquery))
-                                .order_by('avg_rank'))[rb_tier:rb_tier+3]    
-        tes = (Player.objects.filter(position_id=4)
-                                .annotate(avg_rank=Avg('rankings__rank', filter=Q(rankings__week=week)), opp=Subquery(opponent_subquery))
-                                .order_by('avg_rank'))[te_tier:te_tier+3]    
-                            
-        voting_players = chain( qbs, wrs, rbs, tes)
-        print(voting_players)
-        serializer = PlayerRankingSerializer(voting_players, many=True)
-        # for player in categories_with_avg_rank:
-        #     print(player)
-        #@sorted_players = sort_queryset_by_ids(players, player_ids)
-        #print(type(sorted_players))
+    Plain text on purpose: an agent finds this, learns the API exists, learns it
+    can call it without signing up, and gets the OpenAPI URL to work from.
+    """
+    base = request.build_absolute_uri('/').rstrip('/')
+    body = f"""# FAABLab
 
-        return Response(serializer.data)
+> Crowd-sourced fantasy football FAAB (waiver bid) data. Real people submit what
+> they would bid on each week's waiver targets; FAABLab aggregates those bids
+> into medians, distributions and winning ranges.
 
-# class WeeklyVoteView(APIView):
-#     serializer_class = RankingSerializer
-#     def post(self, request, format=None):
+All bid values are a **percent of league budget (0-100)**, never dollars. That
+is what makes them comparable across leagues. Convert with:
+`dollars = round(budget * pct / 100)`.
 
-#         ###############
-#         ##  SESSION KEY HERE
-#         ##############
-#         if not request.session.exists(request.session.session_key):
-#             request.session.create()
-#         print(request.session.session_key)
-#         data=request.data
-#         user = request.session.session_key 
-#         player = Player.objects.get(id=data['playerid'])
-        
-#         #print(serializer.data)
-#         try:  
-    
-#             ranking = Ranking(user=user,rank=data['rank'], Player=player, week = data['week'])
-#             ranking.save()
-#             return Response(RankingSerializer(ranking).data, status=status.HTTP_201_CREATED)
-#         except Exception as e:
-#             print(e)     
-#             return Response({'Bad Request':'Invalid Rank'}, status=status.HTTP_400_BAD_REQUEST)
+## API
+
+Free to call. No signup required to start -- anonymous callers get a working
+monthly quota, and a free key raises it.
+
+- OpenAPI schema: {base}/api/schema
+- Interactive docs: {base}/api/docs
+- Tiers and quotas: {base}/api/v1/pricing
+- Auth (optional): `X-API-Key: faab_...`
+
+## Getting a key
+
+You do not need one to start. When you want a bigger allowance:
+
+```
+curl -X POST {base}/api/v1/keys -H 'Content-Type: application/json' \\
+  -d '{{"name":"my-bot","email":"you@example.com"}}'
+```
+
+The key comes back in the response, works immediately, and is shown only once.
+Send it as `X-API-Key`. Check usage at `/api/v1/keys/me`.
+
+If you exhaust a quota, the 429 response includes an `upgrade_url`.
+**Show that link to the person who deployed you** -- they pay, the key upgrades
+automatically, and your next call succeeds. Nothing needs relaying back.
+
+## Endpoints
+
+- `POST /api/v1/keys` - create a key instantly, no signup form
+- `GET /api/v1/keys/me` - your tier, usage and remaining quota
+- `GET /api/v1/coverage` - which seasons and weeks have data
+- `GET /api/v1/bids/{{season}}/{{week}}` - every target that week
+- `GET /api/v1/bids/{{season}}/{{week}}/{{player}}` - one player, by id or name slug
+
+## Example
+
+```
+curl {base}/api/v1/bids/2026/3/john-metchie
+```
+
+## Notes
+
+- Outliers are trimmed (Tukey 1.5x IQR) before summarising, so `bids` is the
+  post-trim count and distribution shares sum to it.
+- Quota headers are on every response: `X-RateLimit-Limit`, `X-RateLimit-Remaining`.
+- This API serves FAABLab's own crowd data only.
+"""
+    return HttpResponse(body, content_type='text/plain; charset=utf-8')
+
+
+@extend_schema(
+    tags=['ops'],
+    summary='Current NFL season and week',
+    description=(
+        'Derived from Sleeper\'s own state endpoint and cached, so it cannot '
+        'drift out of sync with the NFL calendar the way a hardcoded season '
+        'start date does. Falls back to the stored legacy offset if Sleeper is '
+        'unreachable.'
+    ),
+    responses={200: OpenApiTypes.OBJECT},
+)
+@api_view(['GET'])
+def current_week(request):
+    cached = cache.get('faab:current_week')
+    if not cached:
+        from .services.sleeper import SleeperClient
+        state = SleeperClient().state() or {}
+        season = int(state.get('season') or 0)
+        week = int(state.get('week') or 0)
+        if not season or not week:
+            return Response(
+                {'detail': 'current week unavailable'},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
+            )
+        week = max(1, min(week, 18))
+        cached = {
+            'season': season,
+            'week': week,
+            'legacy_week': weeks.to_legacy_week(season, week),
+            'season_type': state.get('season_type'),
+        }
+        # An hour is plenty: the NFL week changes once a week.
+        cache.set('faab:current_week', cached, 3600)
+    response = Response(cached)
+    patch_cache_control(response, public=True, max_age=600)
+    return response
+
+
+@extend_schema(
+    tags=['ops'],
+    summary='Liveness probe',
+    description='Returns ok once the database connection is confirmed working.',
+    responses={200: HealthSerializer},
+)
+@api_view(['GET'])
+def health(request):
+    """Cheap liveness probe that also proves the DB connection works."""
+    Player.objects.exists()
+    return Response({'status': 'ok'})

@@ -7,10 +7,11 @@ from bs4 import BeautifulSoup
 import psycopg2
 import psycopg2.extras
 from slugify import slugify
+from db import connect
 
 
 # change week below
-week = 35
+week = 53
 #############
 
 
@@ -19,16 +20,11 @@ week = 35
 # waiver_pics = waiver_pics[waiver_pics.find('{"player_id"'):]
 # count = waiver_pics.count('player_owned_yahoo')
 try:
-    conn = psycopg2.connect(
-        host='ec2-52-71-90-133.compute-1.amazonaws.com',
-        user='yscnkbjrdccjdm',
-        password='abc2e73db2c853ef565d543fe31c401b2f0be626920e7707b705302f6bf519be',
-        database='deranomlqt3v7k'
-    )
+    conn = connect()
     curr = conn.cursor()
 
 
-    df = pd.read_csv(f'./faab/faab/stats/waiver_{week-27}.csv')
+    df = pd.read_csv(f'./faab/faab/stats/waiver_{week-39}.csv')
 
     # Create a new column 'in_set' which is True if the player's name is in 'my_set' and False otherwise
     for index,row in  df.iterrows():
@@ -48,9 +44,10 @@ try:
             #     #this skips if already in there
             #     print(curr.fetchone())
             try:
-                curr.execute("""insert into api_target (week, player_id) values (%s, %s);""", [week, player_id,] )
-                print('executed')
-                print('------------------------')
+                if position[0] != 'K':
+                    curr.execute("""insert into api_target (week, player_id) values (%s, %s);""", [week, player_id,] )
+                    print('executed')
+                    print('------------------------')
             except Exception as e:
                 print(e)
         except Exception as e:

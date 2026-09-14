@@ -1,0 +1,31 @@
+{
+  "app": {
+    "[project]/web/app/_not-found/page": [
+      "static/media/c6e2684784a55443-s.p.2p4adm_386h58.woff2",
+      "static/media/a083361d37caf3d1-s.p.0s4utfvp8prsy.woff2",
+      "static/media/6c98c9fb873995d2-s.p.22ggkaf3lyu8c.woff2",
+      "static/media/0595f7052377a1a2-s.p.2lpos000q_nzo.woff2"
+    ],
+    "[project]/web/app/page": [
+      "static/media/c6e2684784a55443-s.p.2p4adm_386h58.woff2",
+      "static/media/a083361d37caf3d1-s.p.0s4utfvp8prsy.woff2",
+      "static/media/6c98c9fb873995d2-s.p.22ggkaf3lyu8c.woff2",
+      "static/media/0595f7052377a1a2-s.p.2lpos000q_nzo.woff2"
+    ],
+    "[project]/web/app/waiver-wire/[season]/[week]/[player]/page": [
+      "static/media/c6e2684784a55443-s.p.2p4adm_386h58.woff2",
+      "static/media/a083361d37caf3d1-s.p.0s4utfvp8prsy.woff2",
+      "static/media/6c98c9fb873995d2-s.p.22ggkaf3lyu8c.woff2",
+      "static/media/0595f7052377a1a2-s.p.2lpos000q_nzo.woff2"
+    ],
+    "[project]/web/app/waiver-wire/[season]/[week]/page": [
+      "static/media/c6e2684784a55443-s.p.2p4adm_386h58.woff2",
+      "static/media/a083361d37caf3d1-s.p.0s4utfvp8prsy.woff2",
+      "static/media/6c98c9fb873995d2-s.p.22ggkaf3lyu8c.woff2",
+      "static/media/0595f7052377a1a2-s.p.2lpos000q_nzo.woff2"
+    ]
+  },
+  "appUsingSizeAdjust": true,
+  "pages": {},
+  "pagesUsingSizeAdjust": false
+}

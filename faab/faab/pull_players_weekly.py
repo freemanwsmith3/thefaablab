@@ -7,6 +7,7 @@ from bs4 import BeautifulSoup
 import psycopg2
 import psycopg2.extras
 from slugify import slugify
+from db import connect
 # Downloading contents of the web page
 url = "https://www.fantasypros.com/nfl/rankings/waiver-wire-overall.php"
 data = requests.get(url).text
@@ -25,12 +26,7 @@ waiver_pics = waiver_pics[waiver_pics.find('{"player_id"'):]
 count = waiver_pics.count('player_owned_yahoo')
 try:
 
-    conn = psycopg2.connect(
-        host='ec2-52-71-90-133.compute-1.amazonaws.com',
-        user='yscnkbjrdccjdm',
-        password='abc2e73db2c853ef565d543fe31c401b2f0be626920e7707b705302f6bf519be',
-        database='deranomlqt3v7k'
-    )
+    conn = connect()
     curr = conn.cursor()
 
 

@@ -1,0 +1,33 @@
+/* [project]/web/app/globals.css [app-client] (css) */
+:root {
+  --brand: #035e7b;
+  --page: #ebebeb;
+  --text: #14343f;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--page);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  font-family: Barlow, system-ui, -apple-system, sans-serif;
+}
+
+a {
+  color: var(--brand);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/*# sourceMappingURL=web_app_globals_css_1igg3k2._.single.css.map*/

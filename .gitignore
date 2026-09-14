@@ -138,3 +138,12 @@ GitHub.sublime-settings
 
 *.csv
 node_modules
+.cache/
+staticfiles/
+.env.local
+.env.demo
+
+# local databases
+*.sqlite3
+*.sqlite3-journal
+faab/demo.sqlite3
