@@ -35,11 +35,20 @@ class PlayerSerializer(serializers.ModelSerializer):
 
 
 class BidInputSerializer(serializers.Serializer):
-    """Validates an incoming crowd bid. Week is the legacy running counter."""
+    """
+    An incoming crowd bid.
+
+    Send `season` with an NFL `week` (1-18). Without it, `week` is read as the
+    old running counter and translated via LEGACY_WEEK_OFFSETS -- which only
+    exists for the original frontend. New clients should always send `season`,
+    because a bid that cannot be resolved to a season never reaches an
+    aggregate and so never appears on the site.
+    """
 
     player = serializers.IntegerField(min_value=1)
     week = serializers.IntegerField(min_value=0, max_value=2000)
     value = serializers.IntegerField(min_value=0, max_value=100)
+    season = serializers.IntegerField(required=False, min_value=2000, max_value=2100)
 
 
 # ---------------------------------------------------------------------------

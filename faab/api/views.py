@@ -440,7 +440,22 @@ class BidView(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         data = serializer.validated_data
-        value, legacy_week, player_id = data['value'], data['week'], data['player']
+        value, player_id = data['value'], data['player']
+        posted_week = data['week']
+        posted_season = data.get('season')
+
+        # With a season, the week is a real NFL week and needs no translation.
+        # Without one, fall back to reading it as the legacy running counter.
+        if posted_season:
+            season, week = posted_season, posted_week
+            legacy_week = weeks.to_legacy_week(season, week)
+            if legacy_week is None:
+                # No offset configured for this season: keep the raw row keyed
+                # on the NFL week rather than dropping the bid.
+                legacy_week = posted_week
+        else:
+            legacy_week = posted_week
+            season, week = weeks.to_season_week(legacy_week)
 
         if not Player.objects.filter(id=player_id).exists():
             return Response({'detail': 'unknown player'}, status=status.HTTP_400_BAD_REQUEST)
@@ -469,15 +484,20 @@ class BidView(APIView):
                                 status=status.HTTP_200_OK)
             return _set_submitter_cookie(response, submitter) if issued else response
 
-        season, week = weeks.to_season_week(legacy_week)
         if season is not None:
             aggregates.bump(
                 scope=BidAggregate.Scope.CROWD, player_id=player_id,
                 season=season, week=week, value=value,
             )
         else:
-            log.warning('no season offset for legacy week %s; aggregate not updated',
-                        legacy_week)
+            # The bid is stored but invisible on the site. Loud, because it is
+            # silent from the user's side.
+            log.error(
+                'bid on player %s week %s could not be resolved to a season; '
+                'it will not appear in any aggregate. Send "season" in the '
+                'request or add a LEGACY_WEEK_OFFSETS entry.',
+                player_id, posted_week,
+            )
 
         response = Response({'recorded': True}, status=status.HTTP_201_CREATED)
         return _set_submitter_cookie(response, submitter) if issued else response

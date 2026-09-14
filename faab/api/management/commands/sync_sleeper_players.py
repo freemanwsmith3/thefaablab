@@ -70,31 +70,56 @@ class Command(BaseCommand):
                 by_name.setdefault(key, set()).add(str(sleeper_id))
 
         matched = ambiguous = missed = 0
-        updates = []
+        candidates_for = {}
         for player in Player.objects.filter(sleeper_id__isnull=True).only('id', 'name'):
-            candidates = by_name.get(normalise(player.name))
-            if not candidates:
+            found = by_name.get(normalise(player.name))
+            if not found:
                 missed += 1
-            elif len(candidates) > 1:
+            elif len(found) > 1:
                 ambiguous += 1
             else:
-                player.sleeper_id = next(iter(candidates))
-                updates.append(player)
-                matched += 1
+                candidates_for.setdefault(next(iter(found)), []).append(player)
+
+        # Two local rows can normalise to the same name -- "D.J. Chark Jr." and
+        # "DJ Chark Jr." both reduce to "dj chark" -- and would then be assigned
+        # the same Sleeper id. sleeper_id is unique, so that aborts the whole
+        # batch. These are duplicate player records rather than a matching
+        # failure, so report them and leave both unmapped.
+        collisions = {sid: ps for sid, ps in candidates_for.items() if len(ps) > 1}
+
+        # Ids already claimed in the database cannot be assigned again either.
+        taken = set(
+            Player.objects.exclude(sleeper_id=None)
+            .filter(sleeper_id__in=list(candidates_for))
+            .values_list('sleeper_id', flat=True)
+        )
+
+        updates = []
+        for sleeper_id, players in candidates_for.items():
+            if len(players) > 1 or sleeper_id in taken:
+                continue
+            players[0].sleeper_id = sleeper_id
+            updates.append(players[0])
+        matched = len(updates)
+
+        if collisions:
+            self.stdout.write(self.style.WARNING(
+                f'\n  {len(collisions)} Sleeper id(s) matched by more than one player '
+                f'-- skipped, these look like duplicate records:'
+            ))
+            for sid, players in collisions.items():
+                names = ' | '.join(f'#{p.id} {p.name}' for p in players)
+                self.stdout.write(f'    {sid}: {names}')
+        if taken:
+            self.stdout.write(self.style.WARNING(
+                f'  {len(taken)} id(s) already assigned to another player -- skipped'
+            ))
 
         if updates and not opts['dry_run']:
-            # Unique constraint means a duplicate would abort the batch, so
-            # drop ids already claimed by another row first.
-            taken = set(
-                Player.objects.filter(
-                    sleeper_id__in=[p.sleeper_id for p in updates]
-                ).values_list('sleeper_id', flat=True)
-            )
-            updates = [p for p in updates if p.sleeper_id not in taken]
             Player.objects.bulk_update(updates, ['sleeper_id'], batch_size=500)
 
         self.stdout.write(
-            f'  matched: {matched}  ambiguous: {ambiguous}  unmatched: {missed}'
+            f'\n  matched: {matched}  ambiguous: {ambiguous}  unmatched: {missed}'
             f'{"  (dry run)" if opts["dry_run"] else ""}'
         )
         self.stdout.write(self.style.SUCCESS('player sync complete'))
