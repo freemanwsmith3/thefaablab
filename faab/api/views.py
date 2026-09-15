@@ -210,7 +210,7 @@ def _legacy_stats_payload(agg):
 
 def _targets_for(season, week, legacy_week):
     """
-    The week's targets as {player_id: target_id}.
+    Returns ({player_id: target_id}, {player_id: sleeper_adds}).
 
     Prefers the explicit (season, nfl_week) columns. Falls back to the legacy
     running counter so rows written before those columns existed still resolve.
@@ -223,8 +223,12 @@ def _targets_for(season, week, legacy_week):
     if qs is None and legacy_week is not None:
         qs = Target.objects.filter(week=legacy_week)
     if qs is None:
-        return {}
-    return {player_id: target_id for target_id, player_id in qs.values_list('id', 'player_id')}
+        return {}, {}
+    ids, adds = {}, {}
+    for target_id, player_id, trending in qs.values_list('id', 'player_id', 'trending_adds'):
+        ids[player_id] = target_id
+        adds[player_id] = trending
+    return ids, adds
 
 
 class TargetsAPI(APIView):
@@ -237,7 +241,7 @@ class TargetsAPI(APIView):
             return Response({'detail': 'week is required'}, status=status.HTTP_400_BAD_REQUEST)
 
         season, week = weeks.to_season_week(legacy_week)
-        target_ids = _targets_for(season, week, legacy_week)
+        target_ids, _adds = _targets_for(season, week, legacy_week)
         players = (
             Player.objects.filter(id__in=target_ids.keys())
             .select_related('team', 'position')
@@ -285,7 +289,7 @@ class StatsAPI(APIView):
                 binned[str(player_id)] = bins
 
         # Any target with no bids yet still needs a placeholder entry.
-        for player_id in _targets_for(season, week, legacy_week):
+        for player_id in _targets_for(season, week, legacy_week)[0]:
             stats.setdefault(str(player_id), _legacy_stats_payload(None)[0])
 
         response = Response({'binned_data': binned, 'stats': stats})
@@ -333,7 +337,7 @@ class WeekAPI(APIView):
         if scoring not in ScoringFormat.values:
             scoring = ScoringFormat.ALL
 
-        target_ids = _targets_for(season, week, legacy_week)
+        target_ids, sleeper_adds = _targets_for(season, week, legacy_week)
 
         crowd = _aggregate_map(BidAggregate.Scope.CROWD, season, week)
         market = _aggregate_map(
@@ -377,6 +381,9 @@ class WeekAPI(APIView):
                     'image': player.image,
                     'sleeper_id': player.sleeper_id,
                     'target_id': target_ids.get(player.id),
+                    # How many Sleeper users added this player, refreshed
+                    # through the week by the update_trending command.
+                    'sleeper_adds': sleeper_adds.get(player.id),
                     'crowd': None if not c else {
                         'n': c.n, 'mean': c.mean, 'median': c.median, 'mode': c.mode,
                         'p25': c.p25, 'p75': c.p75, 'bins': hg.bins(hg.trimmed(c.counts)),
@@ -397,6 +404,7 @@ class WeekAPI(APIView):
             key=lambda p: (
                 p['target_id'] is not None,
                 (p['crowd'] or {}).get('n') or 0,
+                p['sleeper_adds'] or 0,
                 (p['market'] or {}).get('n') or 0,
             ),
             reverse=True,

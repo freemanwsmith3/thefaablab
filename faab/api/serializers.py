@@ -114,6 +114,9 @@ class WeekPlayerSerializer(serializers.Serializer):
     image = serializers.CharField(allow_null=True)
     sleeper_id = serializers.CharField(allow_null=True)
     target_id = serializers.IntegerField(allow_null=True)
+    sleeper_adds = serializers.IntegerField(
+        allow_null=True, help_text='Sleeper users who added this player recently.'
+    )
     crowd = CrowdStatsSerializer(allow_null=True)
     market = MarketStatsSerializer(allow_null=True)
 
