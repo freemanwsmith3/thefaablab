@@ -22,6 +22,20 @@ CACHE_TTL = 60 * 60 * 24  # Sleeper asks for at most one call per day.
 SUFFIXES = {'jr', 'sr', 'ii', 'iii', 'iv', 'v'}
 
 
+def surname_key(name: str) -> str:
+    """
+    'Kenneth Gainwell' and 'Kenny Gainwell' both -> 'k gainwell'.
+
+    A fallback for when exact names differ by a nickname. Deliberately coarse,
+    so callers must check it resolves to exactly one candidate before trusting
+    it -- two players sharing a surname and initial would collide.
+    """
+    parts = normalise(name).split()
+    if len(parts) < 2:
+        return ''
+    return f'{parts[0][0]} {parts[-1]}'
+
+
 def normalise(name: str) -> str:
     """Lowercase, strip punctuation and generational suffixes, collapse spaces."""
     cleaned = re.sub(r"[^a-z\s]", '', (name or '').lower())

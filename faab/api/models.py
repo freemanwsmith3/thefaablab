@@ -69,15 +69,43 @@ class Player(models.Model):
 # Crowd side (existing product)
 # ---------------------------------------------------------------------------
 class Target(models.Model):
-    """A player surfaced for bidding in a given legacy week."""
+    """
+    A player surfaced for bidding in a given week.
+
+    `week` is the old running counter and is kept so existing rows and the
+    original frontend keep working. New rows also carry an explicit
+    (season, nfl_week), which is what everything new looks them up by -- a
+    target written with only a legacy week is invisible to any season that has
+    no LEGACY_WEEK_OFFSETS entry.
+    """
 
     player = models.ForeignKey(Player, on_delete=models.CASCADE, related_name='targets')
     week = models.IntegerField(
         null=False, validators=[MinValueValidator(0), MaxValueValidator(2000)]
     )
 
+    season = models.IntegerField(null=True, blank=True)
+    nfl_week = models.IntegerField(
+        null=True, blank=True, validators=[MinValueValidator(1), MaxValueValidator(18)]
+    )
+
+    # How many Sleeper users added this player, refreshed through the week.
+    # Sleeper's own signal of demand, independent of what FAABLab bidders say.
+    trending_adds = models.IntegerField(null=True, blank=True)
+    trending_updated_at = models.DateTimeField(null=True, blank=True)
+
     class Meta:
-        indexes = [models.Index(fields=['week', 'player'], name='target_week_player_idx')]
+        indexes = [
+            models.Index(fields=['week', 'player'], name='target_week_player_idx'),
+            models.Index(fields=['season', 'nfl_week'], name='target_season_week_idx'),
+        ]
+        constraints = [
+            models.UniqueConstraint(
+                fields=['player', 'season', 'nfl_week'],
+                condition=models.Q(season__isnull=False),
+                name='uniq_target_player_season_week',
+            )
+        ]
 
 
 class BidOriginal(models.Model):

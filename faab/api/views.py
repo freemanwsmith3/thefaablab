@@ -207,6 +207,26 @@ def _legacy_stats_payload(agg):
     parameters=[WEEK_PARAM],
     responses={200: TargetsResponseSerializer},
 )
+
+def _targets_for(season, week, legacy_week):
+    """
+    The week's targets as {player_id: target_id}.
+
+    Prefers the explicit (season, nfl_week) columns. Falls back to the legacy
+    running counter so rows written before those columns existed still resolve.
+    """
+    qs = None
+    if season is not None and week is not None:
+        qs = Target.objects.filter(season=season, nfl_week=week)
+        if not qs.exists():
+            qs = None
+    if qs is None and legacy_week is not None:
+        qs = Target.objects.filter(week=legacy_week)
+    if qs is None:
+        return {}
+    return {player_id: target_id for target_id, player_id in qs.values_list('id', 'player_id')}
+
+
 class TargetsAPI(APIView):
     """Legacy: the week's player cards."""
 
@@ -216,8 +236,8 @@ class TargetsAPI(APIView):
         except (TypeError, ValueError):
             return Response({'detail': 'week is required'}, status=status.HTTP_400_BAD_REQUEST)
 
-        targets = Target.objects.filter(week=legacy_week).values_list('id', 'player_id')
-        target_ids = {player_id: target_id for target_id, player_id in targets}
+        season, week = weeks.to_season_week(legacy_week)
+        target_ids = _targets_for(season, week, legacy_week)
         players = (
             Player.objects.filter(id__in=target_ids.keys())
             .select_related('team', 'position')
@@ -265,9 +285,7 @@ class StatsAPI(APIView):
                 binned[str(player_id)] = bins
 
         # Any target with no bids yet still needs a placeholder entry.
-        for player_id in Target.objects.filter(week=legacy_week).values_list(
-            'player_id', flat=True
-        ):
+        for player_id in _targets_for(season, week, legacy_week):
             stats.setdefault(str(player_id), _legacy_stats_payload(None)[0])
 
         response = Response({'binned_data': binned, 'stats': stats})
@@ -315,8 +333,7 @@ class WeekAPI(APIView):
         if scoring not in ScoringFormat.values:
             scoring = ScoringFormat.ALL
 
-        targets = Target.objects.filter(week=legacy_week).values_list('id', 'player_id')
-        target_ids = {player_id: target_id for target_id, player_id in targets}
+        target_ids = _targets_for(season, week, legacy_week)
 
         crowd = _aggregate_map(BidAggregate.Scope.CROWD, season, week)
         market = _aggregate_map(
