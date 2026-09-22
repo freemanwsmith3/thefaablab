@@ -1,0 +1,1 @@
+self.__SSG_MANIFEST=new Set(["\u002Fwaiver-wire\u002F[season]\u002F[week]\u002F[player]"]);self.__SSG_MANIFEST_CB&&self.__SSG_MANIFEST_CB()

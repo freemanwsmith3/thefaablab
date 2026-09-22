@@ -7,16 +7,12 @@ from bs4 import BeautifulSoup
 import psycopg2
 import psycopg2.extras
 from slugify import slugify
+from db import connect
 # Downloading contents of the web page
 try:
 
 
-    con = psycopg2.connect(
-        host='ec2-34-199-68-114.compute-1.amazonaws.com',
-        user='oibdolfaruxway',
-        password='5983be3a6ab94c50df024487d2c3bcbab6a2eca9a8b4c594ddaf0b934a5553cc',
-        database='d4qgddmcqs7su1'
-    )
+    con = connect()
     cur = con.cursor()
     cur.execute("""SELECT * FROM api_player""")
     players = cur.fetchall()
@@ -25,7 +21,7 @@ try:
         # Convert the rows into a set
     players_set = set(row[1] for row in players) 
 
-    df = pd.read_csv('./faab/faab/stats/2024rankings.csv')
+    df = pd.read_csv('./faab/faab/stats/2025rankings.csv')
 
     # Create a new column 'in_set' which is True if the player's name is in 'my_set' and False otherwise
     for index,row in  df.iterrows():

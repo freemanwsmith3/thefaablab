@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# Run a manage.py command against the production database from this machine.
+#
+#   ./prod migrate
+#   ./prod load_targets --create-missing
+#   ./prod update_trending
+#
+# Credentials are read from Heroku at call time, so nothing is stored here and
+# nothing breaks when they are rotated. Everything it runs writes to the live
+# database -- there is no dry run unless the command itself offers one.
+set -euo pipefail
+
+APP="${FAAB_HEROKU_APP:-faablab}"
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PY="$ROOT/faab_env/bin/python"
+
+if [ $# -eq 0 ]; then
+  echo "usage: ./prod <manage.py command> [args...]" >&2
+  exit 1
+fi
+
+echo "→ fetching credentials for '$APP'..." >&2
+DB_URL="$(heroku config:get DATABASE_URL -a "$APP")"
+if [ -z "$DB_URL" ]; then
+  echo "could not read DATABASE_URL from heroku app '$APP'" >&2
+  exit 1
+fi
+
+echo "→ running against PRODUCTION: $*" >&2
+DJANGO_ENV_FILE=/dev/null \
+DATABASE_URL="$DB_URL" \
+DEBUG=False \
+SECRET_KEY="local-runner-not-used-for-signing" \
+ALLOWED_HOSTS="localhost" \
+DB_SSL_REQUIRE=True \
+LEGACY_WEEK_OFFSETS="${LEGACY_WEEK_OFFSETS:-2024:28}" \
+  "$PY" "$ROOT/faab/manage.py" "$@"

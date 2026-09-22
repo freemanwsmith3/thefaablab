@@ -1,3 +1,4 @@
+import os
 """
 Django settings for faab project.
 
@@ -21,7 +22,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-c(tebb2w04c9mt&0!vp%-zy2jyu4-cz%#lgdp$jzp$2io*o4+5'
+SECRET_KEY = os.environ.get('SECRET_KEY', '')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -82,11 +83,11 @@ WSGI_APPLICATION = 'faab.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'd4qgddmcqs7su1',
-        'USER': 'oibdolfaruxway',
+        'NAME': os.environ.get('PGNAME', ''),
+        'USER': os.environ.get('PGUSER', ''),
         'PASSWORD' : '5983be3a6ab94c50df024487d2c3bcbab6a2eca9a8b4c594ddaf0b934a5553cc',
-        'HOST': 'ec2-34-199-68-114.compute-1.amazonaws.com',
-        'PORT': '5432',
+        'HOST': os.environ.get('PGHOST', ''),
+        'PORT': os.environ.get('PGPORT', ''),
     }
 }
 
@@ -95,16 +96,16 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        'NAME': os.environ.get('PGNAME', ''),
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'NAME': os.environ.get('PGNAME', ''),
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        'NAME': os.environ.get('PGNAME', ''),
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        'NAME': os.environ.get('PGNAME', ''),
     },
 ]
 
