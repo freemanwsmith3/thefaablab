@@ -71,7 +71,11 @@ class Command(BaseCommand):
             '--from-trending', action='store_true',
             help='Use Sleeper trending adds (the default when no --csv is given).',
         )
-        parser.add_argument('--limit', type=int, default=25, help='How many targets.')
+        parser.add_argument(
+            '--limit', type=int, default=40,
+            help='Maximum targets. Sized to comfortably exceed a weekly export '
+                 'so a curated CSV is never silently truncated.',
+        )
         parser.add_argument(
             '--lookback-hours', type=int, default=48,
             help='Trending window. 48h spans the days after most waivers run.',
@@ -86,6 +90,11 @@ class Command(BaseCommand):
                  "Sleeper's player dump. Without this they are simply skipped, "
                  "which is usually why a week loads far fewer targets than the "
                  "export lists.",
+        )
+        parser.add_argument(
+            '--add', action='append', default=[], metavar='NAME',
+            help='Add a single player to the week without re-reading the source. '
+                 'Repeatable. Leaves existing targets untouched.',
         )
         parser.add_argument('--dry-run', action='store_true')
 
@@ -266,6 +275,29 @@ class Command(BaseCommand):
 
         # Prefer the weekly export when one exists for this season/week; fall
         # back to Sleeper trending so the command still works with no file.
+        # A one-off addition: skip the CSV and trending sources entirely so the
+        # rest of the week's targets are left exactly as they are.
+        if opts['add']:
+            picked, problems = self._resolve_names(
+                opts['add'], opts['create_missing'], client
+            )
+            if problems:
+                self.stdout.write(self.style.WARNING(
+                    '  not found: ' + ', '.join(problems)
+                    + ('' if opts['create_missing'] else '  (try --create-missing)')
+                ))
+            if not picked:
+                raise CommandError('none of those names resolved; nothing written')
+            self.stdout.write(f'\nadding {len(picked)} player(s) to {season} week {week}:')
+            for p_, _c in picked:
+                pos = p_.position.position_type if p_.position_id else '?'
+                self.stdout.write(f'  {p_.name} ({pos})')
+            if opts['dry_run']:
+                self.stdout.write(self.style.SUCCESS('\ndry run -- nothing written.'))
+                return
+            self._write(picked, season, week, replace=False)
+            return
+
         csv_path = Path(opts['csv']) if opts.get('csv') else default_csv_for(season, week)
         use_csv = bool(opts.get('csv')) or (csv_path.exists() and not opts['from_trending'])
 
@@ -308,6 +340,9 @@ class Command(BaseCommand):
             self.stdout.write(self.style.SUCCESS('\ndry run -- nothing written.'))
             return
 
+        self._write(picked, season, week, replace=opts['replace'])
+
+    def _write(self, picked, season, week, replace=False):
         # Written for both keying schemes so the original frontend, which asks
         # by the legacy counter, still sees them.
         legacy = legacy_week_for(season, week)
@@ -322,7 +357,7 @@ class Command(BaseCommand):
                 )
                 kept.append(obj.pk)
             removed = 0
-            if opts['replace']:
+            if replace:
                 removed, _ = (
                     Target.objects.filter(season=season, nfl_week=week)
                     .exclude(pk__in=kept).delete()
@@ -330,6 +365,6 @@ class Command(BaseCommand):
 
         self.stdout.write(self.style.SUCCESS(
             f'\nwrote {len(kept)} target(s)'
-            + (f', removed {removed} no longer trending' if opts['replace'] else '')
+            + (f', removed {removed} no longer trending' if replace else '')
             + f'. Legacy week column set to {legacy}.'
         ))

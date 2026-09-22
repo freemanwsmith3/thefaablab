@@ -17,6 +17,12 @@ class Command(BaseCommand):
             '--limit', type=int, default=0, help='Cap leagues swept (for testing).'
         )
         parser.add_argument(
+            '--waiver-day', type=int, nargs='+',
+            help='Only sweep leagues that process on these days (0=Sunday .. '
+                 '6=Saturday, matching Sleeper). Useful mid-week: leagues that '
+                 'have not run yet cost a call and return nothing.',
+        )
+        parser.add_argument(
             '--no-slices', action='store_true',
             help='Rebuild only the unfiltered aggregate, skipping filter slices.',
         )
@@ -38,6 +44,11 @@ class Command(BaseCommand):
             return
 
         leagues = SleeperLeague.objects.filter(season=season, is_active=True)
+        if opts.get('waiver_day'):
+            leagues = leagues.filter(waiver_day__in=opts['waiver_day'])
+            self.stdout.write(
+                f'  limited to waiver day(s) {opts["waiver_day"]}: {leagues.count()} leagues'
+            )
         if opts['limit']:
             leagues = leagues[: opts['limit']]
 
@@ -54,6 +65,12 @@ class Command(BaseCommand):
             self.stdout.write(self.style.WARNING(
                 f'  {result["unmatched_players"]} bid(s) have no local player; '
                 f'run sync_sleeper_players to map them'
+            ))
+
+        if result.get('leagues') and not result.get('bids'):
+            self.stdout.write(self.style.WARNING(
+                '  every league came back empty -- waivers have probably not '
+                'processed for this week yet. No league was marked inactive.'
             ))
 
         if not opts['skip_aggregates']:

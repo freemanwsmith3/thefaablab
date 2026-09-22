@@ -237,10 +237,16 @@ def ingest_week(
         SleeperLeague.objects.filter(pk__in=touched).update(
             last_ingested_week=week, empty_week_streak=0
         )
-        for league in empty_leagues:
-            league.empty_week_streak += 1
-            league.is_active = league.empty_week_streak < EMPTY_WEEK_LIMIT
-            league.save(update_fields=['empty_week_streak', 'is_active'])
+
+        # Only hold an empty result against a league when the run as a whole
+        # found something. If every league came back empty the cause is the
+        # week, not the leagues -- waivers commonly have not processed yet --
+        # and counting that would march the entire corpus toward deactivation.
+        if touched:
+            for league in empty_leagues:
+                league.empty_week_streak += 1
+                league.is_active = league.empty_week_streak < EMPTY_WEEK_LIMIT
+                league.save(update_fields=['empty_week_streak', 'is_active'])
 
     return {
         'leagues': len(leagues),
